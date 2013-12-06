@@ -77,3 +77,32 @@ class SubscriptionsFormTestCase(TestCase):
         self.assertEqual(f1.fields[s1.slug].initial, {"subscribe": True, "email": True})
         self.assertEqual(f1.fields[s2.slug].initial, {"subscribe": False, "email": False})
         self.assertEqual(f1.fields[s3.slug].initial, {"subscribe": True, "email": False})
+        
+    def test_subscription_creation(self):
+        """Tests correct subscription creation.
+        """
+        u1, n = get_user_model().objects.get_or_create(username="u1")
+        s4, n = Signature.objects.get_or_create(slug="test4", title="Test4")
+        s5, n = Signature.objects.get_or_create(slug="test5", title="Test5")
+        s6, n = Signature.objects.get_or_create(slug="test6", title="Test6")
+        
+        qs = (s4, s5, s6)
+        
+        self.assertEqual(Subscription.objects.filter(subscriber=u1, signature__in=qs).count(), 0)
+        
+        f = SubscriptionsForm(
+            u1,
+            {"%s_0" % s4.slug: True, "%s_1" % s4.slug: False},
+            initial={s4.slug: {"subscribe": True, "email": False}},
+            signatures=qs
+        )
+
+        f.save()
+        
+        try:
+            s = Subscription.objects.get(subscriber=u1, signature=s4)
+            self.assertEqual(s.signature, s4)
+            self.assertEqual(s.subscriber, u1)
+            self.assertEqual(s.send_email, False)
+        except Subscription.DoesNotExist:
+            self.assertFalse(True)

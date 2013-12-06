@@ -45,9 +45,7 @@ class SubscriptionField(forms.MultiValueField):
     widget = SubscriptionWidget
 
     def __init__(self, *args, **kwargs):
-        if 'initial' not in kwargs:
-            kwargs['initial'] = {'subscribe': False, 'email': False}
-        initial = kwargs['initial']
+        initial = kwargs.get('initial', {'subscribe': False, 'email': False})
         kwargs['fields'] = (
             forms.BooleanField(required=False, label=_('subscribe'), initial=initial['subscribe']),
             forms.BooleanField(required=False, label=_('send email'), initial=initial['email'])
@@ -71,7 +69,7 @@ class SubscriptionsForm(forms.Form):
                 name = signature.slug
                 is_subscriber = (Subscription.objects.filter(signature=signature, subscriber=self.subscriber).count() > 0)
                 send_email = (Subscription.objects.filter(signature=signature, subscriber=self.subscriber, send_email=True).count() > 0)
-                field = SubscriptionField(label=_(signature.title), initial={'subscribe': is_subscriber, 'email': send_email})
+                field = SubscriptionField(label=_(signature.title), initial=self.initial.get(name, {'subscribe': is_subscriber, 'email': send_email}))
                 self.fields[name] = field
             
     def save(self):
