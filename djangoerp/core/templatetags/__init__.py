@@ -14,19 +14,3 @@ THE SOFTWARE.
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
 __version__ = '0.0.2'
-
-def parse_args_kwargs(parser, token):
-    contents = token.split_contents()
-    tag_name = contents[0]
-    args_list = contents[1:]
-    args = []
-    kwargs = {}
-    
-    for value in args_list:
-        if '=' in value:
-            k, v = value.split('=', 1)
-            kwargs[str(k)] = v
-        else:
-            args.append(value)
-    
-    return tag_name, args, kwargs
