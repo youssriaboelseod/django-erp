@@ -67,5 +67,5 @@ def diff(obj, amount):
 
     Example usage: {{ my_counter|diff:"5" }} or {{ my_counter|diff:step_id }}
     """
-    return obj-amount
+    return obj-float(amount)
     

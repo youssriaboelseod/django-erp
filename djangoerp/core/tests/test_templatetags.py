@@ -31,6 +31,58 @@ class JoinStringsTemplateTagTestCase(TestCase):
         """Tests "join" templatetag must exclude empty/invalid strings.
         """
         self.assertEqual(join("_", "a", "b", "", "d"), "a_b_d")
+        
+class SplitFilterTestCase(TestCase):
+    def test_split_on_string(self):
+        """Tests the split filter on a string.
+        """
+        self.assertEqual(split("a/path/to/my/folder", '/'), ["a", "path", "to", "my", "folder"])
+        
+class DiffFilterTestCase(TestCase):
+    def test_diff_with_number(self):
+        """Tests the diff filter using a number.
+        """
+        self.assertEqual(diff(5, 2), 3)
+        
+    def test_diff_with_string(self):
+        """Tests the diff filter using a numeric string.
+        """
+        self.assertEqual(diff(5, "2"), 3)
+        
+class GetFilterTestCase(TestCase):
+    def test_get_from_dict(self):
+        """Tests getting a value from a dict.
+        """
+        self.assertEqual(get({"foo": "bar"}, "foo"), "bar")
+        
+    def test_get_from_list(self):
+        """Tests getting a value from a list.
+        """
+        self.assertEqual(get(["foo", "bar"], 1), "bar")
+        
+    def test_get_from_tuple(self):
+        """Tests getting a value from a tuple.
+        """
+        self.assertEqual(get(("foo", "bar"), 1), "bar")
+        
+    def test_get_invalid_from_list_or_tuple(self):
+        """Tests getting a value from a tuple.
+        """
+        self.assertEqual(get(["foo", "bar"], "foo"), "")
+        self.assertEqual(get(("foo", "bar"), "foo"), "")
+        
+    def test_get_from_object(self):
+        """Tests getting a value from an object.
+        """
+        class TestObject:
+            foo = "bar"
+            
+            def foo_func(self): return "bar_func"
+            
+        obj = TestObject()
+            
+        self.assertEqual(get(obj, "foo"), "bar")
+        self.assertEqual(get(obj, "foo_func"), "bar_func")
     
 class ModelNameFilterTestCase(TestCase):
     def test_valid_model_name(self):
