@@ -35,8 +35,8 @@ class ManagementInstallTestCase(TestCase):
         self.assertTrue(users_group.permissions.get_by_natural_key("view_notification", "notifications", "notification"))
         
 class SubscriptionsFormTestCase(TestCase):
-    def test_creation(self):
-        """Tests correct creation of SubScriptionForm.
+    def test_field_creation(self):
+        """Tests correct creation of fields in SubscriptionForm.
         """
         u1, n = get_user_model().objects.get_or_create(username="u1")
         s1, n = Signature.objects.get_or_create(slug="test1", title="Test1")
@@ -104,5 +104,28 @@ class SubscriptionsFormTestCase(TestCase):
             self.assertEqual(s.signature, s4)
             self.assertEqual(s.subscriber, u1)
             self.assertEqual(s.send_email, False)
+            self.assertEqual(Subscription.objects.filter(subscriber=u1, signature__in=(s5, s6)).count(), 0)
         except Subscription.DoesNotExist:
             self.assertFalse(True)
+        
+    def test_subscription_deletion(self):
+        """Tests correct subscription deletion.
+        """
+        u1, n = get_user_model().objects.get_or_create(username="u1")
+        s7, n = Signature.objects.get_or_create(slug="test7", title="Test7")
+        
+        qs = (s7,)
+        
+        s, n = Subscription.objects.get_or_create(subscriber=u1, signature=s7)
+        
+        self.assertNotEqual(Subscription.objects.filter(subscriber=u1, signature__in=qs).count(), 0)
+        
+        f = SubscriptionsForm(
+            u1,
+            {"%s_0" % s7.slug: False, "%s_1" % s7.slug: False},
+            signatures=qs
+        )
+
+        f.save()
+        
+        self.assertEqual(Subscription.objects.filter(subscriber=u1, signature__in=qs).count(), 0)
