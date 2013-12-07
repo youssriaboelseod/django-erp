@@ -91,7 +91,7 @@ class Group(DjangoGroup):
     def __unicode__(self):
         """In this proxy class the name is returned already translated.
         """
-        return _(super(Group, self).__unicode__())
+        return u"%s" % _(super(Group, self).__unicode__())
 
 class Permission(DjangoPermission):
     """A proxy for Permission model which uses a custom manager.
@@ -124,4 +124,4 @@ class ObjectPermission(models.Model):
         return u"%s.%s" % (self.perm.uid, self.object_id)
 
     def __unicode__(self):
-        return "%s | %d" % (self.perm, self.object_id)
+        return u"%s | %d" % (self.perm, self.object_id)
