@@ -111,8 +111,8 @@ class DependencyCase(TestCase):
         try:
           check_dependency("supercalifragidilistichespiralidoso.core")
           self.assertTrue(False)
-        except DependencyError:
-          self.assertTrue(True)
+        except DependencyError as e:
+          self.assertEqual("%s" % e, u"A dependency is not satisfied: supercalifragidilistichespiralidoso.core")
 
 class RenderingValueToStringCase(TestCase):
     def test_empty_value_to_string(self):
