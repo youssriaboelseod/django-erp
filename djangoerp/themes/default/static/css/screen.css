@@ -158,13 +158,13 @@ form .helppopup {
 }
 
 form .required input, form .required textarea, form .required select {
-    background-color: #fffecc;
-    border: 1px solid #ffda88;
+    background-color: #fffecc !important;
+    border: 1px solid #ffda88 !important;
 }
 
 form .errors input, form .errors textarea, form .errors select {
-    background-color: #ffc0c0;
-    border: 1px solid #d21717;
+    background-color: #ffc0c0 !important;
+    border: 1px solid #d21717 !important;
 }
 
 form ul.errorlist li, form td ul.errorlist li {
