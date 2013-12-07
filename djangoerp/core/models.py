@@ -89,6 +89,8 @@ class Group(DjangoGroup):
         proxy = True
         
     def __unicode__(self):
+        """In this proxy class the name is returned already translated.
+        """
         return _(super(Group, self).__unicode__())
 
 class Permission(DjangoPermission):
