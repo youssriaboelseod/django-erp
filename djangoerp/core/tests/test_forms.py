@@ -87,14 +87,15 @@ class UserFormTestCase(TestCase):
         self.user = get_user_model().objects.create(username="u1", email="u@u.it")
         self.user_data = {'username': 'u1', 'email': 'u@u.it', 'timezone': 'GMT', 'language': 'en'}
         
-    def test_raise_exception_when_no_password1_on_creation(self):
+    def test_raise_exception_if_no_password1_on_creation(self):
         """Tests raising an error when no password is provided on user creation.
         """
-        f = UserForm()
+        f = UserForm({})
         
         self.assertTrue(f.fields['password1'].required)
         self.assertTrue(f.fields['password2'].required)
         self.assertFalse(f.is_valid())
+        self.assertTrue("This field is required." in f.errors.get("password1", []))
         
     def test_no_password_required_on_editing(self):
         """Tests no password is required on user editing.
@@ -123,6 +124,18 @@ class UserFormTestCase(TestCase):
         f = UserForm(test_data, instance=self.user)
         
         self.assertTrue(f.is_valid())
+        self.assertTrue(f.is_valid())
+        
+    def test_error_when_has_password1_without_password2(self):
+        """Tests an error must be raised when only password1 is provided.
+        """
+        test_data = self.user_data
+        test_data.update({"password1": "password"})
+        
+        f = UserForm(test_data, instance=self.user)
+        
+        self.assertFalse(f.is_valid())
+        self.assertTrue("This field is required." in f.errors.get("password2", []))
         
     def test_error_when_passwords_are_not_equal(self):
         """Tests an error must be raised if password values are not equal.
@@ -133,4 +146,27 @@ class UserFormTestCase(TestCase):
         f = UserForm(test_data, instance=self.user)
         
         self.assertFalse(f.is_valid())
+        self.assertTrue("The two password fields didn't match." in f.errors.get("password2", []))
         
+    def test_user_saving(self):
+        """Tests user saving (creation or editing) using UserForm.
+        """
+        test_data = self.user_data
+        test_data.update({"username": "u2", "password1": "password", "password2": "password"})
+        
+        f = UserForm(test_data)
+        u2 = f.save()
+        
+        self.assertTrue(isinstance(u2, get_user_model()))
+        
+class AdminUserCreationFormTestCase(TestCase):
+    def test_clean_username(self):
+        """Tests clean_username func which checks username must be unique.
+        """
+        u1 = get_user_model().objects.create(username="u1", email="u@u.it")
+        test_data = {"username": "u1", "password1": "password", "password2": "password"}
+        
+        f = AdminUserCreationForm(test_data)
+        
+        self.assertFalse(f.is_valid())
+        self.assertTrue("A user with that username already exists." in f.errors.get("username", []))

@@ -21,28 +21,59 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 from . import enrich_form
 from ..models import User
-        
-class AdminUserCreationForm(UserCreationForm):
-    """A form that creates a user with no privileges.
+
+class BaseUserCreationForm(UserCreationForm):
+    """A base class for all user creation forms.
     """
-    class Meta:
+    class Meta(UserCreationForm.Meta):
         # This is the custom User model, not the Django's one.
         model = User
-        fields = '__all__'
 
     def clean_username(self):
         # Since User.username is unique, this check is redundant,
         # but it sets a nicer error message than the ORM. See #13147.
-        username = self.cleaned_data["username"]
+        username = self.cleaned_data.get("username")
         try:
             # This is the custom User model, not the Django's one.
-            User._default_manager.get(username=username)
+            u = User.objects.get(username=username)
+            if u == self.instance:
+                raise User.DoesNotExist
         except User.DoesNotExist:
             return username
         raise forms.ValidationError(
             self.error_messages['duplicate_username'],
             code='duplicate_username',
         )
+
+    def clean_password1(self):
+        """Checks for a valid password1.
+        """
+        password1 = self.cleaned_data.get("password1")
+            
+        if not (password1 or self.instance.pk):
+            raise forms.ValidationError(_('This field is required.'))
+            
+        return password1
+
+    def clean_password2(self):
+        """Checks if password2 is equal to password1.
+        """
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+            
+        if (password1 and not password2) or not (password2 or self.instance.pk):
+            raise forms.ValidationError(_('This field is required.'))
+        
+        if password1 != password2:
+            raise forms.ValidationError(_("The two password fields didn't match."))
+            
+        return password2
+        
+class AdminUserCreationForm(BaseUserCreationForm):
+    """A form that creates a user with no privileges.
+    """
+    class Meta(BaseUserCreationForm.Meta):
+        fields = '__all__'
 
 class AdminUserChangeForm(UserChangeForm):
     """A form for updating users.
@@ -55,14 +86,10 @@ class AdminUserChangeForm(UserChangeForm):
         model = User
         fields = '__all__'
 
-class UserForm(forms.ModelForm):
+class UserForm(BaseUserCreationForm):
     """Form for user data.
     """
-    password1 = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
-    password2 = forms.CharField(label=_("Password confirmation"), widget=forms.PasswordInput)
-    
-    class Meta:
-        model = User
+    class Meta(BaseUserCreationForm.Meta):
         fields = ['username', 'email', 'password1', 'password2', 'language', 'timezone']
         
     def __init__(self, *args, **kwargs):
@@ -70,37 +97,11 @@ class UserForm(forms.ModelForm):
         self.fields['password1'].required = (self.instance.pk is None)
         self.fields['password2'].required = (self.instance.pk is None)
 
-    def clean_password1(self):
-        """Checks for a valid password1.
-        """
-        password1 = self.cleaned_data["password1"]
-            
-        if not (password1 or self.instance.pk):
-            raise forms.ValidationError(_('This field is required.'))
-            
-        return password1
-
-    def clean_password2(self):
-        """Checks if password2 is equal to password1.
-        """
-        password1 = self.cleaned_data.get("password1", None)
-        password2 = self.cleaned_data["password2"]
-        
-        if password1 != password2 and (password2 or not self.instance.pk):
-            raise forms.ValidationError(_("The two password fields didn't match."))
-            
-        if not (password2 or self.instance.pk):
-            raise forms.ValidationError(_('This field is required.'))
-            
-        return password2
-
     def save(self, commit=True):
         user = super(UserForm, self).save(commit=False)
-        if self.cleaned_data['password1'] or not user.password:
-            user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
-            self.save_m2m()   
+            self.save_m2m()
         return user
 
 enrich_form(UserForm)
