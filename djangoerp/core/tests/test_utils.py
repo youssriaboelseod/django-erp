@@ -74,7 +74,7 @@ class GetModelTestCase(TestCase):
         except ValueError:
             self.assertFalse(True)
           
-class CleanHTTPRefererCase(TestCase):            
+class CleanHTTPRefererCase(TestCase):
     def test_no_request(self):
         """Tests when there isn't a request, default_referer must be returned.
         """
@@ -93,8 +93,18 @@ class CleanHTTPRefererCase(TestCase):
         expected_referer = '/test'
         request = FakeRequest()
         request.META["HTTP_REFERER"] = request.META['HTTP_HOST'] + expected_referer
-        self.assertEqual(clean_http_referer(request), expected_referer)  
-
+        self.assertEqual(clean_http_referer(request), expected_referer)
+        
+    def test_silently_fail_when_no_http_host(self):
+        """Tests that no error should be raised when request hasn't a HTTP_HOST.
+        """
+        request = FakeRequest()
+        del request.META['HTTP_HOST']
+        try:
+            clean_http_referer(request)
+        except:
+            self.fail("Failure caused by the absence of HTTP_HOST variable.")        
+        
 class DependencyCase(TestCase):
     def test_satisfied_dependency(self):
         """Tests that when a dependency is satisfied, no error is raised.

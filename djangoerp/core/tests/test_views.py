@@ -16,6 +16,7 @@ __copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
 __version__ = '0.0.2'
 
 from django.test import TestCase
+from django.test.utils import override_settings
 
 from ..models import User
 from ..views import _get_user # Is not in the public API.
@@ -34,3 +35,28 @@ class GetterTestCase(TestCase):
             self.assertEqual(u, u1)
         except User.DoesNotExist:
             self.assertFalse(True)
+
+@override_settings(LOGIN_REQUIRED_URLS_EXCEPTIONS=(r'/(.*)$',))            
+class SetCancelUrlMixinTestCase(TestCase):
+    urls = 'djangoerp.core.tests.urls'
+    
+    def test_back_in_context_data(self):
+        """Tests the presence of a "back" variable in context data.
+        """
+        response = self.client.get('/default_cancel_url/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context_data.get("back"), "/")
+    
+    def test_preset_cancel_url(self):
+        """Tests setting of "cancel_url" variable to preset a default back url.
+        """
+        response = self.client.get('/preset_cancel_url/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context_data.get("back"), "/go_to_cancel_url/")
+    
+    def test_cancel_url_from_request(self):
+        """Tests using a "cancel_url" retrieved from "request.GET".
+        """
+        response = self.client.get('/default_cancel_url/?back=/custom_cancel_url/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context_data.get("back"), "/custom_cancel_url/")

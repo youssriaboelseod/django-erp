@@ -54,7 +54,7 @@ def clean_http_referer(request, default_referer='/'):
         
     referer = request.META.get('HTTP_REFERER', default_referer)
     
-    return referer.replace("http://", "").replace("https://", "").replace(request.META['HTTP_HOST'], "")
+    return referer.replace("http://", "").replace("https://", "").replace(request.META.get('HTTP_HOST', ""), "")
     
 def set_path_kwargs(request, **kwargs):
     """Adds/sets the given kwargs to request path and returns the result.
