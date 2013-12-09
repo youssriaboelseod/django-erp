@@ -17,7 +17,9 @@ __version__ = '0.0.2'
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.conf import settings
 
 from . import enrich_form
 from ..models import User
@@ -27,18 +29,19 @@ class BaseUserCreationForm(UserCreationForm):
     """
     class Meta(UserCreationForm.Meta):
         # This is the custom User model, not the Django's one.
-        model = User
+        model = get_user_model()
 
     def clean_username(self):
         # Since User.username is unique, this check is redundant,
         # but it sets a nicer error message than the ORM. See #13147.
         username = self.cleaned_data.get("username")
+        user_model = get_user_model()
         try:
             # This is the custom User model, not the Django's one.
-            u = User.objects.get(username=username)
+            u = user_model.objects.get(username=username)
             if u == self.instance:
-                raise User.DoesNotExist
-        except User.DoesNotExist:
+                raise user_model.DoesNotExist
+        except user_model.DoesNotExist:
             return username
         raise forms.ValidationError(
             self.error_messages['duplicate_username'],
