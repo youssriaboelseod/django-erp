@@ -18,17 +18,22 @@ __version__ = '0.0.2'
 from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 
+from ..urls import urlpatterns
 from ..views import SetCancelUrlMixin
 
-class SetCancelUrlTestView(SetCancelUrlMixin, TemplateView):
+class BaseTemplateView(TemplateView):
     template_name = "index.html"
+
+class SetCancelUrlTestView(SetCancelUrlMixin, BaseTemplateView):
+    pass
 
 class PresetSetCancelUrlTestView(SetCancelUrlTestView):
     cancel_url = "/go_to_cancel_url/"
 
 # Special urls for test cases.
-urlpatterns = patterns('',
+urlpatterns += patterns('',
     url(r'^default_cancel_url/', view=SetCancelUrlTestView.as_view(), name="default_cancel_url"),
     url(r'^preset_cancel_url/', view=PresetSetCancelUrlTestView.as_view(), name="preset_cancel_url"),
+    url(r'^private/', view=BaseTemplateView.as_view(), name="private_zone_url"),
 )
 
