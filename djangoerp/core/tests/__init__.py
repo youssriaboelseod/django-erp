@@ -41,4 +41,6 @@ def clear_perm_caches(user):
 class FakeRequest(object):
     def __init__(self):
         self.user = None
+        self.GET = {}
+        self.POST = {}
         self.META = {'HTTP_HOST': "myhost.com", 'HTTP_REFERER': "http://www.test.com"}

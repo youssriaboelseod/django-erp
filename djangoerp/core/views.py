@@ -68,10 +68,10 @@ class BaseModelListView(ListView):
     list_template_name = "elements/model_list.html"
     list_uid = ""
     
-    def __init__(self, fields=None, list_template_name=None, list_uid=None, *args, **kwargs):
+    def __init__(self, field_list=None, list_template_name=None, list_uid=None, *args, **kwargs):
         super(BaseModelListView, self).__init__(*args, **kwargs)
-        if fields:
-            self.field_list = fields
+        if field_list:
+            self.field_list = field_list
         if list_template_name:
             self.list_template_name = list_template_name
         if list_uid:
