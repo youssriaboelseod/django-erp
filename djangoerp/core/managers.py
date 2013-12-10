@@ -55,12 +55,11 @@ class PermissionManager(DjangoPermissionManager):
     """Custom manager for Permission model.
     """
     def get_or_create_by_natural_key(self, codename, app_label, model):
-        from models import Permission
         get_models(get_app(app_label))
         ct = ContentType.objects.get_for_model(get_model(app_label, model))
         action, sep, model_name = codename.rpartition('_')
         name = "Can %s %s" % (action.replace('_', ' '), ct.name)
-        return Permission.objects.get_or_create(codename=codename, name=name, content_type=ct)
+        return self.get_or_create(codename=codename, name=name, content_type=ct)
         
     def get_by_uid(self, uid):
         app_label, sep, codename = uid.rpartition('.')
@@ -75,11 +74,13 @@ class ObjectPermissionManager(models.Manager):
     """Custom manager for ObjectPermission model.
     """
     def get_by_natural_key(self, codename, app_label, model, object_id):
-        perm = PermissionManager().get_by_natural_key(codename, app_label, model)
+        from models import Permission
+        perm = Permission.objects.get_by_natural_key(codename, app_label, model)
         return self.get(perm=perm, object_id=int(object_id))
 
     def get_or_create_by_natural_key(self, codename, app_label, model, object_id):
-        perm, is_new = PermissionManager().get_or_create_by_natural_key(codename, app_label, model)
+        from models import Permission
+        perm, is_new = Permission.objects.get_or_create_by_natural_key(codename, app_label, model)
         return self.get_or_create(perm=perm, object_id=int(object_id))
         
     def get_by_uid(self, uid):

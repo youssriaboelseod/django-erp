@@ -19,28 +19,7 @@ from django.test import TestCase
 from django.contrib.auth.hashers import make_password
 
 from . import *
-from ..models import ObjectPermission, User
-
-class ObjectPermissionManagerTestCase(TestCase):
-    def test_get_or_create_perm_by_natural_key(self):
-        """Tests "ObjectPermissionManager.get(_or_create)_by_natural_key" method.
-        """
-        op, n = ObjectPermission.objects.get_or_create_by_natural_key("view_user", auth_app, "user", 1)
-        
-        self.assertEqual(op.perm.content_type.app_label, auth_app)
-        self.assertEqual(op.perm.content_type.model, "user")
-        self.assertEqual(op.perm.codename, "view_user")
-        self.assertEqual(op.object_id, 1)
-        
-    def test_get_or_create_perm_by_uid(self):
-        """Tests "ObjectPermissionManager.get(_or_create)_by_uid" method.
-        """
-        op, n = ObjectPermission.objects.get_or_create_by_uid("%s.view_user.1" % auth_app)
-        
-        self.assertEqual(op.perm.content_type.app_label, auth_app)
-        self.assertEqual(op.perm.content_type.model, "user")
-        self.assertEqual(op.perm.codename, "view_user")
-        self.assertEqual(op.object_id, 1)
+from ..models import ObjectPermission, User, Group
         
 class UserManagerTestCase(TestCase):
     def test_create_user_helper(self):
@@ -83,3 +62,81 @@ class UserManagerTestCase(TestCase):
             self.fail()
         except ValueError:
             pass
+
+class ObjectPermissionManagerTestCase(TestCase):
+    def setUp(self):
+        self.u1 = User.objects.create(username="u1")
+        self.u2 = User.objects.create(username="u2")
+        self.g = Group.objects.create(name="my_group")
+        self.op1, n = ObjectPermission.objects.get_or_create_by_natural_key("view_user", auth_app, "user", self.u1.pk)
+        self.op2, n = ObjectPermission.objects.get_or_create_by_natural_key("view_user", auth_app, "user", self.u2.pk)
+        
+        self.g.user_set.add(self.u1)
+        self.g.objectpermissions.add(self.op2)
+        self.u1.objectpermissions.add(self.op1)
+        self.u2.objectpermissions.add(self.op2)
+        
+    def test_get_perm_by_natural_key(self):
+        """Tests "ObjectPermissionManager.get_by_natural_key" method.
+        """
+        op = ObjectPermission.objects.get_by_natural_key("view_user", auth_app, "user", self.u1.pk)
+        
+        self.assertEqual(op, self.op1)
+        self.assertEqual(op.perm.content_type.app_label, auth_app)
+        self.assertEqual(op.perm.content_type.model, "user")
+        self.assertEqual(op.perm.codename, "view_user")
+        self.assertEqual(op.object_id, 1)
+        
+    def test_get_or_create_perm_by_natural_key(self):
+        """Tests "ObjectPermissionManager.get_or_create_by_natural_key" method.
+        """
+        op, n = ObjectPermission.objects.get_or_create_by_natural_key("view_user", auth_app, "user", self.u1.pk)
+        
+        self.assertFalse(n)
+        self.assertEqual(op, self.op1)
+        self.assertEqual(op.perm.content_type.app_label, auth_app)
+        self.assertEqual(op.perm.content_type.model, "user")
+        self.assertEqual(op.perm.codename, "view_user")
+        self.assertEqual(op.object_id, 1)
+        
+    def test_get_perm_by_uid(self):
+        """Tests "ObjectPermissionManager.get_by_uid" method.
+        """
+        op = ObjectPermission.objects.get_by_uid("%s.view_user.%s" % (auth_app, self.u1.pk))
+        
+        self.assertEqual(op, self.op1)
+        self.assertEqual(op.perm.content_type.app_label, auth_app)
+        self.assertEqual(op.perm.content_type.model, "user")
+        self.assertEqual(op.perm.codename, "view_user")
+        self.assertEqual(op.object_id, 1)
+        
+    def test_get_or_create_perm_by_uid(self):
+        """Tests "ObjectPermissionManager.get_or_create_by_uid" method.
+        """
+        op, n = ObjectPermission.objects.get_or_create_by_uid("%s.view_user.%s" % (auth_app, self.u1.pk))
+        
+        self.assertFalse(n)
+        self.assertEqual(op, self.op1)
+        self.assertEqual(op.perm.content_type.app_label, auth_app)
+        self.assertEqual(op.perm.content_type.model, "user")
+        self.assertEqual(op.perm.codename, "view_user")
+        self.assertEqual(op.object_id, 1)
+
+    def test_get_all_permissions(self):
+        """Tests "ObjectPermissionManager.get_all_permissions" method.
+        """
+        all_perms_u1 = ObjectPermission.objects.get_all_permissions(self.u1).filter(perm__codename="view_user")
+        
+        self.assertQuerysetEqual(
+            all_perms_u1,
+            [repr(r) for r in (self.op1, self.op2)],
+            ordered=False
+        )
+        
+        all_perms_u2 = ObjectPermission.objects.get_all_permissions(self.u2).filter(perm__codename="view_user")
+        
+        self.assertQuerysetEqual(
+            all_perms_u2,
+            [repr(self.op2)],
+            ordered=False
+        )
