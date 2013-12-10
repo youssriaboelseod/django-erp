@@ -16,9 +16,10 @@ __copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
 __version__ = '0.0.2'
 
 from django.test import TestCase
+from django.contrib.auth.hashers import make_password
 
 from . import *
-from ..models import ObjectPermission
+from ..models import ObjectPermission, User
 
 class ObjectPermissionManagerTestCase(TestCase):
     def test_get_or_create_perm_by_natural_key(self):
@@ -40,3 +41,45 @@ class ObjectPermissionManagerTestCase(TestCase):
         self.assertEqual(op.perm.content_type.model, "user")
         self.assertEqual(op.perm.codename, "view_user")
         self.assertEqual(op.object_id, 1)
+        
+class UserManagerTestCase(TestCase):
+    def test_create_user_helper(self):
+        """Test "create_user" helper function.
+        """
+        u = User.objects.create_user("u1", "u@u.it", "password")
+        
+        self.assertTrue(isinstance(u, User))
+        self.assertEqual(u.username, "u1")
+        self.assertEqual(u.email, "u@u.it")
+        self.assertEqual(u.is_active, True)
+        self.assertEqual(u.is_superuser, False)
+        self.assertEqual(u.is_staff, False)
+        self.assertTrue(u.check_password("password"))
+        
+    def test_create_superuser_helper(self):
+        """Test "create_superuser" helper function.
+        """
+        u = User.objects.create_superuser("su", "su@u.it", "superpassword")
+        
+        self.assertTrue(isinstance(u, User))
+        self.assertEqual(u.username, "su")
+        self.assertEqual(u.email, "su@u.it")
+        self.assertEqual(u.is_active, True)
+        self.assertEqual(u.is_superuser, True)
+        self.assertEqual(u.is_staff, True)
+        self.assertTrue(u.check_password("superpassword"))
+        
+    def test_fail_user_creation_without_username(self):
+        """Test failure of "create_*user" helpers when no username is given.
+        """
+        try:
+            User.objects.create_user(None, "su@u.it", "superpassword")
+            self.fail()
+        except ValueError:
+            pass
+            
+        try:
+            User.objects.create_superuser(None, "su@u.it", "superpassword")
+            self.fail()
+        except ValueError:
+            pass
