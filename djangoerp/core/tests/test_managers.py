@@ -63,6 +63,42 @@ class UserManagerTestCase(TestCase):
         except ValueError:
             pass
 
+class PermissionManagerTestCase(TestCase):
+    def setUp(self):
+        self.p, n = Permission.objects.get_or_create_by_natural_key("view_user", auth_app, "user")
+        
+    def test_get_or_create_perm_by_natural_key(self):
+        """Tests "PermissionManager.get_or_create_by_natural_key" method.
+        """
+        p, n = Permission.objects.get_or_create_by_natural_key("view_user", auth_app, "user")
+        
+        self.assertFalse(n)
+        self.assertEqual(p, self.p)
+        self.assertEqual(p.content_type.app_label, auth_app)
+        self.assertEqual(p.content_type.model, "user")
+        self.assertEqual(p.codename, "view_user")
+        
+    def test_get_perm_by_uid(self):
+        """Tests "PermissionManager.get_by_uid" method.
+        """
+        p = Permission.objects.get_by_uid("%s.view_user" % auth_app)
+        
+        self.assertEqual(p, self.p)
+        self.assertEqual(p.content_type.app_label, auth_app)
+        self.assertEqual(p.content_type.model, "user")
+        self.assertEqual(p.codename, "view_user")
+        
+    def test_get_or_create_perm_by_uid(self):
+        """Tests "PermissionManager.get_or_createby_uid" method.
+        """
+        p, n = Permission.objects.get_or_create_by_uid("%s.view_user" % auth_app)
+        
+        self.assertFalse(n)
+        self.assertEqual(p, self.p)
+        self.assertEqual(p.content_type.app_label, auth_app)
+        self.assertEqual(p.content_type.model, "user")
+        self.assertEqual(p.codename, "view_user")
+
 class ObjectPermissionManagerTestCase(TestCase):
     def setUp(self):
         self.u1 = User.objects.create(username="u1")
