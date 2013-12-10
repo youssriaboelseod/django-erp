@@ -18,9 +18,7 @@ __version__ = '0.0.2'
 from django.utils.formats import localize
 from django.utils.safestring import mark_safe
 from django.template.loader import render_to_string
-from django.template.defaultfilters import date, time
 from django.db import models
-from django.conf import settings
 
 def value_to_string(value):
     """Tries to return a smart string representation of the given value.
@@ -71,15 +69,6 @@ def field_to_value(field, instance):
             except AttributeError:
                 items.append(u'%s' % item)
         return items
-
-    elif isinstance(field, models.DateTimeField):
-        return date(value, settings.DATETIME_FORMAT)
-
-    elif isinstance(field, models.DateField):
-        return date(value, settings.DATE_FORMAT)
-
-    elif isinstance(field, models.TimeField):
-        return time(value, settings.TIME_FORMAT)
 
     elif isinstance(field, models.URLField) and value:
         return render_to_string('elements/link.html', {'url': value, 'caption': value})
