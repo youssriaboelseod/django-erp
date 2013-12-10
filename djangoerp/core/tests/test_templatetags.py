@@ -26,6 +26,7 @@ from ..templatetags.modelfuncs import *
 from ..templatetags.basefuncs import *
 from ..templatetags.permfuncs import *
 from ..templatetags.breadcrumbs import *
+from ..templatetags.avatar import *
         
 class JoinStringsTemplateTagTestCase(TestCase):
     def test_join_list_with_empty_string(self):
@@ -544,4 +545,37 @@ class BreadcrumbsTagsTestCase(TestCase):
         self.assertEqual(
             render_breadcrumbs(self.context),
             {"breadcrumbs": [("Home", "/"), ("Private zone", "/private/")]}
+        )
+        
+class AvatarTagTestCase(TestCase):
+    def test_empty_avatar(self):
+        """Tests "avatar" templatetag with empty params.
+        """
+        self.assertEqual(
+            avatar(None),
+            '<span class="avatar"><img width="36" height="36" src="http://www.gravatar.com/avatar/?s=36&r=g" /></span>'
+        )
+        
+    def test_valid_avatar(self):
+        """Tests "avatar" templatetag with valid email.
+        """
+        self.assertEqual(
+            avatar("u@u.it"),
+            '<span class="avatar"><img width="36" height="36" src="http://www.gravatar.com/avatar/754331256868501f6cdcc08efab6dd1e?s=36&r=g" /></span>'
+        )
+        
+    def test_set_avatar_size(self):
+        """Tests "avatar" templatetag with different size.
+        """
+        self.assertEqual(
+            avatar("u@u.it", 80),
+            '<span class="avatar"><img width="80" height="80" src="http://www.gravatar.com/avatar/754331256868501f6cdcc08efab6dd1e?s=80&r=g" /></span>'
+        )
+        
+    def test_set_default_avatar(self):
+        """Tests "avatar" templatetag with a default image.
+        """
+        self.assertEqual(
+            avatar("u@u.it", default="http://localhost:8000/my_default_image.jpg"),
+            '<span class="avatar"><img width="36" height="36" src="http://www.gravatar.com/avatar/754331256868501f6cdcc08efab6dd1e?s=36&r=g&d=http://localhost:8000/my_default_image.jpg" /></span>'
         )

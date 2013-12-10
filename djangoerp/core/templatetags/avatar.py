@@ -21,20 +21,20 @@ from django import template
 register = template.Library()
 
 @register.simple_tag
-def avatar(email, size=36, rating='g', default=None):
-    """Returns an image element with gravatar for the specified user.
+def avatar(email, size=36, default=None):
+    """Returns the gravatar image associated to the given email.
+    
+    More info: http://www.gravatar.com
 
-    Example tag usage: {% avatar email_address 80 "g" %}
-    """
-    # Verify the rating actually is a rating accepted by gravatar
-    rating = rating.lower()
-    ratings = ['g', 'pg', 'r', 'x']
-    if rating not in ratings:
-        raise template.TemplateSyntaxError('rating must be %s' % (", ".join(ratings)))
-        
-    # Create and return the url
-    h = md5(email).hexdigest()
-    url = 'http://www.gravatar.com/avatar/%s?s=%s&r=%s' % (h, size, rating)
+    Example tag usage: {% avatar email_address 80 "http://.../my_default_image.jpg" %}
+    """        
+    # Creates and returns the URL.
+    h = ""
+    if email:
+        h = md5(email).hexdigest()
+    url = 'http://www.gravatar.com/avatar/%s?s=%s&r=g' % (h, size)
+    
+    # Adds a default image URL (if present).
     if default:
         url = "%s&d=%s" % (url, default)
         
