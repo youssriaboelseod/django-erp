@@ -25,6 +25,7 @@ from . import *
 from ..templatetags.modelfuncs import *
 from ..templatetags.basefuncs import *
 from ..templatetags.permfuncs import *
+from ..templatetags.breadcrumbs import *
         
 class JoinStringsTemplateTagTestCase(TestCase):
     def test_join_list_with_empty_string(self):
@@ -410,3 +411,137 @@ class UserHasPermTagTestCase(TestCase):
         
         # Restores previous cached user.
         logged_cache.user = prev_user
+        
+class BreadcrumbsTagsTestCase(TestCase):
+    urls = 'djangoerp.core.tests.urls'
+    
+    def setUp(self):
+        self.context = {"request": FakeRequest()}
+        self.clear_breadcrumbs()
+        
+    def del_breadcrumbs(self):
+        delattr(self.context['request'], 'breadcrumbs')
+        
+    def clear_breadcrumbs(self):
+        self.context['request'].breadcrumbs = []
+        
+    def get_breadcrumbs(self):
+        return self.context['request'].breadcrumbs
+        
+    def test_adding_breadcrumbs_var_to_context(self):
+        """Tests adding by default "breadcrumbs" var to context if not present.
+        """
+        self.del_breadcrumbs()
+        
+        self.assertFalse(hasattr(self.context['request'], 'breadcrumbs'))
+        
+        add_crumb(self.context, "Go")
+        
+        self.assertTrue(hasattr(self.context['request'], 'breadcrumbs'))
+        self.assertEqual(type(self.context['request'].breadcrumbs), list)
+        
+        self.clear_breadcrumbs()
+        
+    def test_fail_adding_empty_crumb(self):
+        """Tests empty crumbs are not allowed.
+        """
+        self.clear_breadcrumbs()
+        
+        self.assertEqual(len(self.get_breadcrumbs()), 0)
+        
+        add_crumb(self.context, None)
+        
+        self.assertEqual(len(self.get_breadcrumbs()), 0)
+        
+    def test_add_crumb_with_empty_url(self):
+        """Tests "add_crumb" templatetag with an empty URL.
+        """
+        self.clear_breadcrumbs()
+        
+        self.assertEqual(len(self.get_breadcrumbs()), 0)
+        
+        add_crumb(self.context, "Home")
+        
+        self.assertEqual(len(self.get_breadcrumbs()), 1)
+        self.assertEqual(self.get_breadcrumbs()[0], ("Home", None))
+        
+    def test_add_crumb_with_valid_url(self):
+        """Tests "add_crumb" templatetag with a valid URL.
+        """
+        self.clear_breadcrumbs()
+        
+        self.assertEqual(len(self.get_breadcrumbs()), 0)
+        
+        add_crumb(self.context, "Home", "/")
+        
+        self.assertEqual(len(self.get_breadcrumbs()), 1)
+        self.assertEqual(self.get_breadcrumbs()[0], ("Home", "/"))
+        
+    def test_add_crumb_with_view_name(self):
+        """Tests "add_crumb" templatetag with a view name instead of an URL.
+        """
+        self.clear_breadcrumbs()
+        
+        self.assertEqual(len(self.get_breadcrumbs()), 0)
+        
+        add_crumb(self.context, "Home", "private_zone_url")
+        
+        self.assertEqual(len(self.get_breadcrumbs()), 1)
+        self.assertEqual(self.get_breadcrumbs()[0], ("Home", "/private/"))
+        
+    def test_remove_last_crumb_to_empty_list(self):
+        """Tests "remove_last_crumb" templatetag from an empty breadcrumb list.
+        """
+        self.clear_breadcrumbs()
+        
+        self.assertEqual(len(self.get_breadcrumbs()), 0)
+        
+        remove_last_crumb(self.context)
+        
+        self.assertEqual(len(self.get_breadcrumbs()), 0)        
+        
+    def test_remove_last_crumb(self):
+        """Tests "remove_last_crumb" templatetag from a breadcrumb list.
+        """
+        self.clear_breadcrumbs()
+        
+        self.assertEqual(len(self.get_breadcrumbs()), 0)
+        
+        add_crumb(self.context, "Home", "/")
+        add_crumb(self.context, "Private zone", "private_zone_url")
+        
+        self.assertEqual(len(self.get_breadcrumbs()), 2)
+        
+        remove_last_crumb(self.context)
+        
+        self.assertEqual(len(self.get_breadcrumbs()), 1)
+        self.assertEqual(self.get_breadcrumbs()[0], ("Home", "/"))
+        
+    def test_render_invalid_breadcrumbs(self):
+        """Tests "render_breadcrumbs" templatetag without registered breadcrumbs.
+        """
+        self.del_breadcrumbs()
+        
+        self.assertEqual(render_breadcrumbs(self.context), {"breadcrumbs": None})
+        
+        self.clear_breadcrumbs()
+        
+    def test_render_empty_breadcrumbs(self):
+        """Tests "render_breadcrumbs" templatetag with an empty breadcrumb list.
+        """
+        self.clear_breadcrumbs()
+        
+        self.assertEqual(render_breadcrumbs(self.context), {"breadcrumbs": []})
+        
+    def test_render_breadcrumbs(self):
+        """Tests "render_breadcrumbs" templatetag with a valid breadcrumb list.
+        """
+        self.clear_breadcrumbs()
+        
+        add_crumb(self.context, "Home", "/")
+        add_crumb(self.context, "Private zone", "private_zone_url")
+        
+        self.assertEqual(
+            render_breadcrumbs(self.context),
+            {"breadcrumbs": [("Home", "/"), ("Private zone", "/private/")]}
+        )

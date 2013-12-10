@@ -24,15 +24,18 @@ register = template.Library()
 def add_crumb(context, crumb, url=None, *args):
     """
     Add a crumb to the breadcrumb list.
-
+    
+    Crumbs without URL are allowed, while empty crumbs (without name) are not.
+    
     Example tag usage: {% add_crumb name [url] %}
     """
-    href = url
-    if url and not url.startswith('/'):
-        href = reverse(url, args=args)
-    if not hasattr(context['request'], "breadcrumbs"):
-        context['request'].breadcrumbs = []
-    context['request'].breadcrumbs.append((u'%s' % crumb, href))
+    if crumb:
+        href = url
+        if url and not url.startswith('/'):
+            href = reverse(url, args=args)
+        if not hasattr(context['request'], "breadcrumbs"):
+            context['request'].breadcrumbs = []
+        context['request'].breadcrumbs.append((u'%s' % crumb, href))
     return ""
 
 @register.simple_tag(takes_context=True)
@@ -42,7 +45,8 @@ def remove_last_crumb(context):
 
     Example tag usage: {% remove_last_crumb %}
     """
-    context['request'].breadcrumbs.pop()
+    if len(context['request'].breadcrumbs) > 0:
+        context['request'].breadcrumbs.pop()
     return ""
 
 @register.inclusion_tag('elements/breadcrumbs.html', takes_context=True)
