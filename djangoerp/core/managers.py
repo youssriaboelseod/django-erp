@@ -73,6 +73,12 @@ class PermissionManager(DjangoPermissionManager):
 class ObjectPermissionManager(models.Manager):
     """Custom manager for ObjectPermission model.
     """
+    def get_by_object(self, obj):
+        if obj is None:
+            return self.all()
+        ct = ContentType.objects.get_for_model(obj.__class__)
+        return self.filter(perm__content_type=ct, object_id=obj.pk)
+        
     def get_by_natural_key(self, codename, app_label, model, object_id):
         from models import Permission
         perm = Permission.objects.get_by_natural_key(codename, app_label, model)
@@ -91,8 +97,8 @@ class ObjectPermissionManager(models.Manager):
         tokens = uid.split('.')
         return self.get_or_create_by_natural_key(tokens[1], tokens[0], tokens[1].rpartition('_')[2], tokens[2])
 
-    def get_group_permissions(self, user):
-        return self.filter(groups__user=user)
+    def get_group_permissions(self, user, obj=None):
+        return self.get_by_object(obj).filter(groups__user=user)
 
-    def get_all_permissions(self, user):
-        return self.filter(Q(groups__user=user) | Q(users=user))
+    def get_all_permissions(self, user, obj=None):
+        return self.get_by_object(obj).filter(Q(groups__user=user) | Q(users=user))

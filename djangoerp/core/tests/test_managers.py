@@ -112,6 +112,28 @@ class ObjectPermissionManagerTestCase(TestCase):
         self.u1.objectpermissions.add(self.op1)
         self.u2.objectpermissions.add(self.op2)
         
+    def test_get_perm_by_empty_object(self):
+        """Tests "ObjectPermissionManager.get_by_object" method (without obj).
+        """
+        self.assertQuerysetEqual(
+            ObjectPermission.objects.get_by_object(None),
+            map(repr, ObjectPermission.objects.all()),
+            ordered=False
+        )
+        
+    def test_get_perm_by_object(self):
+        """Tests "ObjectPermissionManager.get_by_object" method (with obj).
+        """
+        self.assertQuerysetEqual(
+            ObjectPermission.objects.get_by_object(self.u2),
+            [
+                repr(ObjectPermission.objects.get_by_natural_key("view_user", auth_app, "user", self.u2.pk)),
+                repr(ObjectPermission.objects.get_by_natural_key("change_user", auth_app, "user", self.u2.pk)),
+                repr(ObjectPermission.objects.get_by_natural_key("delete_user", auth_app, "user", self.u2.pk)),
+            ],
+            ordered=False
+        )
+        
     def test_get_perm_by_natural_key(self):
         """Tests "ObjectPermissionManager.get_by_natural_key" method.
         """

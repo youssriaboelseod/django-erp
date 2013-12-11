@@ -24,10 +24,13 @@ from models import *
 
 class ObjPermLookupDict(object):
     def __init__(self, user, module_name):
-        self.user, self.module_name = user, module_name
+        self.user = user
+        self.module_name = module_name
 
     def __repr__(self):
-        return str([p for p in self.user.get_all_permissions() if len(p.split('.')) == 3])
+        if self.user.is_superuser:
+            return str([p.uid for p in ObjectPermission.objects.filter(perm__content_type__app_label=self.module_name) if len(p.uid.split('.')) == 3])
+        return str([p.uid for p in self.user.objectpermissions.filter(perm__content_type__app_label=self.module_name) if len(p.uid.split('.')) == 3])
 
     def __getitem__(self, perm_name):
         if self.user.is_superuser:
@@ -38,14 +41,15 @@ class ObjPermLookupDict(object):
     def __nonzero__(self):
         if self.user.is_superuser:
             return True
-        return self.user.objectpermissions.filter(perm__contentype__app_label=self.module_name).exists()
-
+        return self.user.objectpermissions.filter(perm__content_type__app_label=self.module_name).exists()
 
 class ObjPermWrapper(object):
     def __init__(self, user):
         self.user = user
 
     def __getitem__(self, module_name):
+        if self.user.is_anonymous():
+            return []
         return ObjPermLookupDict(self.user, module_name)
 
     def __iter__(self):
@@ -67,13 +71,15 @@ def auth(request):
     # requires knowing the class of the object we want to proxy, which could
     # break with custom auth backends.  LazyObject is a less complete but more
     # flexible solution that is a good enough wrapper for 'User'.
-    def get_user():
+    def _get_user():
+        user = None
         if hasattr(request, 'user'):
-            return request.user
-        else:
+            user = request.user
+        if not user:
             from django.contrib.auth.models import AnonymousUser
-            return AnonymousUser()
+            user = AnonymousUser()
+        return user
 
     return {
-        'obj_perms':  lazy(lambda: ObjPermWrapper(get_user()), ObjPermWrapper)(),
+        'obj_perms': lazy(lambda: ObjPermWrapper(_get_user()), ObjPermWrapper)(),
     }
