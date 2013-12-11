@@ -105,7 +105,48 @@ class CleanHTTPRefererTestCase(TestCase):
         try:
             clean_http_referer(request)
         except:
-            self.fail("Failure caused by the absence of HTTP_HOST variable.")        
+            self.fail("Failure caused by the absence of HTTP_HOST variable.")
+        
+class SetPathKwargsTestCase(TestCase):
+    def setUp(self):
+        self.request = FakeRequest()
+        self.request.GET = {
+            "next": "/home/",
+            "prev": "/home/test/foo/",
+            "filter_by": "name",
+        }
+        
+    def test_appending_no_kwargs(self):
+        """Tests returning the path as is.
+        """
+        self.assertEqual(
+            set_path_kwargs(FakeRequest()),
+            "/home/test/"
+        )
+        
+    def test_appending_get_kargs(self):
+        """Tests appending kwargs from request.GET.
+        """
+        self.assertEqual(
+            set_path_kwargs(self.request),
+            "/home/test/?next=/home/;prev=/home/test/foo/;filter_by=name"
+        )
+        
+    def test_filtering_existing_kwargs(self):
+        """Tests filtering out existing kwargs.
+        """
+        self.assertEqual(
+            set_path_kwargs(self.request, filter_by="id", prev="/"),
+            "/home/test/?prev=/;filter_by=id;next=/home/"
+        )
+        
+    def test_removing_invalid_kwargs(self):
+        """Tests removing invalid kwargs.
+        """
+        self.assertEqual(
+            set_path_kwargs(self.request, filter_by=None, prev="/"),
+            "/home/test/?prev=/;next=/home/"
+        )
         
 class DependencyTestCase(TestCase):
     def test_satisfied_dependency(self):

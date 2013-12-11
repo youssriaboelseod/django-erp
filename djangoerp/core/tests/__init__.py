@@ -43,4 +43,8 @@ class FakeRequest(object):
         self.user = None
         self.GET = {}
         self.POST = {}
-        self.META = {'HTTP_HOST': "myhost.com", 'HTTP_REFERER': "http://www.test.com"}
+        self.META = {
+            'HTTP_HOST': "myhost.com",
+            'HTTP_REFERER': "http://www.test.com",
+            'PATH_INFO': "/home/test/",
+        }
