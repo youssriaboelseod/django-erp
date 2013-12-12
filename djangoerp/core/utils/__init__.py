@@ -15,17 +15,18 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
 __version__ = '0.0.2'
 
+from django.db import models
+from django import forms
+
 def get_model(klass):
-    """Tries to return the model class identified by klass.
+    """Returns the model class identified by klass.
     
     If klass is already a model class, is returned as it is.
     If klass is a model instance or queryset, its model class is returned.
     If klass is a string, it's used to retrieve the related real model class.
     
     A ValueError is raised on other cases.
-    """
-    from django.db import models
-    
+    """    
     try:
         if issubclass(klass, models.Model):
             return klass
@@ -43,6 +44,24 @@ def get_model(klass):
         return models.get_model(app_label, model_name)
         
     raise ValueError
+        
+def get_fields(form_or_model):
+    """Returns a dict containing all the fields of the given model/form instance.
+    
+    If the given instance is not a model mor a form, an empty dict is returned.
+    
+    The returned dict is in the form:
+    
+    {field_name: field_instance, ...}
+    """
+    field_list = {}
+    
+    if isinstance(form_or_model, models.Model):
+        field_list = dict([(f.name, f) for f in (form_or_model._meta.fields + form_or_model._meta.many_to_many)])
+    elif isinstance(form_or_model, forms.BaseForm):
+        field_list = form_or_model.fields
+        
+    return field_list
 
 def clean_http_referer(request, default_referer='/'):
     """Returns the HTTP referer of the given request.

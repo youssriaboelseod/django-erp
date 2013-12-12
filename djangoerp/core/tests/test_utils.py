@@ -17,6 +17,7 @@ __version__ = '0.0.2'
 
 from django.test import TestCase
 from django.db import models
+from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.template.loader import render_to_string
@@ -24,6 +25,7 @@ from django.contrib.auth import get_user_model
 
 from . import *
 from ..models import Group
+from ..forms.auth import UserForm
 from ..utils import *
 from ..utils.dependencies import *
 from ..utils.rendering import *
@@ -75,6 +77,40 @@ class GetModelTestCase(TestCase):
             self.assertEqual(m, get_user_model())
         except ValueError:
             self.fail()
+            
+class GetFieldsTestCase(TestCase):
+    def setUp(self):
+        self.u = get_user_model().objects.create(username="u", email="u@u.it", password="password")
+        self.f = UserForm(instance=self.u)
+        
+    def test_get_model_fields(self):
+        """Tests retrieving a dict containing all fields of a model instance.
+        """
+        fields = get_fields(self.u)
+        
+        self.assertEqual(len(fields), len(self.u._meta.fields) + len(self.u._meta.many_to_many))
+        self.assertTrue("username" in fields)
+        self.assertTrue(isinstance(fields["username"], models.Field))
+        self.assertTrue("email" in fields)
+        self.assertTrue(isinstance(fields["email"], models.Field))
+        self.assertTrue("password" in fields)
+        self.assertTrue(isinstance(fields["password"], models.Field))
+        
+    def test_get_form_fields(self):
+        """Tests retrieving a dict containing all fields of a form instance.
+        """
+        fields = get_fields(self.f)
+        
+        self.assertEqual(len(fields), len(self.f._meta.fields))
+        self.assertTrue("username" in fields)
+        self.assertTrue(isinstance(fields["username"], forms.Field))
+        self.assertTrue("email" in fields)
+        self.assertTrue(isinstance(fields["email"], forms.Field))
+        self.assertFalse("password" in fields)
+        self.assertTrue("password1" in fields)
+        self.assertTrue(isinstance(fields["password1"], forms.Field))
+        self.assertTrue("password2" in fields)
+        self.assertTrue(isinstance(fields["password2"], forms.Field))
           
 class CleanHTTPRefererTestCase(TestCase):
     def test_no_request(self):
@@ -170,37 +206,58 @@ class RenderingValueToStringTestCase(TestCase):
     def test_empty_value_to_string(self):
         """Tests rendering of an empty value.
         """
-        self.assertEqual(value_to_string(None), mark_safe(render_to_string('elements/empty.html', {})))
+        self.assertEqual(
+            value_to_string(None),
+            mark_safe(render_to_string('elements/empty.html', {}).strip())
+        )
 
     def test_bool_true_value_to_string(self):
         """Tests rendering of a valid boolean value.
         """
-        self.assertEqual(value_to_string(True), mark_safe(render_to_string('elements/yes.html', {})))
+        self.assertEqual(
+            value_to_string(True),
+            mark_safe(render_to_string('elements/yes.html', {}).strip())
+        )
 
     def test_bool_true_value_to_string(self):
         """Tests rendering of an invalid boolean value.
         """
-        self.assertEqual(value_to_string(False), mark_safe(render_to_string('elements/no.html', {})))
+        self.assertEqual(
+            value_to_string(False),
+            mark_safe(render_to_string('elements/no.html', {}).strip())
+        )
 
     def test_float_value_to_string(self):
         """Tests rendering of a float value.
         """
-        self.assertEqual(value_to_string(2.346), '2.35')
+        self.assertEqual(
+            value_to_string(2.346),
+            '2.35'
+        )
 
     def test_integer_value_to_string(self):
         """Tests rendering of an integer value.
         """
-        self.assertEqual(value_to_string(2346), '2346')
+        self.assertEqual(
+            value_to_string(2346),
+            '2346'
+        )
 
     def test_list_value_to_string(self):
         """Tests rendering of a list.
         """
-        self.assertEqual(value_to_string([None, True]), '%s, %s' % (mark_safe(render_to_string('elements/empty.html', {})), mark_safe(render_to_string('elements/yes.html', {}))))
+        self.assertEqual(
+            value_to_string([None, True]),
+            '%s, %s' % (mark_safe(render_to_string('elements/empty.html', {}).strip()), mark_safe(render_to_string('elements/yes.html', {}).strip()))
+        )
 
     def test_tuple_value_to_string(self):
         """Tests rendering of a list.
         """
-        self.assertEqual(value_to_string((None, False)), '%s, %s' % (mark_safe(render_to_string('elements/empty.html', {})), mark_safe(render_to_string('elements/no.html', {}))))
+        self.assertEqual(
+            value_to_string((None, False)),
+            '%s, %s' % (mark_safe(render_to_string('elements/empty.html', {}).strip()), mark_safe(render_to_string('elements/no.html', {}).strip()))
+        )
         
 class RenderingFieldToValueTestCase(TestCase):
     def setUp(self):
@@ -297,3 +354,77 @@ class RenderingFieldToValueTestCase(TestCase):
             field_to_value(self.field_list['flag'], self.test_obj),
             False
         )
+   
+class RenderingGetFieldTypeTestCase(TestCase):
+    def test_get_type_for_field(self):
+        """Tests returning a string representing the type of a field.
+        """
+        self.assertEqual(get_field_type(models.TextField()), "text")
+        self.assertEqual(get_field_type(models.IntegerField()), "integer")
+        
+    def test_get_type_for_choice_field(self):
+        """Tests returning a string representation for a field with choices.
+        """
+        self.assertEqual(get_field_type(models.TextField(choices=[("1", "First")])), "text_choices")
+        self.assertEqual(get_field_type(models.IntegerField(choices=[("1", "First")])), "integer_choices")
+        
+class RenderGetFieldTupeTestCase(TestCase):
+    def setUp(self):
+        class FakeObject():
+            test = "A small test"
+            
+            def test1(self):
+                return "Test"
+            
+            def test2(self):
+                return "Foo"
+            test2.short_description = "Something"
+            
+        self.o = FakeObject()
+        self.m = get_user_model().objects.create(username="u", email="u@u.it", password="password")
+        self.f = UserForm({"username": "u", "email": "u@u.it", "password1": "password"}, instance=self.m)
+        
+    def test_get_typle_for_object_attr(self):
+        """Tests returning a tuple for an arbitrary object's attribute.
+        """
+        self.assertEqual(get_field_tuple("test", self.o), (u'Test:', u'', 'A small test'))
+        self.assertEqual(get_field_tuple("test1", self.o), (u'Test1:', u'', 'Test'))
+        self.assertEqual(get_field_tuple("test2", self.o), (u'Something:', u'', 'Foo'))
+        
+    def test_get_typle_for_model_field(self):
+        """Tests returning a tuple for a model instance's field.
+        """
+        self.assertEqual(get_field_tuple("username", self.m), (u'Username:', u'', 'u'))
+        self.assertEqual(get_field_tuple("email", self.m), (u'Email:', u'', u'<a href="mailto:u@u.it">u@u.it</a>'))
+        self.assertEqual(get_field_tuple("password", self.m), (u'Password:', u'', u'password'))
+        
+    def test_get_typle_for_form_field(self):
+        """Tests returning a tuple for a form instance's field.
+        """
+        self.assertEqual(
+            get_field_tuple("username", self.f),
+            (
+                u'<label for="id_username">Username:</label>',
+                u' class="required"',
+                u'<input id="id_username" maxlength="30" name="username" type="text" value="u" /><br/><span title="Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only." class="helptext helppopup">Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only.</span>'
+            )
+        )
+        
+        self.assertEqual(
+            get_field_tuple("email", self.f),
+            (
+                u'<label for="id_email">Email:</label>',
+                u' class="required"',
+                u'<input id="id_email" maxlength="254" name="email" type="email" value="u@u.it" />'
+            )
+        )
+        
+        self.assertEqual(
+            get_field_tuple("password2", self.f),
+            (
+                u'<label for="id_password2">Password confirmation:</label>',
+                u' class="errors"',
+                u'<input id="id_password2" name="password2" type="password" /><br/><span title="Enter the same password as above, for verification." class="helptext helppopup">Enter the same password as above, for verification.</span><br/>\n<ul class="errorlist">\n\t<li>This field is required.</li>\n</ul>\n'
+            )
+        )
+    

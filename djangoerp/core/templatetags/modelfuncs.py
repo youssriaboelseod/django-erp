@@ -16,89 +16,15 @@ __copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
 __version__ = '0.0.2'
 
 from copy import copy
+from django.db import models
 from django.utils.encoding import force_text
-from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
 from django import template
 from django.template.loader import render_to_string
-from django.db import models
-from django import forms
-from django.forms.forms import BoundField, pretty_name
-from django.forms.util import flatatt
 from django.contrib.contenttypes.models import ContentType
-from djangoerp.core.utils.rendering import field_to_string, value_to_string
-from djangoerp.core.utils import get_model
+from djangoerp.core.utils import get_model, get_fields
+from djangoerp.core.utils.rendering import field_to_string, get_field_type, get_field_tuple
 
 register = template.Library()
-
-def _get_type_for_field(f):
-    field_type = f.__class__.__name__.lower().replace("field", "")
-    if f.choices:
-        field_type += "_choices"
-    return field_type
-    
-def _get_modelclass_from(obj):
-    try:
-        return get_model(obj)
-    except:
-        return None
-        
-def _get_object_fields(form_or_model):
-    field_list = []
-    
-    if isinstance(form_or_model, models.Model):
-        field_list = dict([(f.name, f) for f in (form_or_model._meta.fields + form_or_model._meta.many_to_many)])
-    elif isinstance(form_or_model, forms.BaseForm):
-        field_list = form_or_model.fields
-        
-    return field_list    
-        
-def _get_object_field(name, form_or_model):
-    name, sep, suffix = name.partition(':')
-    
-    label = ""
-    value = ""
-    td_attrs = {}
-    field_list = _get_object_fields(form_or_model)
-    field = None
-    
-    if name in field_list:
-        field = field_list[name]
-        
-    elif hasattr(form_or_model, name):
-        field = getattr(form_or_model, name)
-        if hasattr(field, 'short_description'):
-            name = field.short_description
-
-    if isinstance(field, models.Field):
-        label = u'%s:' % field.verbose_name
-        value = field_to_string(field, form_or_model)
-
-    elif isinstance(field, forms.Field):
-        bf = BoundField(form_or_model, field, name)
-        label = u'%s' % bf.label_tag()
-        value = u'%s' % bf
-        if bf.help_text:
-            value += '<br/><span title="%(help_text)s" class="helptext helppopup">%(help_text)s</span>' % {"help_text": u'%s' % bf.help_text}
-        errors = bf.errors
-        if errors:
-            value += '<br/>\n<ul class="errorlist">\n'
-            for error in errors:
-                value += '\t<li>%s</li>\n' % error
-            value += '</ul>\n'
-        css_classes = bf.css_classes()
-        if css_classes:
-            td_attrs['class'] = css_classes
-
-    else:
-        name = _(pretty_name(name).lower())
-        label = u'%s:' % name.capitalize()
-        if callable(field):
-            value = value_to_string(field())
-        else:
-            value = value_to_string(field)
-
-    return mark_safe(label), flatatt(td_attrs), mark_safe(" ".join([t for t in (value, suffix) if t]))
 
 @register.filter
 def model_name(obj):
@@ -106,9 +32,11 @@ def model_name(obj):
 
     Example usage: {{ object|model_name }}
     """
-    mk = _get_modelclass_from(obj)
-    if mk:
+    try:
+        mk = get_model(obj)
         return force_text(mk._meta.verbose_name)
+    except:
+        pass
     return ""
 
 @register.filter
@@ -117,9 +45,11 @@ def model_name_plural(obj):
 
     Example usage: {{ object|model_name_plural }}
     """
-    mk = _get_modelclass_from(obj)
-    if mk:
+    try:
+        mk = get_model(obj)
         return force_text(mk._meta.verbose_name_plural)
+    except:
+        pass
     return ""
 
 @register.filter
@@ -128,9 +58,11 @@ def raw_model_name(obj):
 
     Example usage: {{ object|raw_model_name }}
     """
-    mk = _get_modelclass_from(obj)
-    if mk:
+    try:
+        mk = get_model(obj)
         return mk.__name__.lower()
+    except:
+        pass
     return ""
 
 @register.filter
@@ -170,7 +102,7 @@ def render_model_list(context, object_list, field_list=[], template_name="elemen
     fields = [model._meta.get_field(n) for n in field_list] or model._meta.fields
     filters = dict([(f.attname, ("", "")) for f in fields])
     filters.update(context.get("%slist_filter_by" % prefix, None) or {})
-    headers = [{"name": f.verbose_name, "attname": f.attname, "type": _get_type_for_field(f), "filter": {"expr": filters[f.attname][0], "value": filters[f.attname][1]}} for f in fields]
+    headers = [{"name": f.verbose_name, "attname": f.attname, "type": get_field_type(f), "filter": {"expr": filters[f.attname][0], "value": filters[f.attname][1]}} for f in fields]
     rows = [{"object": o, "fields": [field_to_string(f, o) for f in fields]} for o in object_list]
     new_context = copy(context)
     new_context.update(
@@ -219,7 +151,7 @@ def render_model_details(context, objects, field_layout=[], template_name="eleme
                 elif not on:
                     o = objects[0]
                 if o:
-                    label, attrs, value = _get_object_field(fn, o)
+                    label, attrs, value = get_field_tuple(fn, o)
                     return_list.append([{"name": label, "attrs": attrs, "value": value}])
         return return_list
         
@@ -227,10 +159,10 @@ def render_model_details(context, objects, field_layout=[], template_name="eleme
             
     if not field_layout:
         for o in objects:
-            for f in _get_object_fields(o):
-                if isinstance(f, (list, tuple)):
-                    f = f[0]
-                label, attrs, value = _get_object_field(f, o)
+            for f in get_fields(o):
+                #if isinstance(f, (list, tuple)):
+                #    f = f[0]
+                label, attrs, value = get_field_tuple(f, o)
                 layout.append([{"name": label, "attrs": attrs, "value": value}])
                 
     num_cols = 1

@@ -17,9 +17,9 @@ __version__ = '0.0.2'
 
 from django.test import TestCase
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
 from django.template.loader import render_to_string
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 
 from . import *
 from ..templatetags.modelfuncs import *
@@ -90,8 +90,8 @@ class ModelNameFilterTestCase(TestCase):
     def test_valid_model_name(self):
         """Tests returning of a valid model name using "model_name" filter.
         """
-        self.assertEqual(model_name(get_user_model()), _("user")) 
-        self.assertEqual(model_name(get_user_model()), _("user"))
+        self.assertEqual(model_name(get_user_model()), "user") 
+        self.assertEqual(model_name(get_user_model()), "user")
         
     def test_invalid_model_name(self):
         """Tests "model_name" filter on an invalid input.
@@ -105,8 +105,17 @@ class ModelNameFilterTestCase(TestCase):
     def test_plural_model_name(self):
         """Tests returning of a plural model name using "model_name" filter.
         """
-        self.assertEqual(model_name_plural(get_user_model()), _("users")) 
-        self.assertEqual(model_name_plural(get_user_model()), _("users"))
+        self.assertEqual(model_name_plural(get_user_model()), "users") 
+        self.assertEqual(model_name_plural(get_user_model()), "users")
+        
+    def test_invalid_plural_model_name(self):
+        """Tests "model_name_plural" filter on an invalid input.
+        """
+        class FakeObject:
+            pass
+            
+        self.assertEqual(model_name_plural(FakeObject), "") 
+        self.assertEqual(model_name_plural(FakeObject()), "")
         
     def test_proxy_model_name(self):
         """Tests proxy-model name must be returned instead of concrete one.
@@ -114,15 +123,53 @@ class ModelNameFilterTestCase(TestCase):
         class ProxyUser(get_user_model()):
             class Meta:
                 proxy = True
-                verbose_name = _('proxy user')
-                verbose_name_plural = _('proxy users')
+                verbose_name = 'proxy user'
+                verbose_name_plural = 'proxy users'
                 
-        self.assertEqual(model_name(ProxyUser), _('proxy user'))
-        self.assertEqual(model_name(ProxyUser()), _('proxy user'))
-        self.assertEqual(model_name_plural(ProxyUser), _('proxy users'))
-        self.assertEqual(model_name_plural(ProxyUser()), _('proxy users'))
+        self.assertEqual(model_name(ProxyUser), 'proxy user')
+        self.assertEqual(model_name(ProxyUser()), 'proxy user')
+        self.assertEqual(model_name_plural(ProxyUser), 'proxy users')
+        self.assertEqual(model_name_plural(ProxyUser()), 'proxy users')
+        
+    def test_valid_raw_model_name(self):
+        """Tests returning of a valid model name using "raw_model_name" filter.
+        """
+        self.assertEqual(raw_model_name(get_user_model()), "user") 
+        self.assertEqual(raw_model_name(get_user_model()), "user")
+        
+    def test_invalid_raw_model_name(self):
+        """Tests "raw_model_name" filter on an invalid input.
+        """
+        class FakeObject:
+            pass
+            
+        self.assertEqual(raw_model_name(FakeObject), "") 
+        self.assertEqual(raw_model_name(FakeObject()), "")
+        
+    def test_plural_raw_model_name(self):
+        """Tests returning of a plural model name using "raw_model_name_plural" filter.
+        """
+        self.assertEqual(raw_model_name_plural(get_user_model()), "users") 
+        self.assertEqual(raw_model_name_plural(get_user_model()), "users")
+        
+    def test_invalid_plural_raw_model_name(self):
+        """Tests "raw_model_name_plural" filter on an invalid input.
+        """
+        class FakeObject:
+            pass
+            
+        self.assertEqual(raw_model_name_plural(FakeObject), "") 
+        self.assertEqual(raw_model_name_plural(FakeObject()), "")
         
 class ModelListTagTestCase(TestCase):
+    def test_render_model_list_from_invalid_object_list(self):
+        """Tests rendering a model list from an invalid object_list (not a queryset).
+        """
+        self.assertEqual(
+            render_model_list({}, None),
+            ""
+        )
+        
     def test_render_empty_model_list(self):
         """Tests rendering an empty model list table.
         """
@@ -159,6 +206,38 @@ class ModelListTagTestCase(TestCase):
         self.assertEqual(
             render_model_list({}, qs, ["username"], uid="mytable"),
             render_to_string("elements/model_list.html", {"table": table_dict})
+        )
+        
+    def test_render_model_list_with_empty_field_list(self):
+        """Tests rendering a model list with empty field_list (all fields used).
+        """
+        table_dict = {
+            "uid": "",
+            "order_by": [],
+            "headers": [
+                {"name": "ID", "attname": "id", "type": "auto", "filter": {"expr": "", "value": ""}},
+                {"name": "name", "attname": "name", "type": "char", "filter": {"expr": "", "value": ""}}
+            ],
+            "rows": [
+            ]
+        }
+        
+        qs = Group.objects.none()
+        rendered_table = render_to_string("elements/model_list.html", {"table": table_dict})
+        
+        self.assertEqual(
+            render_model_list({}, qs),
+            rendered_table
+        )
+        
+        self.assertEqual(
+            render_model_list({}, qs, None),
+            rendered_table
+        )
+        
+        self.assertEqual(
+            render_model_list({}, qs, False),
+            rendered_table
         )
         
     def test_render_one_row_model_list(self):
@@ -374,6 +453,66 @@ class ModelDetailsTagTestCase(TestCase):
         
         self.assertEqual(
             render_model_details({}, [u1, u2], ['0.username:(user)', '1.username:(another user)']),
+            render_to_string("elements/model_details.html", {"details": details_dict})
+        )
+        
+    def test_render_model_details_with_string_objects(self):
+        """Tests rendering a model details table passing objects as context keys.
+        """
+        u1, n = get_user_model().objects.get_or_create(username="u1")
+        u2, n = get_user_model().objects.get_or_create(username="u2")
+        
+        details_dict = {
+            "uid": "",
+            "num_cols": 1,
+            "layout": [
+                [{"name": "Username:", "attrs": "", "value": "u1 (user)"}],
+                [{"name": "Username:", "attrs": "", "value": "u2 (another user)"}],
+            ]
+        }
+        
+        self.assertEqual(
+            render_model_details({"u1": u1, "u2": u2}, "[u1, u2]", ['0.username:(user)', '1.username:(another user)']),
+            render_to_string("elements/model_details.html", {"details": details_dict})
+        )
+        
+    def test_render_model_details_with_string_layout(self):
+        """Tests rendering a model details table passing the layout as a string.
+        """
+        u1, n = get_user_model().objects.get_or_create(username="u1")
+        u2, n = get_user_model().objects.get_or_create(username="u2")
+        
+        details_dict = {
+            "uid": "",
+            "num_cols": 1,
+            "layout": [
+                [{"name": "Username:", "attrs": "", "value": "u1 (user)"}],
+                [{"name": "Username:", "attrs": "", "value": "u2 (another user)"}],
+            ]
+        }
+        
+        self.assertEqual(
+            render_model_details({}, [u1, u2], "['0.username:(user)', '1.username:(another user)']"),
+            render_to_string("elements/model_details.html", {"details": details_dict})
+        )
+        
+    def test_render_model_details_without_layout(self):
+        """Tests rendering a model details table without passing a layout.
+        """
+        g, n = Group.objects.get_or_create(name="g")
+        
+        details_dict = {
+            "uid": "",
+            "num_cols": 1,
+            "layout": [
+                [{"name": "Permissions:", "attrs": "", "value": mark_safe(render_to_string("elements/empty.html").strip())}],
+                [{"name": "ID:", "attrs": "", "value": "#1"}],
+                [{"name": "Name:", "attrs": "", "value": "g"}],
+            ]
+        }
+        
+        self.assertEqual(
+            render_model_details({}, g),
             render_to_string("elements/model_details.html", {"details": details_dict})
         )
         
