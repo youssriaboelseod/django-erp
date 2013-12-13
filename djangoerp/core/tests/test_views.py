@@ -17,6 +17,7 @@ __version__ = '0.0.2'
 
 from django.test import TestCase
 from django.test.utils import override_settings
+from django.contrib.auth import get_user_model
 
 from . import FakeRequest
 from ..models import User
@@ -117,3 +118,207 @@ class BaseModelListViewTestCase(TestCase):
         self.assertEqual(context['list_template_name'], "elements/model_list.html")
         self.assertTrue("list_uid" in context)
         self.assertEqual(context['list_uid'], "")
+        
+class ModelListDeleteMixinTestCase(TestCase):
+    def setUp(self):
+        class FakeBase(object):
+            page_kwarg = "page"
+            
+            def get(self, request, *args, **kwargs):
+                return "get"
+                
+            def post(self, request, *args, **kwargs):
+                return "post"
+                
+            def get_list_prefix(self):
+                return ""
+                
+            def get_queryset(self):
+                return get_user_model().objects.all()
+                
+            def get_paginate_by(self, qs):
+                return max(1, qs.count())
+            
+        class TestModelListDeleteMixin(ModelListDeleteMixin, FakeBase):
+            pass
+            
+        self.request = FakeRequest()
+        self.m = TestModelListDeleteMixin()
+        
+    def test_select_all_uids(self):
+        """Tests selecting all UIDs in the model list.
+        """
+        self.request.POST = {"select_all": True}
+        
+        self.assertEqual(self.m.get_selected_uids(self.request), "*")
+        
+    def test_get_selected_uids(self):
+        """Tests selecting any UIDs in the model list.
+        """
+        self.request.POST = {"select_1": True, "select_2": False, "select_3": True, "select_4": ""}
+        
+        self.assertEqual(self.m.get_selected_uids(self.request), ["1", "3"])
+        
+    def test_get_delete_template_name(self):
+        """Tests retrieving delete template name.
+        """
+        self.assertEqual(self.m.delete_template_name, "base_model_list_confirm_delete.html")
+        self.assertEqual(self.m.get_delete_template_name(), self.m.delete_template_name)
+        
+    def test_handle_as_get_when_has_no_selected_items(self):
+        """Tests calling "get" (instead of "post") when no items are selected.
+        """
+        self.request.POST = {"select_all": True, "delete_selected": True}
+        
+        response = self.m.post(self.request)
+        
+        self.assertEqual(response, "get") # NOTE: convenient result just for test. 
+        
+    def test_post_to_confirm_deletion(self):
+        """Tests performing confirm deletion after a proper POST request.
+        """
+        from django.template.response import TemplateResponse
+
+        user_model = get_user_model()
+        u1 = user_model.objects.create(username="u1")
+        self.request.POST = {"select_all": True, "delete_selected": True}
+        
+        response = self.m.post(self.request)
+        
+        self.assertTrue(isinstance(response, TemplateResponse))
+        self.assertEqual(response.template_name, self.m.get_delete_template_name())
+        
+    def test_post_to_deletion(self):
+        """Tests performing real deletion after a proper POST request.
+        """
+        user_model = get_user_model()
+        u1 = user_model.objects.create(username="u1")
+        self.request.POST = {"select_all": True, "confirm_delete_selected": True}
+        
+        response = self.m.post(self.request)
+        
+        self.assertEqual(response, "get") # NOTE: convenient result just for test.  
+        self.assertEqual(user_model.objects.count(), 0)
+        
+    def test_post_to_parent_post(self):
+        """Tests redirecting to parent's POST when there's no need to delete.
+        """
+        self.request.POST = {}
+        
+        response = self.m.post(self.request)
+        
+        self.assertEqual(response, "post") # NOTE: convenient result just for test.
+        
+    def test_delete_all(self):
+        """Tests deleting all items.
+        """
+        from django.template.response import TemplateResponse
+
+        user_model = get_user_model()
+        u1 = user_model.objects.create(username="u1")
+        u2 = user_model.objects.create(username="u2")
+        u3 = user_model.objects.create(username="u3")
+        self.request.POST = {"delete_selected": True, "select_all": True}
+        qs = self.m.get_queryset()
+        
+        # 1) Show confirm deletion template.
+        self.assertQuerysetEqual(
+            qs,
+            map(repr, user_model.objects.all()),
+            ordered=False
+        )
+        self.assertEqual(qs.count(), 3)
+        
+        response = self.m.delete_selected(self.request)
+        
+        self.assertTrue(isinstance(response, TemplateResponse))
+        self.assertEqual(response.template_name, self.m.get_delete_template_name())
+        self.assertQuerysetEqual(
+            response.context_data['object_list'],
+            map(repr, qs),
+            ordered=False
+        )
+        
+        # 2) Delete all items.
+        del self.request.POST['delete_selected']
+        self.request.POST['confirm_delete_selected'] = True
+        
+        response = self.m.delete_selected(self.request)
+        
+        self.assertEqual(response, "get") # NOTE: convenient result just for test.
+        self.assertEqual(user_model.objects.count(), 0)
+        
+    def test_delete_selected(self):
+        """Tests deleting selected items.
+        """
+        from django.template.response import TemplateResponse
+
+        user_model = get_user_model()
+        u1 = user_model.objects.create(username="u1")
+        u2 = user_model.objects.create(username="u2")
+        u3 = user_model.objects.create(username="u3")
+        self.request.POST = {"delete_selected": True, "select_1": True, "select_2": False, "select_3": True}
+        qs = self.m.get_queryset()
+        
+        # 1) Show confirm deletion template.   
+        self.assertQuerysetEqual(
+            qs,
+            map(repr, user_model.objects.all()),
+            ordered=False
+        )
+        self.assertEqual(qs.count(), 3)
+             
+        response = self.m.delete_selected(self.request)
+        
+        self.assertTrue(isinstance(response, TemplateResponse))
+        self.assertEqual(response.template_name, self.m.get_delete_template_name())
+        self.assertQuerysetEqual(
+            response.context_data['object_list'],
+            map(repr, user_model.objects.filter(pk__in=[1, 3])),
+            ordered=False
+        )
+        
+        # 2) Delete all items.
+        del self.request.POST['delete_selected']
+        self.request.POST['confirm_delete_selected'] = True
+        
+        response = self.m.delete_selected(self.request)
+        
+        self.assertEqual(response, "get") # NOTE: convenient result just for test.
+        self.assertEqual(user_model.objects.count(), 1)
+        self.assertQuerysetEqual(
+            user_model.objects.values("pk"),
+            ["{'pk': 2}"],
+            ordered=False
+        )
+        
+    def test_pagination_on_deletion(self):
+        """Tests pagination handling after item deletion.
+        """
+        from django.http import HttpResponseRedirect
+        
+        def _new_get_paginate_by(qs):
+            return 2
+            
+        old_get_paginate_by = self.m.get_paginate_by
+            
+        self.m.get_paginate_by = _new_get_paginate_by
+
+        user_model = get_user_model()
+        u1 = user_model.objects.create(username="u1")
+        u2 = user_model.objects.create(username="u2")
+        u3 = user_model.objects.create(username="u3")
+        u4 = user_model.objects.create(username="u4")
+        u5 = user_model.objects.create(username="u5")
+        self.request.GET = {"page": 3}
+        self.request.POST = {"confirm_delete_selected": True, "select_5": True}
+        
+        response = self.m.delete_selected(self.request)
+        
+        self.assertTrue(isinstance(response, HttpResponseRedirect))
+        self.assertEqual(response.url, "/home/test/?page=2")
+        self.assertEqual(user_model.objects.count(), 4)
+        
+        # Restores previous behavior.
+        self.m.get_paginate_by = old_get_paginate_by
+        

@@ -156,9 +156,7 @@ class ModelListDeleteMixin(object):
                 curr_page = request.GET.get(self.page_kwarg, 1)
                 page_size = self.get_paginate_by(queryset)
                 item_count = queryset.count()
-                page_count = item_count / page_size
-                if item_count % page_size > 0:
-                    page_count += 1
+                page_count = max(1, item_count / page_size)
                 if curr_page > page_count:
                     path = set_path_kwargs(request, **{self.page_kwarg: page_count})
                     return HttpResponseRedirect(path)
