@@ -38,7 +38,7 @@ class GetterTestCase(TestCase):
         except User.DoesNotExist:
             self.assertFalse(True)
 
-@override_settings(LOGIN_REQUIRED_URLS_EXCEPTIONS=(r'/(.*)$',))            
+@override_settings(LOGIN_REQUIRED_URLS_EXCEPTIONS=(r'/(.*)$',))    
 class SetCancelUrlMixinTestCase(TestCase):
     urls = 'djangoerp.core.tests.urls'
     
@@ -321,4 +321,160 @@ class ModelListDeleteMixinTestCase(TestCase):
         
         # Restores previous behavior.
         self.m.get_paginate_by = old_get_paginate_by
+
+class ModelListFilteringMixinTestCase(TestCase):
+    def setUp(self):
+        user_model = get_user_model()
         
+        class FakeBase(object):
+            def get_queryset(self):
+                return user_model.objects.all()
+                
+            def get_list_prefix(self):
+                return ""
+                
+            def get_context_data(self):
+                return {}
+                
+        class TestModelListFilteringMixin(ModelListFilteringMixin, FakeBase):
+            pass
+
+        self.m = TestModelListFilteringMixin()
+        self.m.request = FakeRequest()
+        self.u1 = user_model.objects.create(username="u1", email="u1@u.it")
+        self.u2 = user_model.objects.create(username="u2", email="u2@u.it")
+        self.u3 = user_model.objects.create(username="u3", email="u3@u.it")
+        self.u4 = user_model.objects.create(username="u4", email="u4@u.it")
+        
+    def test_get_queryset(self):
+        """Tests returning filtered queryset.
+        """
+        user_model = get_user_model()
+        
+        self.m.request.GET = {}
+        qs = self.m.get_queryset()
+        
+        self.assertEqual(qs.count(), 4)
+        self.assertQuerysetEqual(
+            qs,
+            map(repr, user_model.objects.all()),
+            ordered=False
+        )
+        
+        self.m.request.GET = {"filter_by_username__lt": "u4"}
+        qs = self.m.get_queryset()
+        
+        self.assertEqual(qs.count(), 3)
+        self.assertQuerysetEqual(
+            qs,
+            map(repr, user_model.objects.filter(username__lt="u4")),
+            ordered=False
+        )
+        
+        self.m.request.GET = {"filter_by_username__lt": "u4", "filter_by_email__gte": "u2@u.it"}
+        qs = self.m.get_queryset()
+        
+        self.assertEqual(qs.count(), 2)
+        self.assertQuerysetEqual(
+            qs,
+            map(repr, user_model.objects.filter(username__lt="u4", email__gte="u2@u.it")),
+            ordered=False
+        )
+        self.assertQuerysetEqual(
+            qs,
+            [repr(self.u2), repr(self.u3)],
+            ordered=False
+        )
+        
+    def test_get_context_data(self):
+        """Tests returning correct context variables.
+        """
+        user_model = get_user_model()
+        
+        self.m.request.GET = {"filter_by_username__lt": "u4", "filter_by_email__gte": "u2@u.it"}
+        context = self.m.get_context_data()
+        
+        self.assertTrue("unfiltered_object_list" in context)
+        self.assertQuerysetEqual(
+            context['unfiltered_object_list'],
+            map(repr, user_model.objects.all()),
+            ordered=False
+        )
+        
+        self.assertTrue("list_filter_by" in context)
+        self.assertEqual(
+            context['list_filter_by'],
+            {
+                "username": ("lt", "u4"),
+                "email": ("gte", "u2@u.it"),
+            }
+        )
+        
+    def test_post(self):
+        """Tests correct handling of POST requests.
+        """
+        self.m.request.GET = {}
+        self.m.request.POST = {}
+        response = self.m.post(self.m.request)
+        
+        self.assertTrue(isinstance(response, HttpResponseRedirect))
+        self.assertEqual(response.url, "/home/test/")
+        
+        self.m.request.POST = {
+            "filter_by_username": "u4", "filter_expr_username": "lt",
+            "filter_by_email": "u2@u.it", "filter_expr_email": "gte"
+        }
+        response = self.m.post(self.m.request)
+        
+        self.assertTrue(isinstance(response, HttpResponseRedirect))
+        self.assertEqual(response.url, "/home/test/?filter_by_email__gte=u2@u.it;filter_by_username__lt=u4")
+        
+    def test_reset_filters(self):
+        """Tests resetting (clearing) filters.
+        """
+        self.m.request.GET = {}
+        self.m.request.POST = {
+            "filter_by_username": "u4", "filter_expr_username": "lt",
+            "filter_by_email": "u2@u.it", "filter_expr_email": "gte",
+            "reset_filters": True
+        }
+        response = self.m.post(self.m.request)
+        
+        self.assertTrue(isinstance(response, HttpResponseRedirect))
+        self.assertEqual(response.url, "/home/test/")
+        
+    def test_get_filter_query_from_post(self):
+        """Tests getting correct filter query from POST request.
+        """
+        self.m.request.GET = {}
+        self.m.request.POST = {}
+        filter_query = self.m.get_filter_query_from_post()
+        
+        self.assertEqual(filter_query, {})
+        
+        self.m.request.POST = {
+            "filter_by_username": "u4", "filter_expr_username": "lt",
+            "filter_by_email": "u2@u.it", "filter_expr_email": "gte",
+            "filter_by_is_staff": True,
+        }
+        filter_query = self.m.get_filter_query_from_post()
+        
+        self.assertEqual(filter_query, {"email__gte": "u2@u.it", "username__lt": "u4", "is_staff": True})
+        
+    def test_get_filter_query_from_get(self):
+        """Tests getting correct filter query from GET request.
+        """
+        self.m.request.GET = {}
+        self.m.request.POST = {}
+        filter_query = self.m.get_filter_query_from_get()
+        
+        self.assertEqual(filter_query, {})
+        
+        self.m.request.GET = {
+            "filter_by_username__lt": "u4",
+            "filter_by_email__gte": "u2@u.it",
+            "filter_by_is_staff": True,
+        }
+        filter_query = self.m.get_filter_query_from_get()
+        
+        self.assertEqual(filter_query, {"email__gte": "u2@u.it", "username__lt": "u4", "is_staff": True})
