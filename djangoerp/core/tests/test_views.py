@@ -17,10 +17,12 @@ __version__ = '0.0.2'
 
 from django.test import TestCase
 from django.test.utils import override_settings
+from django.shortcuts import resolve_url
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 
 from . import FakeRequest
-from ..models import User
+from ..models import User, ObjectPermission
 from ..views import _get_user # Is not in the public API.
 from ..views import *
 
@@ -568,3 +570,123 @@ class ModelListOrderingMixinTestCase(TestCase):
         
         self.assertTrue("list_order_by" in context)
         self.assertEqual(context['list_order_by'], "email")
+        
+class DetailUserViewTestCase(TestCase):
+    def setUp(self):
+        self.u1 = get_user_model().objects.create_user("u1", "u@u.it", "password")
+        self.u2 = get_user_model().objects.create_user("u2", "u@u.it", "password")
+        
+    def test_deny_anonymous_user(self):
+        """Tests anonymous users can not access the view.
+        """
+        self.client.logout()
+        response = self.client.get(resolve_url("user_detail", pk=self.u2.pk))
+        
+        self.assertEqual(response.status_code, 302)
+        
+    def test_logged_user_without_perms(self):
+        """Tests logged users (but without correct perms) can not access the view.
+        """
+        self.client.login(username='u1', password='password')
+        response = self.client.get(resolve_url("user_detail", pk=self.u2.pk))
+        
+        self.assertEqual(response.status_code, 302)
+        
+    def test_logged_user_with_perms(self):
+        """Tests logged users with correct perms can access the view.
+        """
+        p, n = ObjectPermission.objects.get_or_create_by_natural_key("view_user", "core", "user", self.u2.pk)
+        self.u2.objectpermissions.add(p)
+        
+        self.client.login(username='u2', password='password')
+        response = self.client.get(resolve_url("user_detail", pk=self.u2.pk))
+        
+        self.assertEqual(response.status_code, 200)
+
+class UpdateUserViewTestCase(TestCase):
+    def setUp(self):
+        self.u1 = get_user_model().objects.create_user("u1", "u@u.it", "password")
+        self.u2 = get_user_model().objects.create_user("u2", "u@u.it", "password")
+        
+    def test_deny_anonymous_user(self):
+        """Tests anonymous users can not access the view.
+        """
+        self.client.logout()
+        response = self.client.get(resolve_url("user_edit", pk=self.u2.pk))
+        
+        self.assertEqual(response.status_code, 302)
+        
+    def test_logged_user_without_perms(self):
+        """Tests logged users (but without correct perms) can not access the view.
+        """
+        self.client.login(username='u1', password='password')
+        response = self.client.get(resolve_url("user_edit", pk=self.u2.pk))
+        
+        self.assertEqual(response.status_code, 302)
+        
+    def test_logged_user_with_perms(self):
+        """Tests logged users with correct perms can access the view.
+        """
+        p, n = ObjectPermission.objects.get_or_create_by_natural_key("change_user", "core", "user", self.u2.pk)
+        self.u2.objectpermissions.add(p)
+        
+        self.client.login(username='u2', password='password')
+        response = self.client.get(resolve_url("user_edit", pk=self.u2.pk))
+        
+        self.assertEqual(response.status_code, 200)
+
+class DeleteUserViewTestCase(TestCase):
+    def setUp(self):
+        self.u1 = get_user_model().objects.create_user("u1", "u@u.it", "password")
+        self.u2 = get_user_model().objects.create_user("u2", "u@u.it", "password")
+        
+    def test_deny_anonymous_user(self):
+        """Tests anonymous users can not access the view.
+        """
+        self.client.logout()
+        response = self.client.get(resolve_url("user_delete", pk=self.u2.pk))
+        
+        self.assertEqual(response.status_code, 302)
+        
+    def test_logged_user_without_perms(self):
+        """Tests logged users (but without correct perms) can not access the view.
+        """
+        self.client.login(username='u1', password='password')
+        response = self.client.get(resolve_url("user_delete", pk=self.u2.pk))
+        
+        self.assertEqual(response.status_code, 302)
+        
+    def test_logged_user_with_perms(self):
+        """Tests logged users with correct perms can access the view.
+        """
+        p, n = ObjectPermission.objects.get_or_create_by_natural_key("delete_user", "core", "user", self.u2.pk)
+        self.u2.objectpermissions.add(p)
+        
+        self.client.login(username='u2', password='password')
+        response = self.client.get(resolve_url("user_delete", pk=self.u2.pk))
+        
+        self.assertEqual(response.status_code, 200)
+        
+    def test_success_url_on_current_user_deletion(self):
+        """Tests returned "success_url" when the current user is deleted.
+        """
+        view = DeleteUserView()
+        
+        view.kwargs = {'pk': self.u2.pk}
+        view.request = FakeRequest()
+        view.request.user = self.u2
+        view.get_object()
+        
+        self.assertEqual(view.success_url, resolve_url("user_logout"))
+        
+    def test_success_url_on_different_user_deletion(self):
+        """Tests returned "success_url" when a different user is deleted.
+        """
+        view = DeleteUserView()
+        
+        view.kwargs = {'pk': self.u1.pk}
+        view.request = FakeRequest()
+        view.request.user = self.u2
+        view.get_object()
+        
+        self.assertEqual(view.success_url, "/")
