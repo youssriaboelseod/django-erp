@@ -13,7 +13,7 @@ THE SOFTWARE.
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.2'
+__version__ = '0.0.3'
 
 from djangoerp.settings.base import DEBUG, TEMPLATE_CONTEXT_PROCESSORS, MIDDLEWARE_CLASSES
 
