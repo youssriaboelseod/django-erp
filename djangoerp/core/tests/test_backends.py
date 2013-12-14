@@ -26,16 +26,21 @@ class ObjectPermissionBackendTestCase(TestCase):
     def test_always_fail_authentication(self):
         """Tests the (unsupported) user authentication must always fail.
         """
-        u, n = get_user_model().objects.get_or_create(username="u", password="password")
+        u = get_user_model().objects.create_user("u", "u@u.it", "password")
         
         self.assertEqual(ob.authenticate("u1", "password"), None)
         
     def test_has_perm(self):
         """Tests simple object permissions between three different instances.
         """
-        u, n = get_user_model().objects.get_or_create(username="u")
-        u1, n = get_user_model().objects.get_or_create(username="u1")
-        u2, n = get_user_model().objects.get_or_create(username="u2")
+        user_model = get_user_model()
+        
+        # WARNING: don't remove!
+        logged_cache.clear()
+        
+        u, n = user_model.objects.get_or_create(username="u")
+        u1, n = user_model.objects.get_or_create(username="u1")
+        u2, n = user_model.objects.get_or_create(username="u2")
         p = Permission.objects.get_by_natural_key("delete_user", auth_app, "user")
         
         self.assertFalse(ob.has_perm(u, p, u1))
@@ -89,10 +94,11 @@ class ObjectPermissionBackendTestCase(TestCase):
         """Tests retrieving object permissions by names.
         """
         p_name = "%s.delete_user" % auth_app
+        user_model = get_user_model()
         
-        u, n = get_user_model().objects.get_or_create(username="u")
-        u1, n = get_user_model().objects.get_or_create(username="u1")
-        u2, n = get_user_model().objects.get_or_create(username="u2")
+        u, n = user_model.objects.get_or_create(username="u")
+        u1, n = user_model.objects.get_or_create(username="u1")
+        u2, n = user_model.objects.get_or_create(username="u2")
         
         p = Permission.objects.get_by_natural_key("delete_user", auth_app, "user")
         op, n = ObjectPermission.objects.get_or_create(object_id=u.pk, perm=p)
