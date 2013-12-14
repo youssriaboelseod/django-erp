@@ -478,3 +478,93 @@ class ModelListFilteringMixinTestCase(TestCase):
         filter_query = self.m.get_filter_query_from_get()
         
         self.assertEqual(filter_query, {"email__gte": "u2@u.it", "username__lt": "u4", "is_staff": True})
+
+class ModelListOrderingMixinTestCase(TestCase):
+    def setUp(self):
+        user_model = get_user_model()
+        
+        class FakeBase():
+            def get_queryset(self):
+                return user_model.objects.all()
+                
+            def get_list_prefix(self):
+                return ""
+                
+            def get_context_data(self):
+                return {}
+                
+        class TestModelListOrderingMixin(ModelListOrderingMixin, FakeBase):
+            pass
+            
+        self.m = TestModelListOrderingMixin()
+        self.m.request = FakeRequest()
+        self.u1 = user_model.objects.create(username="Anna", email="z@z.it")
+        self.u2 = user_model.objects.create(username="Berta", email="ab@a.it")
+        self.u3 = user_model.objects.create(username="Wendy", email="aa@g.it")
+        self.u4 = user_model.objects.create(username="Grace", email="g@g.it")
+        
+    def test_get_queryset(self):
+        """Tests returning ordered queryset.
+        """
+        user_model = get_user_model()
+        
+        self.m.request.GET = {}
+        qs = self.m.get_queryset()
+        
+        self.assertEqual(
+            map(repr, qs),
+            map(repr, user_model.objects.all()),
+        )
+        
+        self.m.request.GET = {"order_by": "username"}
+        qs = self.m.get_queryset()
+        
+        self.assertEqual(
+            map(repr, qs),
+            map(repr, user_model.objects.order_by("username")),
+        )
+        
+        self.m.request.GET = {"order_by": "-username"}
+        qs = self.m.get_queryset()
+        
+        self.assertEqual(
+            map(repr, qs),
+            map(repr, user_model.objects.order_by("-username")),
+        )
+        
+        self.m.request.GET = {"order_by": "email"}
+        qs = self.m.get_queryset()
+        
+        self.assertEqual(
+            map(repr, qs),
+            map(repr, user_model.objects.order_by("email")),
+        )
+        
+    def test_get_context_data(self):
+        """Tests returning correct context variables.
+        """
+        user_model = get_user_model()
+        
+        self.m.request.GET = {}
+        context = self.m.get_context_data()
+        
+        self.assertTrue("list_order_by" in context)
+        self.assertEqual(context['list_order_by'], None)
+        
+        self.m.request.GET = {"order_by": "username"}
+        context = self.m.get_context_data()
+        
+        self.assertTrue("list_order_by" in context)
+        self.assertEqual(context['list_order_by'], "username")
+        
+        self.m.request.GET = {"order_by": "-username"}
+        context = self.m.get_context_data()
+        
+        self.assertTrue("list_order_by" in context)
+        self.assertEqual(context['list_order_by'], "-username")
+        
+        self.m.request.GET = {"order_by": "email"}
+        context = self.m.get_context_data()
+        
+        self.assertTrue("list_order_by" in context)
+        self.assertEqual(context['list_order_by'], "email")

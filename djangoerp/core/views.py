@@ -247,7 +247,11 @@ class ModelListOrderingMixin(object):
     
     def get_context_data(self, *args, **kwargs):
         context = super(ModelListOrderingMixin, self).get_context_data(*args, **kwargs)
-        context['list_order_by'] = self._order_query or None
+        
+        self.get_queryset()
+            
+        context['list_order_by'] = self._order_query
+        
         return context      
         
 class ModelListView(ModelListDeleteMixin, ModelListOrderingMixin, ModelListFilteringMixin, BaseModelListView):
