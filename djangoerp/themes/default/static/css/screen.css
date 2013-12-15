@@ -132,7 +132,8 @@ form textarea {
     height: 150px;
 }
 
-form input[type="checkbox"] {
+form input[type="checkbox"],
+form input[type="radio"] {
     width: auto !important;
     margin-right: 10px;
     margin-top: 3px;

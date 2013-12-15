@@ -80,6 +80,18 @@ form .checkbox-row label.vCheckboxLabel {
     margin-right: 10px;
 }
 
+form .form-row ul.radiolist {
+    float: left;
+    padding-left: 0;
+    margin-left: 0;
+    margin-bottom: 0;
+}
+
+form .form-row ul.radiolist li {
+    background-image: none;
+    padding-left: 0;
+}
+
 form .aligned .form-row p.help, form .wide .form-row p.help {
     float: left;
     margin: 0;
