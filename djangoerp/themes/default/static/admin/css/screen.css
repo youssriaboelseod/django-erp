@@ -82,9 +82,8 @@ form .checkbox-row label.vCheckboxLabel {
 
 form .form-row ul.radiolist {
     float: left;
-    padding-left: 0;
-    margin-left: 0;
-    margin-bottom: 0;
+    padding: 0;
+    margin: 0;
 }
 
 form .form-row ul.radiolist li {

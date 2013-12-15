@@ -28,6 +28,14 @@ form .checkbox-row label.vCheckboxLabel {
     margin-left: 10px;
 }
 
+form .form-row ul.radiolist { float: right; }
+
+form .form-row ul.radiolist li {
+    margin-left: 10px;
+    margin-right: 0;
+    padding-right: 0;
+}
+
 form .aligned .form-row p.help, form .wide .form-row p.help {
     float: right;
     padding-left: 0 !important;
