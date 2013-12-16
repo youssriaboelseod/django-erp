@@ -106,3 +106,39 @@ class ObjectPermissionBackendTestCase(TestCase):
         
         self.assertTrue(ob.has_perm(u2, p_name, u))
         self.assertFalse(ob.has_perm(u2, p_name, u1))
+        
+class IntegrationTestCase(TestCase):
+    def test_integration_with_model_level_backend(self):
+        """Tests correct integration with model-level perms backend.
+        """
+        user_model = get_user_model()
+        
+        # WARNING: don't remove!
+        logged_cache.clear()
+        
+        u, n = user_model.objects.get_or_create(username="u")
+        u1, n = user_model.objects.get_or_create(username="u1")
+        u2, n = user_model.objects.get_or_create(username="u2")
+        p = Permission.objects.get_by_natural_key("delete_user", auth_app, "user")
+        
+        clear_perm_caches(u1)
+        clear_perm_caches(u2)
+        
+        self.assertFalse(u1.has_perm(p, u))
+        self.assertFalse(u2.has_perm(p, u))
+        
+        u1.user_permissions.add(p)
+        
+        clear_perm_caches(u1)
+        clear_perm_caches(u2)
+        
+        self.assertTrue(u1.has_perm(p, u))
+        self.assertFalse(u2.has_perm(p, u))
+        
+        u2.objectpermissions.add(ObjectPermission.objects.get_by_natural_key("delete_user", auth_app, "user", u.pk))
+        
+        clear_perm_caches(u1)
+        clear_perm_caches(u2)
+        
+        self.assertTrue(u1.has_perm(p, u))
+        self.assertTrue(u2.has_perm(p, u))

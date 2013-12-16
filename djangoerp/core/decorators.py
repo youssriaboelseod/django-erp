@@ -39,11 +39,11 @@ def obj_permission_required(perm, get_obj_func=None, login_url=None, redirect_fi
             perm_name = perm
             if callable(perm):
                 perm_name = perm(request, *args, **kwargs)
+            if request.user.has_perm(perm_name):
+                return viewfunc(request, *args, **kwargs)
             if callable(get_obj_func):
                 obj = get_obj_func(request, *args, **kwargs)
             if request.user.has_perm(perm_name, obj):
-                return viewfunc(request, *args, **kwargs)
-            if request.user.has_perm(perm_name):
                 return viewfunc(request, *args, **kwargs)
             path = request.build_absolute_uri()
             # If the login url is the same scheme and net location then just

@@ -17,8 +17,21 @@ __version__ = '0.0.3'
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.backends import ModelBackend as DjangoModelBackend
 
 from models import *
+
+class ModelBackend(DjangoModelBackend):
+    def get_group_permissions(self, user_obj, obj=None):
+        return super(ModelBackend, self).get_group_permissions(user_obj)
+        
+    def get_all_permissions(self, user_obj, obj=None):
+        return super(ModelBackend, self).get_all_permissions(user_obj)
+
+    def has_perm(self, user_obj, perm, obj=None):
+        if isinstance(perm, Permission):
+            perm = perm.uid
+        return super(ModelBackend, self).has_perm(user_obj, perm)
 
 class ObjectPermissionBackend(object):
     """Backend which enables support for row/object-level permissions.

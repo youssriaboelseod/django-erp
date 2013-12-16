@@ -42,7 +42,7 @@ MIDDLEWARE_CLASSES += (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
+    'djangoerp.core.backends.ModelBackend',
     'djangoerp.core.backends.ObjectPermissionBackend',
 )
 
