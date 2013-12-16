@@ -22,6 +22,7 @@ from django.core.urlresolvers import reverse, NoReverseMatch
 from django.utils.translation import ugettext as _
 from django.template.loader import render_to_string
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 
 from ..models import Menu
 
@@ -33,24 +34,29 @@ def _calculate_link_params(link, context):
     """Helper function which takes a Link instance and a context and calculates
     the final values of its params (i.e. URL, title, description, etc.)
     """
-    user = context['user']
+    user = context.get('user', None)
     link_context = dict([(k, template.Variable(v).resolve(context)) for k, v in json.loads(link.context or "{}").items()])
     link.title = link.title % context
     if link.description:
         link.description = link.description % context
+    link.url = link.url % context
     try:
         link.url = reverse(link.url, args=[], kwargs=link_context)
     except NoReverseMatch:
         pass
     perms = ["%s.%s" % (p.content_type.app_label, p.codename) for p in link.only_with_perms.all()]
     link.authorized = True
-    if not (user.is_staff or user.is_superuser):
+    if isinstance(user, get_user_model()) and not user.is_superuser:
+        if link.only_staff and not (user.is_staff or user.is_superuser):
+            link.authorized = False
+        if link.only_with_perms.exists() and not user.has_perms(perms, context.get("object", None)):
+            link.authorized = False
+    elif not user or isinstance(user, AnonymousUser):
+        user = AnonymousUser()
+        if link.only_staff or link.only_with_perms.exists():
+            link.authorized = False
         if link.only_authenticated and not user.is_authenticated():
             link.authorized = False
-        elif link.only_staff and not (user.is_staff or user.is_superuser):
-            link.authorized = False
-        elif link.only_with_perms:
-            link.authorized = user.has_perms(perms, context.get("object", None))
     return link
     
 
@@ -89,7 +95,7 @@ def render_user_bookmarks(context):
     
     Example tag usage: {% render_user_bookmarks %}
     """
-    user = context['user']
+    user = context.get('user', None)
     if isinstance(user, get_user_model()) and user.pk:
         return _render_menu("user_%d_bookmarks" % user.pk, context)
     return ""    
