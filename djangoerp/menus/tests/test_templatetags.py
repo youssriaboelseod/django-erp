@@ -17,16 +17,20 @@ __version__ = '0.0.3'
 
 import copy
 from django.test import TestCase
+from django.template import Context
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 
 from ..models import *
 from ..templatetags.menus import *
+        
+def _clean_output(output):
+    return "".join([r.strip() for r in output.strip().splitlines() if r and not r.isspace()])
 
 class RenderMenuTagTestCase(TestCase):
     urls = 'djangoerp.menus.tests.urls'
 
     def setUp(self):
-        from django.template import Context
-        from django.contrib.auth import get_user_model
         from djangoerp.core.models import Permission
         
         user_model = get_user_model()
@@ -71,9 +75,6 @@ class RenderMenuTagTestCase(TestCase):
         self.auth_context = Context({
             "object": self.u1
         })
-        
-    def _clean_output(self, output):
-        return "".join([r.strip() for r in output.strip().splitlines() if r and not r.isspace()])
 
     def test_render_invalid_menu(self):
         """Tests rendering an invalid menu.
@@ -101,7 +102,7 @@ class RenderMenuTagTestCase(TestCase):
             Variable("menu_template")
         )
         
-        cleaned_output = self._clean_output(output)
+        cleaned_output = _clean_output(output)
         
         self.assertEqual(
             cleaned_output,
@@ -137,7 +138,7 @@ class RenderMenuTagTestCase(TestCase):
             "auth-menu"
         )
         
-        cleaned_output = self._clean_output(output)
+        cleaned_output = _clean_output(output)
         
         self.assertEqual(
             cleaned_output,
@@ -152,9 +153,7 @@ class RenderMenuTagTestCase(TestCase):
         
     def test_render_menu_with_anonymous_user_permission_management(self):
         """Tests handling anonymous user's permission management on menu rendering.
-        """
-        from django.contrib.auth.models import AnonymousUser
-        
+        """        
         context = copy.copy(self.auth_context)
         
         context['user'] = AnonymousUser()
@@ -164,7 +163,7 @@ class RenderMenuTagTestCase(TestCase):
             "auth-menu"
         )
         
-        cleaned_output = self._clean_output(output)
+        cleaned_output = _clean_output(output)
         
         self.assertEqual(
             cleaned_output,
@@ -189,7 +188,7 @@ class RenderMenuTagTestCase(TestCase):
             "auth-menu"
         )
         
-        cleaned_output = self._clean_output(output)
+        cleaned_output = _clean_output(output)
         
         self.assertEqual(
             cleaned_output,
@@ -229,7 +228,7 @@ class RenderMenuTagTestCase(TestCase):
             "auth-menu"
         )
         
-        cleaned_output = self._clean_output(output)
+        cleaned_output = _clean_output(output)
         
         self.assertEqual(
             cleaned_output,
@@ -264,7 +263,7 @@ class RenderMenuTagTestCase(TestCase):
             "auth-menu"
         )
         
-        cleaned_output = self._clean_output(output)
+        cleaned_output = _clean_output(output)
         
         self.assertEqual(
             cleaned_output,
@@ -287,4 +286,39 @@ class RenderMenuTagTestCase(TestCase):
             '</ul>'
         )
         
+class RenderUserBookmarksTagTestCase(TestCase):
+    def test_with_invalid_user(self):
+        """Tests retrieving bookmarks of an invalid user.
+        """
+        output = render_user_bookmarks({})
         
+        self.assertEqual(output, "")
+        
+    def test_with_anonymous_user(self):
+        """Tests retrieving bookmarks of an anonymous user.
+        """        
+        output = render_user_bookmarks({"user": AnonymousUser()})
+        
+        self.assertEqual(output, "")
+        
+    def test_with_valid_user(self):
+        """Tests retrieving bookmarks of a valid user.
+        """
+        u1, n = get_user_model().objects.get_or_create(username="u1")
+        bookmarks = Menu.objects.get(slug="user_%d_bookmarks" % u1.pk)
+        
+        l1, n = Link.objects.get_or_create(title="Link 1", slug="l1", url="/", menu=bookmarks)
+        
+        output = render_user_bookmarks(Context({"user": u1}))
+        cleaned_output = _clean_output(output)
+        
+        self.assertEqual(
+            cleaned_output,
+            '<ul id="user_%s_bookmarks-menu" class="menu">'
+            '<li id="l1-link">'
+            '<a title="Link 1" href="/">'
+            'Link 1'
+            '</a>'
+            '</li>'
+            '</ul>' % u1.pk
+        )    
