@@ -42,7 +42,12 @@ class LinkTestCase(TestCase):
         """
         l, n = Link.objects.get_or_create(title="Test Link", slug="l", url="/", menu=self.m)
         
-        self.assertEqual(u"%s" % l, "menu | Test Link")
+        self.assertEqual(u"%s" % l, u"menu | Test Link")
+        
+        l.title = "Test %(model_name)s"
+        l.extra_context = {"model_name": "Connection"}
+        
+        self.assertEqual(u"%s" % l, u"menu | Test Connection")
         
     def test_plain_absolute_url(self):
         """Tests retrieving a plain Link's absolute URL.
@@ -68,3 +73,28 @@ class LinkTestCase(TestCase):
         l3, n = Link.objects.get_or_create(title="Test Link 3", slug="l3", url="private_url", menu=self.m)
         
         self.assertEqual(l3.get_absolute_url(), "private_url")
+    
+class BookmarkTestCase(TestCase):
+    def setUp(self):
+        self.m = Menu.objects.create(slug="menu")
+        self.b = Bookmark.objects.create(title="Test Bookmark", slug="b", url="/", menu=self.m)
+        
+    def test_unicode_representation(self):
+        """Tests Bookmark's unicode representation.
+        """
+        self.assertEqual(u"%s" % self.b, "Test Bookmark")
+        
+        self.b.title = "Test %(model_name)s"
+        self.b.extra_context = {"model_name": "Connection"}
+        
+        self.assertEqual(u"%s" % self.b, u"Test Connection")
+        
+    def test_get_edit_url(self):
+        """Tests retrieving the Bookmark's URL for editing.
+        """
+        self.assertEqual(self.b.get_edit_url(), "/bookmarks/b/edit/")
+        
+    def test_get_delete_url(self):
+        """Tests retrieving the Bookmark's URL for deletion.
+        """
+        self.assertEqual(self.b.get_delete_url(), "/bookmarks/b/delete/")
