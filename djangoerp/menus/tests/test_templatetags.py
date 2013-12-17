@@ -321,4 +321,70 @@ class RenderUserBookmarksTagTestCase(TestCase):
             '</a>'
             '</li>'
             '</ul>' % u1.pk
-        )    
+        )
+
+class ScoreLinkTagTestCase(TestCase):
+    def setUp(self):
+        self.m = Menu.objects.create(slug="matching-menu")
+        self.l1 = Link.objects.create(title="Link 1", slug="l1", url="/", menu=self.m)
+        self.l2 = Link.objects.create(title="Link 2", slug="l2", url="/first", menu=self.m)
+        self.l3 = Link.objects.create(title="Link 3", slug="l3", url="/first/second", menu=self.m)
+        self.l4 = Link.objects.create(title="Link 4", slug="l4", url="/first/third", menu=self.m)
+        self.l5 = Link.objects.create(title="Link 5", slug="l5", url="/first/third/fourth", menu=self.m)
+        self.l6 = Link.objects.create(title="Link 6", slug="l6", url="/first/third/fourth/", menu=self.m)
+        self.l7 = Link.objects.create(title="Link 7", slug="l7", url="/second", menu=self.m)
+        
+    def test_no_matching_link(self):
+        """Tests no class should be returned for no-matching links.
+        """
+        css = score_link({}, self.l7, "/first")
+        
+        self.assertEqual(css, "")
+        
+        css = score_link({}, self.l1, "first")
+        
+        self.assertEqual(css, "")
+        
+    def test_matching_link(self):
+        """Tests the given class should be returned for a matching link.
+        """
+        css = score_link({}, self.l2, "/first")
+        
+        self.assertEqual(css, "active")
+        
+    def test_best_matching_link(self):
+        """Tests the given class should be returned only for the best matching link.
+        """
+        css = score_link({}, self.l2, "/first/third/fourth")
+        
+        self.assertEqual(css, "")
+        
+        css = score_link({}, self.l4, "/first/third/fourth")
+        
+        self.assertEqual(css, "")
+        
+        css = score_link({}, self.l5, "/first/third/fourth")
+        
+        self.assertEqual(css, "active")
+        
+    def test_matching_link_with_last_bar(self):
+        """Tests matching link when two links differs only for the last bar.
+        """
+        css = score_link({}, self.l5, "/first/third/fourth/")
+        
+        self.assertEqual(css, "")
+        
+        css = score_link({}, self.l6, "/first/third/fourth/")
+        
+        self.assertEqual(css, "active")
+        
+    def test_first_best_similar_link(self):
+        """Tests matching of the very first most similar link.
+        """
+        css = score_link({}, self.l5, "/first/third/fourth/something")
+        
+        self.assertEqual(css, "")
+        
+        css = score_link({}, self.l6, "/first/third/fourth/something")
+        
+        self.assertEqual(css, "active")
