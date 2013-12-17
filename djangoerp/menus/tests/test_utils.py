@@ -21,6 +21,9 @@ from django.contrib.auth import get_user_model
 from ..models import *
 from ..utils import *
 
+class FakeModel():
+    pk = 5
+
 class CreateBookmarksUtilTestCase(TestCase):
     def test_create_bookmarks_for_user(self):
         """Tests creating bookmarks for the given user instance.
@@ -35,10 +38,7 @@ class CreateBookmarksUtilTestCase(TestCase):
         
     def test_create_bookmarks_for_any_model(self):
         """Tests creating bookmarks for a generic model instance.
-        """
-        class FakeModel():
-            pk = 5
-            
+        """            
         fm = FakeModel()
         m, n = create_bookmarks(fm)
         
@@ -66,10 +66,7 @@ class DeleteBookmarksUtilTestCase(TestCase):
         
     def test_delete_bookmarks_for_any_model(self):
         """Tests deleting bookmarks of a generic model instance.
-        """
-        class FakeModel():
-            pk = 5
-            
+        """            
         fm = FakeModel()
         m, n = create_bookmarks(fm)
         
@@ -86,10 +83,7 @@ class DeleteBookmarksUtilTestCase(TestCase):
         
     def test_delete_bookmarks_without_bookmarks(self):
         """Tests calling "delete_bookmarks" on an instance without bookmarks.
-        """
-        class FakeModel():
-            pk = 5
-            
+        """           
         fm = FakeModel()
         
         self.assertEqual(Menu.objects.exists(), False)
@@ -117,4 +111,13 @@ class GetUserOfUtilTestCase(TestCase):
         u1, n = get_user_model().objects.get_or_create(username="u1")
         bookmarks = Menu.objects.get(slug="user_1_bookmarks")
         
-        self.assertEqual(get_user_of(bookmarks.slug), u1) 
+        self.assertEqual(get_user_of(bookmarks.slug), u1)
+        
+class CreateDetailNavigationTestCase(TestCase):
+    def test_create_detail_navigation(self):
+        """Tests creating a detail view navigation menu.
+        """
+        m, n = create_detail_navigation(FakeModel)
+        
+        self.assertEqual(m.slug, "fakemodel_detail_navigation")
+        self.assertEqual(m.description, "Fakemodel navigation")
