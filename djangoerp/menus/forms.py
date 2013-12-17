@@ -19,7 +19,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from djangoerp.core.forms import enrich_form
 
-from models import Bookmark
+from models import Menu, Bookmark
 
 class BookmarkForm(forms.ModelForm):
     """Form for bookmark data.
@@ -31,6 +31,12 @@ class BookmarkForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.menu = kwargs.pop("menu", None)
         super(BookmarkForm, self).__init__(*args, **kwargs)
+        if not self.menu:
+            try:
+                if self.instance and self.instance.menu:
+                    self.menu = self.instance.menu
+            except Menu.DoesNotExist:
+                pass
     
     def clean_title(self):
         title = self.cleaned_data['title']
@@ -44,5 +50,17 @@ class BookmarkForm(forms.ModelForm):
             pass
             
         return title
+        
+    def save(self, commit=True):
+        from django.template.defaultfilters import slugify
+        
+        obj = super(BookmarkForm, self).save(commit=False)
+        obj.menu = self.menu or obj.menu
+        obj.slug = slugify(("%s_%s" % (obj.title, self.menu.slug))[:-1])
+        
+        if commit:
+            obj.save()
+            
+        return obj
 
 enrich_form(BookmarkForm)

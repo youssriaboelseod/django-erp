@@ -21,7 +21,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.messages.views import SuccessMessageMixin
-from django.template.defaultfilters import slugify
 from djangoerp.core.utils import clean_http_referer
 from djangoerp.core.views import SetCancelUrlMixin, ModelListView
 from djangoerp.core.decorators import obj_permission_required as permission_required
@@ -63,14 +62,6 @@ class BookmarkCreateUpdateMixin(SuccessMessageMixin, SetCancelUrlMixin, Bookmark
             initial["url"] = url
                 
         return initial
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.menu = form.menu
-        self.object.slug = slugify(("%s_%s" % (self.object.title, self.object.menu.slug))[:-1])
-        self.object.save()
-        
-        return super(BookmarkCreateUpdateMixin, self).form_valid(form)
     
 class ListBookmarkView(BookmarkMixin, ModelListView):
     field_list = ["title", "url", "description", "new_window"]
