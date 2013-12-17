@@ -121,3 +121,21 @@ class CreateDetailNavigationTestCase(TestCase):
         
         self.assertEqual(m.slug, "fakemodel_detail_navigation")
         self.assertEqual(m.description, "Fakemodel navigation")
+        
+class CreateDetailActionsTestCase(TestCase):
+    def test_create_detail_actions(self):
+        """Tests creating a detail view action menu.
+        """
+        m, n = create_detail_actions(FakeModel)
+        
+        self.assertEqual(m.slug, "fakemodel_detail_actions")
+        self.assertEqual(m.description, "Fakemodel actions")
+        
+class CreateListActionsTestCase(TestCase):
+    def test_create_list_actions(self):
+        """Tests creating a list view action menu.
+        """
+        m, n = create_list_actions(FakeModel)
+        
+        self.assertEqual(m.slug, "fakemodel_list_actions")
+        self.assertEqual(m.description, "Fakemodel list actions")
