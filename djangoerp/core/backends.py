@@ -22,6 +22,16 @@ from django.contrib.auth.backends import ModelBackend as DjangoModelBackend
 from models import *
 
 class ModelBackend(DjangoModelBackend):
+    """A proxy model-level backend.
+    
+    NOTE: the purpose of this backend is a better integration with object-level
+    permissions. By default, "django.contrib.auth.backends.ModelBackend" will
+    return "False" when "has_perm" is invoked passing an object instance. This
+    proxy backend, instead, will return "True" if the user has the correct
+    model-level permission. The idea is that a model-level permission is a
+    generic permission over all instances, so if the user has a permission on a
+    model class, this means he has a permission over all its instances.    
+    """
     def get_group_permissions(self, user_obj, obj=None):
         return super(ModelBackend, self).get_group_permissions(user_obj)
         
