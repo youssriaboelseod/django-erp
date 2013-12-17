@@ -56,14 +56,27 @@ class Link(models.Model):
         ordering = ('menu', 'sort_order', 'id',)
         verbose_name = _('link')
         verbose_name_plural = _('links')
+        
+    def __init__(self, *args, **kwargs):
+        self.extra_context = kwargs.pop("extra_context", {})
+        super(Link, self).__init__(*args, **kwargs)
 
     def __unicode__(self):
         return '%s | %s' % (self.menu, self.title)
 
     def get_absolute_url(self):
-        if self.url.startswith('www.'):
-            return "http://" + self.url
-        return self.url
+        import json
+        from django.core.urlresolvers import reverse, NoReverseMatch
+        
+        link_context = dict([(k, self.extra_context.get(v, v)) for k, v in json.loads(self.context or "{}").items()])
+        absolute_url = self.url % self.extra_context
+        
+        try:
+            absolute_url = reverse(absolute_url, args=[], kwargs=link_context)
+        except NoReverseMatch:
+            pass
+            
+        return absolute_url
 
 class Bookmark(Link):
     """A proxy model for bookmark links.

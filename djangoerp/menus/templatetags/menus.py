@@ -16,9 +16,7 @@ __copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
 __version__ = '0.0.3'
 
 import re
-import json
 from django import template
-from django.core.urlresolvers import reverse, NoReverseMatch
 from django.utils.translation import ugettext as _
 from django.template.loader import render_to_string
 from django.contrib.auth import get_user_model
@@ -35,15 +33,10 @@ def _calculate_link_params(link, context):
     the final values of its params (i.e. URL, title, description, etc.)
     """
     user = context.get('user', None)
-    link_context = dict([(k, template.Variable(v).resolve(context)) for k, v in json.loads(link.context or "{}").items()])
+    link.extra_context = context
     link.title = link.title % context
     if link.description:
         link.description = link.description % context
-    link.url = link.url % context
-    try:
-        link.url = reverse(link.url, args=[], kwargs=link_context)
-    except NoReverseMatch:
-        pass
     perms = ["%s.%s" % (p.content_type.app_label, p.codename) for p in link.only_with_perms.all()]
     link.authorized = True
     if isinstance(user, get_user_model()) and not user.is_superuser:
@@ -110,7 +103,7 @@ def score_link(context, link, ref_url, css_class="active"):
         if menu:
             for l in menu.links.all():
                 l = _calculate_link_params(l, context)
-                url = l.url
+                url = l.get_absolute_url()
                 if url == ref_url or ref_url.startswith(url):
                     remainder = ref_url[len(url):]
                     current_score = len(remainder)
