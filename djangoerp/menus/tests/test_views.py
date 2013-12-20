@@ -106,7 +106,7 @@ class BookmarkCreateUpdateMixinTestCase(TestCase):
         self.v.object = Bookmark()
         self.assertEqual(self.v.get_initial(), {})
 
-class ListBookmarkView(TestCase):        
+class ListBookmarkViewTestCase(TestCase):        
     def test_deny_anonymous_user(self):
         """Tests anonymous users can not access the view.
         """
@@ -122,5 +122,38 @@ class ListBookmarkView(TestCase):
         
         self.client.login(username='u', password='password')
         response = self.client.get(resolve_url("bookmark_list"))
+        
+        self.assertEqual(response.status_code, 200)
+
+class CreateBookmarkViewTestCase(TestCase):        
+    def test_deny_anonymous_user(self):
+        """Tests anonymous users can not access the view.
+        """
+        self.client.logout()
+        response = self.client.get(resolve_url("bookmark_add"))
+        
+        self.assertEqual(response.status_code, 302)
+        
+    def test_logged_user_without_perms(self):
+        """Tests logged users without correct perms can not access the view.
+        """
+        u1 = get_user_model().objects.create_user("u1", "u@u.it", "password")
+        
+        self.client.login(username='u1', password='password')
+        response = self.client.get(resolve_url("bookmark_add"))
+        
+        self.assertEqual(response.status_code, 302)
+        
+    def test_logged_user_with_perms(self):
+        """Tests logged users with correct perms can access the view.
+        """
+        from djangoerp.core.models import Permission
+        
+        u2 = get_user_model().objects.create_user("u2", "u@u.it", "password")
+        p, n = Permission.objects.get_or_create_by_uid("menus.add_link")
+        u2.user_permissions.add(p)
+        
+        self.client.login(username='u2', password='password')
+        response = self.client.get(resolve_url("bookmark_add"))
         
         self.assertEqual(response.status_code, 200)
