@@ -54,11 +54,17 @@ def manage_author_permissions(cls, enabled=True):
     
     It will add default view, change and delete permissions for each Project's
     instances created by the current user.
+    
+    To disconnect:
+    
+    >> manage_author_permissions(Project, False)
     """
     cls = get_model(cls)
     dispatch_uid = "update_%s_permissions" % cls.__name__.lower()
+    
     if enabled:
         post_save.connect(_update_author_permissions, cls, dispatch_uid=dispatch_uid)
+        
     else:
         post_save.disconnect(_update_author_permissions, cls, dispatch_uid=dispatch_uid)
 

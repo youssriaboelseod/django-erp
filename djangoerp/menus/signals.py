@@ -33,7 +33,7 @@ def _delete_bookmarks(sender, instance, *args, **kwargs):
 
 ## API ##
 
-def manage_bookmarks(cls):
+def manage_bookmarks(cls, enabled=True):
     """Connects handlers for bookmarks management.
     
     This handler could be used to automatically create a related bookmark list
@@ -42,11 +42,23 @@ def manage_bookmarks(cls):
     >> manage_bookmarks(User)
         
     It will auto generate a bookmark list associated to each new User's instance.
+    
+    To disconnect:
+    
+    >> manage_bookmarks(User, False)
     """
     cls = get_model(cls)
     cls_name = cls.__name__.lower()
-    post_save.connect(_create_bookmarks, cls, dispatch_uid="create_%s_bookmarks" % cls_name)
-    pre_delete.connect(_delete_bookmarks, cls, dispatch_uid="delete_%s_bookmarks" % cls_name)
+    create_dispatch_uid = "create_%s_bookmarks" % cls_name
+    delete_dispatch_uid = "delete_%s_bookmarks" % cls_name
+    
+    if enabled:
+        post_save.connect(_create_bookmarks, cls, dispatch_uid=create_dispatch_uid)
+        pre_delete.connect(_delete_bookmarks, cls, dispatch_uid=delete_dispatch_uid)
+        
+    else:
+        post_save.disconnect(_create_bookmarks, cls, dispatch_uid=create_dispatch_uid)
+        pre_delete.disconnect(_delete_bookmarks, cls, dispatch_uid=delete_dispatch_uid)
 
 ## CONNECTIONS ##
 

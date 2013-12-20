@@ -21,6 +21,7 @@ from django.contrib.auth import get_user_model
 from . import *
 from ..models import *
 from ..utils import *
+from ..signals import *
         
 class SignalTestCase(TestCase):
     def test_bookmarks_auto_creation_for_users(self):
@@ -28,9 +29,24 @@ class SignalTestCase(TestCase):
         """
         self.assertEqual(Menu.objects.filter(slug="user_1_bookmarks").count(), 0)
         
-        u1, n = get_user_model().objects.get_or_create(username="u1")
+        u1 = get_user_model().objects.create(username="u1")
         
         self.assertEqual(Menu.objects.filter(slug="user_1_bookmarks").count(), 1)
+        
+    def test_bookmarks_stop_auto_creation(self):
+        """Tests disabling bookmarks list auto-creation.
+        """
+        user_model = get_user_model()
+        
+        self.assertEqual(Menu.objects.filter(slug="user_2_bookmarks").count(), 0)
+        
+        manage_bookmarks(user_model, False) # Disable auto-creation.
+        
+        u2 = user_model.objects.create(username="u2")
+        
+        self.assertEqual(Menu.objects.filter(slug="user_2_bookmarks").count(), 0)
+
+        manage_bookmarks(user_model) # Enable auto-creation.
         
     def test_manage_author_permissions_on_bookmarks(self):
         """Tests that "manage_author_permissions" auto-generate perms for author. 
