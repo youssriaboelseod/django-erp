@@ -157,3 +157,77 @@ class CreateBookmarkViewTestCase(TestCase):
         response = self.client.get(resolve_url("bookmark_add"))
         
         self.assertEqual(response.status_code, 200)
+
+class UpdateBookmarkViewTestCase(TestCase):
+    def setUp(self):
+        from ..utils import get_bookmarks_for
+        
+        self.u1 = get_user_model().objects.create_user("u1", "u@u.it", "password")
+        self.u2 = get_user_model().objects.create_user("u2", "u@u.it", "password")
+        self.b = Bookmark.objects.create(title="Bookmark", slug="bookmark", url="/", menu=get_bookmarks_for(self.u2))
+        
+    def test_deny_anonymous_user(self):
+        """Tests anonymous users can not access the view.
+        """
+        self.client.logout()
+        response = self.client.get(resolve_url("bookmark_edit", slug=self.b.slug))
+        
+        self.assertEqual(response.status_code, 302)
+        
+    def test_not_owner_user(self):
+        """Tests deny access to other user's bookmarks.
+        """        
+        self.client.login(username='u1', password='password')
+        response = self.client.get(resolve_url("bookmark_edit", slug=self.b.slug))
+        
+        self.assertEqual(response.status_code, 404)
+        
+    def test_logged_user_with_perms(self):
+        """Tests logged users with correct perms can access the view.
+        """
+        from djangoerp.core.models import Permission
+        
+        p, n = Permission.objects.get_or_create_by_uid("menus.change_link")
+        self.u2.user_permissions.add(p)
+        
+        self.client.login(username='u2', password='password')
+        response = self.client.get(resolve_url("bookmark_edit", slug=self.b.slug))
+        
+        self.assertEqual(response.status_code, 200)
+
+class DeleteBookmarkViewTestCase(TestCase):
+    def setUp(self):
+        from ..utils import get_bookmarks_for
+        
+        self.u1 = get_user_model().objects.create_user("u1", "u@u.it", "password")
+        self.u2 = get_user_model().objects.create_user("u2", "u@u.it", "password")
+        self.b = Bookmark.objects.create(title="Bookmark", slug="bookmark", url="/", menu=get_bookmarks_for(self.u2))
+        
+    def test_deny_anonymous_user(self):
+        """Tests anonymous users can not access the view.
+        """
+        self.client.logout()
+        response = self.client.get(resolve_url("bookmark_delete", slug=self.b.slug))
+        
+        self.assertEqual(response.status_code, 302)
+        
+    def test_not_owner_user(self):
+        """Tests deny access to other user's bookmarks.
+        """        
+        self.client.login(username='u1', password='password')
+        response = self.client.get(resolve_url("bookmark_delete", slug=self.b.slug))
+        
+        self.assertEqual(response.status_code, 404)
+        
+    def test_logged_user_with_perms(self):
+        """Tests logged users with correct perms can access the view.
+        """
+        from djangoerp.core.models import Permission
+        
+        p, n = Permission.objects.get_or_create_by_uid("menus.delete_link")
+        self.u2.user_permissions.add(p)
+        
+        self.client.login(username='u2', password='password')
+        response = self.client.get(resolve_url("bookmark_delete", slug=self.b.slug))
+        
+        self.assertEqual(response.status_code, 200)
