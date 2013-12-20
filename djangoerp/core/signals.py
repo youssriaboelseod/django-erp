@@ -44,7 +44,7 @@ def _update_author_permissions(sender, instance, raw, created, **kwargs):
             can_change_this_object.users.add(author)
             can_delete_this_object.users.add(author)
         
-def manage_author_permissions(cls):
+def manage_author_permissions(cls, enabled=True):
     """Adds permissions assigned to the author of the given object.
     
     Connects the post_save signal of the given model class to the handler which
@@ -56,7 +56,11 @@ def manage_author_permissions(cls):
     instances created by the current user.
     """
     cls = get_model(cls)
-    post_save.connect(_update_author_permissions, cls, dispatch_uid="update_%s_permissions" % cls.__name__.lower())
+    dispatch_uid = "update_%s_permissions" % cls.__name__.lower()
+    if enabled:
+        post_save.connect(_update_author_permissions, cls, dispatch_uid=dispatch_uid)
+    else:
+        post_save.disconnect(_update_author_permissions, cls, dispatch_uid=dispatch_uid)
 
 def user_post_save(sender, instance, signal, *args, **kwargs):
     """Add view/delete/change object permissions to users (on themselves).

@@ -55,8 +55,9 @@ class ObjPermissionRequiredTestCase(TestCase):
         # Please note that "User.objects.create_user" is different from
         # "User.objects.create" because it stores the hash of given password.
         self.u1 = self.user_model.objects.create_user("u1", "u1@u.it", "password")
-        self.u2 = self.user_model.objects.create_user("u2", "u2@u.it", "password")
-        self.u3 = self.user_model.objects.create_user("u3", "u3@u.it", "password")
+        self.u2 = self.user_model.objects.create_user("u2", "u@u.it", "password")
+        self.u3 = self.user_model.objects.create_user("u3", "u@u.it", "password")
+        self.u4 = self.user_model.objects.create_user("u4", "u@u.it", "password")
         
         self.perm, n = Permission.objects.get_or_create_by_natural_key("view_user", "core", "user")
         self.obj_perm, n = ObjectPermission.objects.get_or_create_by_natural_key("view_user", "core", "user", self.u3.pk)
@@ -86,15 +87,27 @@ class ObjPermissionRequiredTestCase(TestCase):
         
         self.assertEqual(response.status_code, 200)
         
+        request.user = self.u2
+        
+        response = test_decorator_view(request)
+        
+        self.assertEqual(response.status_code, 302)
+        
     def test_get_perm_by_string_with_object(self):
         """Tests the decorator passing only the perm name by string (with obj).
         """
         request = self.factory.get('/view_user/')
         request.user = self.u1
         
-        response = test_decorator_view(request, pk=self.u2.pk)
+        response = test_decorator_view(request, pk=self.u3.pk)
         
         self.assertEqual(response.status_code, 200)
+        
+        request.user = self.u4
+        
+        response = test_decorator_view(request, pk=self.u3.pk)
+        
+        self.assertEqual(response.status_code, 302)
         
     def test_get_obj_perm_by_string_with_object(self):
         """Tests the decorator passing only the obj perm name by string (with obj).
@@ -105,6 +118,12 @@ class ObjPermissionRequiredTestCase(TestCase):
         response = test_decorator_view(request, pk=self.u3.pk)
         
         self.assertEqual(response.status_code, 200)
+        
+        request.user = self.u4
+        
+        response = test_decorator_view(request, pk=self.u3.pk)
+        
+        self.assertEqual(response.status_code, 302)
         
     def test_fail_perm_by_string_with_object(self):
         """Tests failure of decorator passing perm name by string (with obj).

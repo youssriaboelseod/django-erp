@@ -25,8 +25,13 @@ class SignalTestCase(TestCase):
     def test_manage_author_permissions(self):
         """Tests that "manage_author_permissions" auto-generate perms for author. 
         """
-        u3, n = get_user_model().objects.get_or_create(username="u3", password="pwd")
-        u4, n = get_user_model().objects.get_or_create(username="u4")
+        user_model = get_user_model()
+        
+        u3, n = user_model.objects.get_or_create(username="u3", password="pwd")
+        u4, n = user_model.objects.get_or_create(username="u4")
+        
+        clear_perm_caches(u3)
+        clear_perm_caches(u4)
         
         self.assertFalse(ob.has_perm(u3, "%s.view_user" % auth_app, u4))
         self.assertFalse(ob.has_perm(u3, "%s.change_user" % auth_app, u4))
@@ -36,15 +41,18 @@ class SignalTestCase(TestCase):
         self.assertFalse(ob.has_perm(u4, "%s.change_user" % auth_app, u3))
         self.assertFalse(ob.has_perm(u4, "%s.delete_user" % auth_app, u3))
         
-        manage_author_permissions(get_user_model())
+        manage_author_permissions(user_model)
         prev_user = logged_cache.user
         
         # The current author ("logged" user) is now u3.
         logged_cache.user = u3
-        u5, n = get_user_model().objects.get_or_create(username="u5")
-        u6, n = get_user_model().objects.get_or_create(username="u6")
+        u5, n = user_model.objects.get_or_create(username="u5")
+        u6, n = user_model.objects.get_or_create(username="u6")
         
         clear_perm_caches(u3)
+        clear_perm_caches(u4)
+        clear_perm_caches(u5)
+        clear_perm_caches(u6)
         
         self.assertTrue(ob.has_perm(u3, u"%s.view_user" % auth_app, u5))
         self.assertTrue(ob.has_perm(u3, u"%s.change_user" % auth_app, u5))
@@ -57,20 +65,25 @@ class SignalTestCase(TestCase):
         # Restores previous cached user.
         logged_cache.user = prev_user
         
+        manage_author_permissions(user_model, False)
+        
     def test_author_is_only_the_very_first_one(self):
         """Tests that perms must be auto-generated only for the first author. 
         """
-        u3, n = get_user_model().objects.get_or_create(username="u3")
-        u4, n = get_user_model().objects.get_or_create(username="u4")
+        user_model = get_user_model()
+        
+        u3, n = user_model.objects.get_or_create(username="u3")
+        u4, n = user_model.objects.get_or_create(username="u4")
         
         manage_author_permissions(get_user_model())
         prev_user = logged_cache.user
         
         # The current author ("logged" user) is now u3.
         logged_cache.user = u3
-        u7, n = get_user_model().objects.get_or_create(username="u7")
+        u7, n = user_model.objects.get_or_create(username="u7")
         
         clear_perm_caches(u3)
+        clear_perm_caches(u4)
         
         self.assertTrue(ob.has_perm(u3, u"%s.view_user" % auth_app, u7))
         self.assertTrue(ob.has_perm(u3, u"%s.change_user" % auth_app, u7))
@@ -95,6 +108,8 @@ class SignalTestCase(TestCase):
         # Restores previous cached user.
         logged_cache.user = prev_user
         
+        manage_author_permissions(user_model, False)
+        
     def test_author_only_if_authenticated(self):
         """Tests that perms are auto-generated only if author isn't anonymous. 
         """
@@ -104,6 +119,8 @@ class SignalTestCase(TestCase):
         logged_cache.clear()
         
         u8, n = get_user_model().objects.get_or_create(username="u8")
+        
+        clear_perm_caches(u8)
         
         self.assertFalse(logged_cache.has_user)
         self.assertFalse(ob.has_perm(logged_cache.user, u"%s.view_user" % auth_app, u8))
