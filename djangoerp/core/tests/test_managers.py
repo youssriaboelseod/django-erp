@@ -13,7 +13,7 @@ THE SOFTWARE.
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.3'
+__version__ = '0.0.4'
 
 from django.test import TestCase
 from django.contrib.auth.hashers import make_password
