@@ -16,6 +16,7 @@ __copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
 __version__ = '0.0.3'
 
 from django.test import TestCase
+from django.shortcuts import resolve_url
 from django.contrib.auth import get_user_model
 
 from . import *
@@ -104,3 +105,22 @@ class BookmarkCreateUpdateMixinTestCase(TestCase):
         """
         self.v.object = Bookmark()
         self.assertEqual(self.v.get_initial(), {})
+
+class ListBookmarkView(TestCase):        
+    def test_deny_anonymous_user(self):
+        """Tests anonymous users can not access the view.
+        """
+        self.client.logout()
+        response = self.client.get(resolve_url("bookmark_list"))
+        
+        self.assertEqual(response.status_code, 302)
+        
+    def test_logged_user_with_perms(self):
+        """Tests logged users with correct perms can access the view.
+        """
+        u = get_user_model().objects.create_user("u", "u@u.it", "password")
+        
+        self.client.login(username='u', password='password')
+        response = self.client.get(resolve_url("bookmark_list"))
+        
+        self.assertEqual(response.status_code, 200)
