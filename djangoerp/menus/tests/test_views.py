@@ -25,8 +25,12 @@ from ..views import _get_bookmarks, _get_bookmark # NOTE: not in public API!
 class _FakeBaseView(object):
     def __init__(self, *args, **kwargs):
         self.request = FakeRequest()
+        self.request.user, n = get_user_model().objects.get_or_create(username="u")
         self.args = args
         self.kwargs = kwargs
+        
+    def get_form_kwargs(self):
+        return {}
         
     def get_initial(self):
         return {}
@@ -36,9 +40,8 @@ class _FakeBaseView(object):
 
 class GetterFunctionsTestCase(TestCase):
     def setUp(self):
-        self.u, n = get_user_model().objects.get_or_create(username="u")
         self.request = FakeRequest()
-        self.request.user = self.u
+        self.request.user, n = get_user_model().objects.get_or_create(username="u")
         self.user_bookmarks = Menu.objects.get(slug="user_1_bookmarks")
         self.user_bookmark = Bookmark.objects.create(title="Bookmark", slug="bookmark", url="/", menu=self.user_bookmarks)
         
@@ -58,8 +61,6 @@ class BookmarkMixinTestCase(TestCase):
             pass
             
         self.m = TestBookmarkMixin()
-        self.u, n = get_user_model().objects.get_or_create(username="u")
-        self.m.request.user = self.u
         self.user_bookmarks = Menu.objects.get(slug="user_1_bookmarks")
         self.user_bookmark1 = Bookmark.objects.create(title="Bookmark 1", slug="bookmark1", url="/", menu=self.user_bookmarks)
         self.user_bookmark2 = Bookmark.objects.create(title="Bookmark 2", slug="bookmark2", url="/", menu=self.user_bookmarks)
@@ -83,6 +84,14 @@ class BookmarkCreateUpdateMixinTestCase(TestCase):
             pass
             
         self.v = TestBookmarkCreateUpdateView()
+        self.user_bookmarks = Menu.objects.get(slug="user_1_bookmarks")
+        
+    def test_get_form_kwargs(self):
+        """Tests "BookmarkCreateUpdateMixin.get_form_kwargs" method.
+        """
+        kwargs = self.v.get_form_kwargs()
+        self.assertTrue("menu" in kwargs)
+        self.assertEqual(kwargs['menu'], self.user_bookmarks)
         
     def test_get_initial_url_on_creation(self):
         """Tests the initial URL is set on the current path on bookmark creation.
