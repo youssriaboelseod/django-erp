@@ -16,9 +16,29 @@ __copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
 __version__ = '0.0.3'
 
 from django.test import TestCase
+from django.contrib.auth import get_user_model
 
 from . import *
 from ..views import *
+from ..views import _get_bookmarks, _get_bookmark # NOTE: not in public API!
+
+class GetterFunctionsTestCase(TestCase):
+    def setUp(self):
+        self.u, n = get_user_model().objects.get_or_create(username="u")
+        self.request = FakeRequest()
+        self.request.user = self.u
+        self.user_bookmarks = Menu.objects.get(slug="user_1_bookmarks")
+        self.user_bookmark = Bookmark.objects.create(title="Bookmark", slug="bookmark", url="/", menu=self.user_bookmarks)
+        
+    def test_get_bookmarks(self):
+        """Tests _get_bookmarks getter function.
+        """
+        self.assertEqual(_get_bookmarks(self.request), self.user_bookmarks)
+        
+    def test_get_bookmark(self):
+        """Tests _get_bookmark getter function.
+        """
+        self.assertEqual(_get_bookmark(self.request, slug="bookmark"), self.user_bookmark)
     
 class BookmarkCreateUpdateMixinTestCase(TestCase):
     def setUp(self):
