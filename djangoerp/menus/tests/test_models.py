@@ -56,23 +56,40 @@ class LinkTestCase(TestCase):
         
         self.assertEqual(l1.get_absolute_url(), "/")
         
+    def test_simple_reversing_absolute_url(self):
+        """Tests a simple reverse of Link's absolute URL.
+        """
+        l2, n = Link.objects.get_or_create(title="Test Link 2", slug="l2", url="generic_private_zone_url", menu=self.m)
+        
+        self.assertEqual(l2.get_absolute_url(), "/private/")
+        
     def test_reversing_absolute_url(self):
         """Tests reversing the Link's absolute URL.
         """
-        l2, n = Link.objects.get_or_create(title="Test Link 2", slug="l2", url="private_zone_url", context='{"id": "link_url_id_kwarg"}', menu=self.m)
-        l2.extra_context = {
+        l3, n = Link.objects.get_or_create(title="Test Link 3", slug="l3", url="private_zone_url", context='{"id": "link_url_id_kwarg"}', menu=self.m)
+        l3.extra_context = {
             "link_url_id_kwarg": "1",
         }
         
-        self.assertEqual(l2.get_absolute_url(), "/private/1")
+        self.assertEqual(l3.get_absolute_url(), "/private/1")
+        
+    def test_reversing_complex_absolute_url(self):
+        """Tests reversing the Link's absolute URL with complex context lookup.
+        """
+        l4, n = Link.objects.get_or_create(title="Test Link 4", slug="l4", url="private_zone_url", context='{"id": "object.pk"}', menu=self.m)
+        l4.extra_context = {
+            "object": {"pk": lambda : 1},
+        }
+        
+        self.assertEqual(l4.get_absolute_url(), "/private/1")
         
     def test_invalid_absolute_url_reversion(self):
         """Tests invalid Link's absolute URL reversion.
         """
-        # NOTE: "private_url" is an invalid URL's name, so there's no valid reversion.
-        l3, n = Link.objects.get_or_create(title="Test Link 3", slug="l3", url="private_url", menu=self.m)
+        # NOTE: "invalid_private_url" is an invalid URL's name, so there's no valid reversion.
+        l5, n = Link.objects.get_or_create(title="Test Link 5", slug="l5", url="invalid_private_url", menu=self.m)
         
-        self.assertEqual(l3.get_absolute_url(), "private_url")
+        self.assertEqual(l5.get_absolute_url(), "invalid_private_url")
     
 class BookmarkTestCase(TestCase):
     def setUp(self):

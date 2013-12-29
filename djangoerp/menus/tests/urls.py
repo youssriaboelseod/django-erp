@@ -23,6 +23,7 @@ class BaseTemplateView(TemplateView):
 
 # Special urls for test cases.
 urlpatterns = patterns('',
+    url(r'^private/', view=BaseTemplateView.as_view(), name="generic_private_zone_url"),
     url(r'^private/(?P<id>\d+)', view=BaseTemplateView.as_view(), name="private_zone_url"),
 )
 

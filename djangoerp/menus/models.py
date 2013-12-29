@@ -66,9 +66,19 @@ class Link(models.Model):
 
     def get_absolute_url(self):
         import json
+        from django.template import Variable
         from django.core.urlresolvers import reverse, NoReverseMatch
         
-        link_context = dict([(k, self.extra_context.get(v, v)) for k, v in json.loads(self.context or "{}").items()])
+        link_context = {}
+        
+        for k, v in json.loads(self.context or "{}").items():
+            value = v
+            try:
+                v = Variable(v).resolve(self.extra_context)
+            except:
+                pass
+            link_context[k] = v
+            
         absolute_url = self.url % self.extra_context
         
         try:
