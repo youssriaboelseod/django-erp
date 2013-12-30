@@ -14,11 +14,13 @@ THE SOFTWARE.
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
 __version__ = '0.0.4'
+
+from django.utils.translation import ugettext_noop as _
     
 from djangoerp.menus.utils import get_bookmarks_for
 from djangoerp.menus.models import Menu
 
-from loading import register_simple_plugget
+from loading import register_simple_plugget_source
 from forms import TextPluggetForm
 
 def menu(context):
@@ -50,4 +52,4 @@ def bookmarks_menu(context):
         context[u'menu_id'] = get_bookmarks_for(context['user'].username).pk  
     return menu(context)
         
-register_simple_plugget("Text plugget",  "Simply renders a text paragraph.", form=TextPluggetForm)
+register_simple_plugget_source(_("Text plugget"),  _("Simply renders a text paragraph."), form=TextPluggetForm)
