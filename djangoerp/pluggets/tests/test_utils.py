@@ -21,11 +21,14 @@ from django.contrib.auth import get_user_model
 from ..models import Region
 from ..utils import *
           
-class UtilsTestCase(TestCase):
+class DashboardForUserUtilTestCase(TestCase):
+    def setUp(self):
+        self.user_model = get_user_model()
+        
     def test_dashboard_for_user(self):
         """Tests retrieving the dashboard owned by user with a given username.
         """        
-        u1, n = get_user_model().objects.get_or_create(username="u1")
+        u1, n = self.user_model.objects.get_or_create(username="u1")
         
         self.assertTrue(n)
         
@@ -33,10 +36,24 @@ class UtilsTestCase(TestCase):
         
         self.assertEqual(get_dashboard_for(u1.username), dashboard)
         
+    def test_raise_error_on_invalid_username(self):
+        """Tests raising an error when an invalid username is given.
+        """        
+        self.assertRaises(Region.DoesNotExist, lambda : get_dashboard_for("u2"))
+
+class UserOfDashboardUtilTestCase(TestCase):
+    def setUp(self):
+        self.user_model = get_user_model()
+        
     def test_user_of_dashboard(self):
         """Tests retrieving the user of dashboard identified by the given slug.
         """        
-        u1, n = get_user_model().objects.get_or_create(username="u1")
+        u1, n = self.user_model.objects.get_or_create(username="u1")
         dashboard = Region.objects.get(slug="user_1_dashboard")
         
         self.assertEqual(get_user_of(dashboard.slug), u1)
+        
+    def test_raise_error_on_invalid_dashboard(self):
+        """Tests raising an error when an invalid dashboard slug is given.
+        """
+        self.assertRaises(self.user_model.DoesNotExist, lambda : get_user_of("user_2_dashboard"))

@@ -15,18 +15,21 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
 __version__ = '0.0.4'
 
-from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 
 def get_dashboard_for(username):
     """Returns the bookmarks menu for the user with the given username.
     """
     from models import Region
-    user = get_object_or_404(get_user_model(), username=username)
-    return get_object_or_404(Region, slug="user_%s_dashboard" % user.pk)
+    user_model = get_user_model()
+    try:
+        user = user_model.objects.get(username=username)
+    except user_model.DoesNotExist:
+        raise Region.DoesNotExist
+    return Region.objects.get(slug="user_%s_dashboard" % user.pk)
     
 def get_user_of(dashboard_slug):
     """Returns the owner of the given bookmarks list.
     """
     user_pk = dashboard_slug.split('_')[1]
-    return get_object_or_404(get_user_model(), pk=user_pk)
+    return get_user_model().objects.get(pk=user_pk)
