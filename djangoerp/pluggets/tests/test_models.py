@@ -17,36 +17,73 @@ __version__ = '0.0.4'
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.models import ContentType
 
 from ..models import Region, Plugget
 
 class RegionTestCase(TestCase):
+    def setUp(self):
+        from django.contrib.contenttypes.models import ContentType
+        
+        user_model = get_user_model()
+        
+        self.u1 = user_model.objects.create(username="u1")
+        self.r1 = Region.objects.create(slug="r1")
+        self.r2 = Region.objects.create(
+            slug="r2",
+            title="Region 2",
+            content_type=ContentType.objects.get_for_model(user_model),
+            object_id=self.u1.pk
+        )
+        
     def test_get_absolute_url_without_owner(self):
         """Tests the "get_absolute_url" method of a region without owner object.
         """
-        r1, n = Region.objects.get_or_create(slug="r1")
-        self.assertEqual(r1.get_absolute_url(), "/")
+        self.assertEqual(self.r1.get_absolute_url(), "/")
         
     def test_get_absolute_url_with_user_as_owner(self):
         """Tests the "get_absolute_url" method of a region with an owner object.
         """
-        u1, n = get_user_model().objects.get_or_create(username="u1")
-        ct = ContentType.objects.get_for_model(u1)
-        r2, n = Region.objects.get_or_create(slug="r2", content_type=ct, object_id=u1.pk)
-        self.assertNotEqual(r2.get_absolute_url(), u1.get_absolute_url())
-        self.assertEqual(r2.get_absolute_url(), "/")
+        self.assertNotEqual(self.r2.get_absolute_url(), self.u1.get_absolute_url())
+        self.assertEqual(self.r2.get_absolute_url(), "/")
         
     def test_get_absolute_url_with_owner(self):
         """Tests the "get_absolute_url" method of a region with an owner object.
         """
         # TODO: use a custom model as owner of a region.
         pass
+        
+    def test_unicode(self):
+        """Tests getting correct unicode representation.
+        """
+        self.assertEqual(u"%s" % self.r1, u"r1")
+        self.assertEqual(u"%s" % self.r2, u"Region 2")
 
 class PluggetTestCase(TestCase):
+    def setUp(self):
+        self.r1 = Region.objects.create(slug="r1", title="Region 1")
+        self.p1 = Plugget.objects.create(region=self.r1, title="Plugget 1", source="djangoerp.pluggets.base.dummy", template="pluggets/base_plugget.html")
+        
     def test_get_absolute_url(self):
         """Tests the "get_absolute_url" method of a plugget.
         """
-        r1, n = Region.objects.get_or_create(slug="r1")
-        p1, n = Plugget.objects.get_or_create(region=r1, title="p1", source="djangoerp.pluggets.base.dummy", template="pluggets/base_plugget.html")
-        self.assertEqual(p1.get_absolute_url(), r1.get_absolute_url())
+        self.assertEqual(self.p1.get_absolute_url(), self.r1.get_absolute_url())
+        
+    def test_unicode(self):
+        """Tests getting correct unicode representation.
+        """
+        self.assertEqual(u"%s" % self.p1, u"%s | %s" % (self.r1, self.p1.title))
+        
+    def test_slug_func(self):
+        """Tests getting Plugget slug.
+        """
+        self.assertEqual(self.p1.slug(), u"region-1_plugget-1")
+        
+    def test_get_edit_url(self):
+        """Tests retrieving the Plugget's URL for editing.
+        """
+        self.assertEqual(self.p1.get_edit_url(), "/pluggets/%d/edit/" % self.p1.pk)
+        
+    def test_get_delete_url(self):
+        """Tests retrieving the Plugget's URL for deletion.
+        """
+        self.assertEqual(self.p1.get_delete_url(), "/pluggets/%d/delete/" % self.p1.pk)
