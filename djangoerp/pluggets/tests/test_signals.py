@@ -31,6 +31,7 @@ class SignalTestCase(TestCase):
         
         u1, n = get_user_model().objects.get_or_create(username="u1")
         
+        self.assertTrue(n)
         self.assertEqual(Region.objects.filter(slug="user_1_dashboard").count(), 1)
         
     def test_manage_author_permissions_on_dashboard(self):
@@ -96,5 +97,15 @@ class SignalTestCase(TestCase):
             d = None
             
         self.assertEqual(d, None)
-            
+        
+    def test_dashboard_auto_deletion_fails_silently(self):
+        """Tests silent failure of deletion when no dashboard is attached.
+        """            
+        u5, n = get_user_model().objects.get_or_create(username="u5")
+        d = get_dashboard_for("u5")
+        d.delete()
+        
+        self.assertRaises(Region.DoesNotExist, lambda: get_dashboard_for(u5.username))
+        
+        u5.delete()
         
