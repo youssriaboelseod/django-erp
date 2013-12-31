@@ -33,14 +33,10 @@ def menu(context):
     
      * name -- Slug of selected menu.
     """
-    try:
-        pk = context.get(u'menu_id', None)
-        del context['menu_id']
-        if pk:
-            menu = Menu.objects.get(pk=pk)
-            context["name"] = menu.slug
-    except KeyError:
-        pass
+    pk = context.pop(u'menu_id', None)
+    if pk:
+        menu = Menu.objects.get(pk=pk)
+        context["name"] = menu.slug
     return context
     
 def bookmarks_menu(context):
