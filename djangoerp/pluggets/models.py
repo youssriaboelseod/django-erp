@@ -56,7 +56,7 @@ class Plugget(models.Model):
     title = models.CharField(max_length=100, verbose_name=_('title'))
     description = models.TextField(blank=True, null=True, verbose_name=_('description'))
     source = models.CharField(max_length=256, verbose_name=_('source'))
-    template = models.CharField(max_length=256, verbose_name=_('template'))
+    template = models.CharField(max_length=256, default="pluggets/base_plugget.html", verbose_name=_('template'))
     context = models.TextField(blank=True, null=True, validators=[validate_json], help_text=_('Use the JSON syntax.'), verbose_name=_('context'))
     sort_order = models.PositiveIntegerField(default=0, verbose_name=_('sort order'))
 
