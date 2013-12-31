@@ -16,6 +16,7 @@ __copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
 __version__ = '0.0.4'
 
 from django.test import TestCase
+from django.template import Context
 from django.contrib.auth import get_user_model
 from djangoerp.menus.models import Menu
 
@@ -29,7 +30,7 @@ class MenuPluggetFuncTestCase(TestCase):
 
         m = Menu.objects.create(slug="test-menu")
         
-        context = menu({"menu_id": m.pk})
+        context = menu(Context({"menu_id": m.pk}))
         
         self.assertTrue("menu_id" not in context)
         self.assertTrue("name" in context)
@@ -42,11 +43,10 @@ class MenuPluggetFuncTestCase(TestCase):
         #          plugget auto-discovering.
         from ..pluggets import menu
         
-        context = menu({})
+        context = menu(Context())
         
         self.assertTrue("menu_id" not in context)
         self.assertTrue("name" not in context)
-        self.assertEqual(context, {})
 
 class BookmarksMenuPluggetFuncTestCase(TestCase):
     def test_with_user(self):
@@ -58,7 +58,7 @@ class BookmarksMenuPluggetFuncTestCase(TestCase):
         
         u = get_user_model().objects.create(username="u", password="p")
         
-        context = bookmarks_menu({"user": u})
+        context = bookmarks_menu(Context({"user": u}))
         
         self.assertTrue("menu_id" not in context)
         self.assertTrue("name" in context)
@@ -71,9 +71,7 @@ class BookmarksMenuPluggetFuncTestCase(TestCase):
         #          plugget auto-discovering.
         from ..pluggets import bookmarks_menu
         
-        context = bookmarks_menu({})
+        context = bookmarks_menu(Context())
         
         self.assertTrue("menu_id" not in context)
         self.assertTrue("name" not in context)
-        self.assertEqual(context, {})
-        

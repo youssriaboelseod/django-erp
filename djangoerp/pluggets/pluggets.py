@@ -33,7 +33,14 @@ def menu(context):
     
      * name -- Slug of selected menu.
     """
-    pk = context.pop(u'menu_id', None)
+    pk = None
+    if u"menu_id" in context:
+        # NOTE: Here, "context" is not a simple dict instance, so we can't use:
+        #
+        #       >> pk = context.pop("menu_id", None)
+        #
+        pk = context.get(u'menu_id')
+        del context[u'menu_id']
     if pk:
         menu = Menu.objects.get(pk=pk)
         context["name"] = menu.slug
