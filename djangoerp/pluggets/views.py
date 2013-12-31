@@ -35,15 +35,17 @@ from models import *
 from forms import *
 
 def _get_plugget(*args, **kwargs):
-    """Gets the plugget instance associated to the pk arg, 404 otherwise.
+    """Returns the plugget instance associated to the "pk" kwarg, None otherwise.
     """
-    try: return get_object_or_404(Plugget, pk=kwargs.get("pk", None))
-    except: return None
+    try:
+        return Plugget.objects.get(pk=kwargs.get("pk", None))
+    except Plugget.DoesNotExist:
+        return None
 
 def _get_plugget_add_or_edit_perm(*args, **kwargs):
-    """Gets the permission that should be checked.
+    """Returns the permission that should be checked.
     
-    If a pk arg is present, we're checking for edit an existing plugget,
+    If a "pk" kwarg is present, we're checking for edit an existing plugget,
     otherwise we want to add a new one.
     """
     plugget = _get_plugget(*args, **kwargs)
@@ -52,16 +54,17 @@ def _get_plugget_add_or_edit_perm(*args, **kwargs):
     return "pluggets.add_plugget"
 
 def _get_region(*args, **kwargs):
-    """Gets the region instance associated to the slug arg.
+    """Returns the region instance associated to the "slug" kwarg.
     
-    If there is no slug argument, it tries to retrieve the region from one of
-    its plugget (using the pk arg, if present). If also this try fails, it
-    returns 404.
+    If there is no "slug" argument, it tries to retrieve the region from one of
+    its plugget (using the "pk" kwarg, if present).
+    
+    If also this fails, it raises an exception.
     """
-    default = None
-    try: default = _get_plugget(*args, **kwargs).region.slug
-    except: pass
-    return get_object_or_404(Region, slug=kwargs.get("slug", default))
+    default = _get_plugget(*args, **kwargs)
+    if default:
+        default = default.region.slug
+    return Region.objects.get(slug=kwargs.get("slug", default))
 
 class PluggetWizard(SetCancelUrlMixin, SessionWizardView):
     DEFAULT_FORMS = [SelectPluggetSourceForm, CustomizePluggetSettingsForm]
