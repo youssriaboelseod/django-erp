@@ -63,7 +63,7 @@ class ObjectPermissionBackend(object):
     def get_group_permissions(self, user_obj, obj=None):
         """Returns all and only the object perms granted to the groups of the given user_obj.
         """
-        if not hasattr(user_obj, '_group_obj_perm_cache'):
+        if True: # not hasattr(user_obj, '_group_obj_perm_cache'):
             perms = ObjectPermission.objects.get_group_permissions(user_obj, obj)
             perms = perms.values_list('perm__content_type__app_label', 'perm__codename', 'object_id').order_by()
             user_obj._group_obj_perm_cache = set(["%s.%s.%s" % (ct, name, obj_id) for ct, name in perms])
@@ -74,7 +74,7 @@ class ObjectPermissionBackend(object):
         """
         if user_obj.is_anonymous():
             return set()
-        if not hasattr(user_obj, '_obj_perm_cache'):
+        if True: # not hasattr(user_obj, '_obj_perm_cache'):
             user_obj._obj_perm_cache = set([p.uid for p in user_obj.objectpermissions.get_by_object(obj)])
             user_obj._obj_perm_cache.update(self.get_group_permissions(user_obj, obj))
         return user_obj._obj_perm_cache

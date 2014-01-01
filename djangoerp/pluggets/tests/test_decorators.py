@@ -46,14 +46,14 @@ class IsPluggetEditableDecoratorTestCase(TestCase):
         
     def test_with_editable_plugget(self):
         """Tests allowing access to the view when an editable plugget is used.
-        """        
+        """
         response = self.v(0)
         
         self.assertTrue(isinstance(response, PseudoResponse))
         
     def test_with_not_editable_plugget(self):
         """Tests denying access to the view when a not editable plugget is used.
-        """        
+        """
         response = self.v(1)
         
         self.assertFalse(isinstance(response, PseudoResponse))
