@@ -2,7 +2,7 @@ import os
 import sys
 from datetime import datetime
 
-def replace(root, old_string, new_string):
+def replace(root, replace_dict):
     if root[-1] == "/":
         root = root[0:-1]
 
@@ -10,17 +10,22 @@ def replace(root, old_string, new_string):
         path = root + "/" + x
     
         if os.path.isdir(path):
-            replace(path, old_string, new_string)
+            replace(path, replace_dict)
       
         else:
             p, sep, ext = path.partition('.')
             if ext in ("py", "py.tmpl"):
+                replaced = False
                 infile = open(path, "r+")
                 text = infile.read()
-                if text.find(old_string) != -1:
-                    text = text.replace(old_string, new_string)
-                    infile.seek(0)
-                    infile.write(text)
+                infile.seek(0)
+                for old_string, new_string in replace_dict.items():
+                    if text.find(old_string) != -1:
+                        text = text.replace(old_string, new_string)
+                        replaced = True
+                        infile.seek(0)
+                infile.write(text)
+                if replaced:
                     print "Replaced in " + path
                 infile.close()        
 
@@ -32,11 +37,10 @@ if __name__ == "__main__":
     ref_file = open("djangoerp/__init__.py")
     text = ref_file.read()
     ref_file.close()
+    replace_dict = {}
     for line in text.split("\n"):
         if line.startswith("__copyright__"):
-            replace("djangoerp", line, "__copyright__ = 'Copyright (c) 2013-%s, django ERP Team'" % datetime.now().year)
-            continue
+            replace_dict[line] = "__copyright__ = 'Copyright (c) 2013-%d, django ERP Team'" % datetime.now().year
         if line.startswith("__version__"):
-            replace("djangoerp", line, "__version__ = '%s'" % sys.argv[1])
-            break
-  
+            replace_dict[line] = "__version__ = '%s'" % sys.argv[1]
+    replace("djangoerp", replace_dict)
