@@ -19,7 +19,6 @@ from functools import wraps
 from django.shortcuts import redirect
 from django.utils.decorators import available_attrs
 
-from loading import get_plugget_sources
 from models import Plugget
 
 def is_plugget_editable(get_plugget_func, redirect_to='/'):
@@ -30,6 +29,7 @@ def is_plugget_editable(get_plugget_func, redirect_to='/'):
     def decorator(viewfunc):
         @wraps(viewfunc, assigned=available_attrs(viewfunc))
         def _wrapped_view(request, *args, **kwargs):
+            from loading import get_plugget_sources
             plugget = None
             if callable(get_plugget_func):
                 plugget = get_plugget_func(request, *args, **kwargs)

@@ -147,7 +147,7 @@ class PluggetWizard(SetCancelUrlMixin, SessionWizardView):
         elif step == "1":
             initial['title'] = title or source_uid
             if self.instance:
-                initial.update(json.loads(self.instance.context))
+                initial.update(json.loads(self.instance.context or "{}"))
                 
         self.cancel_url = self.region.get_absolute_url()
             
