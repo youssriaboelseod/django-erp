@@ -77,7 +77,7 @@ def render_plugget(context, plugget_pk, template_name=None):
     return ""    
 
 @register.simple_tag(takes_context=True)
-def render_region(context, region_slug, template_name="pluggets/region.html"):
+def render_region(context, region_slug, template_name=None):
     """Renders the region identified by the given slug with the given template.
     
     It takes the following arguments:
@@ -98,7 +98,7 @@ def render_region(context, region_slug, template_name="pluggets/region.html"):
         region = Region.objects.get(slug=region_slug)
         context['region'] = region
         
-        return render_to_string(template_name, context)
+        return render_to_string(template_name or "pluggets/region.html", context)
         
     except ObjectDoesNotExist:
         pass
@@ -123,6 +123,6 @@ def first_region_for(obj):
     Example usage: {% first_region_for obj as obj_first_region %}
     """
     try:
-        return Region.objects.get(content_type=ContentType.objects.get_for_model(obj), object_id=obj.pk)
+        return Region.objects.filter(content_type=ContentType.objects.get_for_model(obj), object_id=obj.pk).first()
     except:
         return None

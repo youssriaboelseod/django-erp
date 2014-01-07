@@ -23,6 +23,10 @@ from djangoerp.menus.models import Menu
 from loading import register_simple_plugget_source
 from forms import TextPluggetForm
 
+def dummy(context):
+    from loading import plugget_source_registry
+    return plugget_source_registry.default_func(context)
+
 def menu(context):
     """Menu plugget.
     
