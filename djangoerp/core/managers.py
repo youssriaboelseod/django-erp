@@ -102,4 +102,3 @@ class ObjectPermissionManager(models.Manager):
 
     def get_all_permissions(self, user, obj=None):
         return self.get_by_object(obj).filter(Q(groups__user=user) | Q(users=user))
-)

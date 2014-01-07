@@ -26,4 +26,3 @@ urlpatterns = patterns('',
     url(r'^bookmarks/(?P<slug>[-\w]+)/edit/$', view=UpdateBookmarkView.as_view(), name='bookmark_edit'),
     url(r'^bookmarks/(?P<slug>[-\w]+)/delete/$', view=DeleteBookmarkView.as_view(), name='bookmark_delete'),
 )
-)

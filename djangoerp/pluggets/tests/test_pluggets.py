@@ -75,4 +75,3 @@ class BookmarksMenuPluggetFuncTestCase(TestCase):
         
         self.assertTrue("menu_id" not in context)
         self.assertTrue("name" not in context)
-)

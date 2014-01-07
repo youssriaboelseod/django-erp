@@ -37,5 +37,3 @@ urlpatterns += patterns('',
     url(r'^private/', view=BaseTemplateView.as_view(), name="private_zone_url"),
 )
 
-
-

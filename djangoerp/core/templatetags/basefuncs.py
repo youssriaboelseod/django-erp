@@ -69,4 +69,3 @@ def diff(obj, amount):
     """
     return obj-float(amount)
     
- 

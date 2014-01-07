@@ -27,5 +27,3 @@ urlpatterns = patterns('',
     url(r'^private/(?P<id>\d+)', view=BaseTemplateView.as_view(), name="private_zone_url"),
 )
 
-
-

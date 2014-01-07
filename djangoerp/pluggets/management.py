@@ -64,4 +64,3 @@ def install(sender, **kwargs):
     # Permissions.
     users_group.permissions.add(add_plugget)
     
- 

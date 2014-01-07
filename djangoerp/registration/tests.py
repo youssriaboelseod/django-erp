@@ -35,4 +35,3 @@ if "djangoerp.registration" in settings.INSTALLED_APPS:
             register_link, is_new = Link.objects.get_or_create(slug="register")
             self.assertTrue(register_link)
             self.assertFalse(is_new)
-)

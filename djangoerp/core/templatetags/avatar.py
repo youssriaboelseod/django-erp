@@ -40,5 +40,3 @@ def avatar(email, size=36, default=None):
         
     return '<span class="avatar"><img width="%s" height="%s" src="%s" /></span>' % (size, size, url)
 
-
-

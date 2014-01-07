@@ -129,4 +129,3 @@ class SubscriptionsFormTestCase(TestCase):
         f.save()
         
         self.assertEqual(Subscription.objects.filter(subscriber=u1, signature__in=qs).count(), 0)
-)

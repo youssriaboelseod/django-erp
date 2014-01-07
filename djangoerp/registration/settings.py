@@ -25,4 +25,3 @@ LOGIN_REQUIRED_URLS_EXCEPTIONS += (
     r'/users/register/$',
     r'/users/activate/(.*)$',
 )
-)

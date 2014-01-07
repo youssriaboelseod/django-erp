@@ -27,4 +27,3 @@ urlpatterns = patterns('',
     url(r'^(?P<object_model>[\w\d\_]+)/(?P<object_id>\d+)/notifications/(?P<pk>\d+)/$', view=DetailNotificationView.as_view(), name='notification_detail'),
     url(r'^(?P<object_model>[\w\d\_]+)/(?P<object_id>\d+)/notifications/(?P<pk>\d+)/delete/$', view=DeleteNotificationView.as_view(), name='notification_delete'),
 )
-)

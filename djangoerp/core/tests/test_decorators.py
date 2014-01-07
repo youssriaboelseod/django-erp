@@ -154,4 +154,3 @@ class ObjPermissionRequiredTestCase(TestCase):
         response = test_decorator_view2(request, pk=self.u1.pk)
         
         self.assertEqual(response.status_code, 302)
-)

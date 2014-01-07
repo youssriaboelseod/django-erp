@@ -50,4 +50,3 @@ class ManagementTestCase(TestCase):
         users_group, is_new = Group.objects.get_or_create(name="users")
 
         self.assertTrue(users_group.permissions.get_by_natural_key("add_plugget", "pluggets", "plugget"))
-)

@@ -25,4 +25,3 @@ urlpatterns = patterns('',
     url(r'^pluggets/(?P<pk>[\d]+)/edit/$', view=PluggetWizard.as_view(PluggetWizard.DEFAULT_FORMS), name='plugget_edit'),
     url(r'^pluggets/(?P<pk>[\d]+)/delete/$', view=DeletePluggetView.as_view(), name='plugget_delete'),
 )
-)

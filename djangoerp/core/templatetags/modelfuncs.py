@@ -181,4 +181,3 @@ def render_model_details(context, objects, field_layout=[], template_name="eleme
     )
     
     return render_to_string(template_name, new_context)
-)

@@ -58,4 +58,3 @@ class LoggedInUserCache(object):
     @property
     def has_user(self):
         return self.user and self.user.is_authenticated()
-)

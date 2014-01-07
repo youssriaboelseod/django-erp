@@ -242,4 +242,3 @@ class NotificationTarget(object):
     def _notification_set(self):
         return Notification.objects.for_object(self)
     notification_set = property(_notification_set)
-)

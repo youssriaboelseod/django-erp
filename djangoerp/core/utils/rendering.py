@@ -158,4 +158,3 @@ def get_field_tuple(name, form_or_model):
             value = value_to_string(field)
 
     return mark_safe(label[:1].capitalize() + label[1:]), flatatt(td_attrs), mark_safe(" ".join([t for t in (value, suffix) if t]))
-)

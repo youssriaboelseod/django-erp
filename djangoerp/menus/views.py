@@ -97,4 +97,3 @@ class DeleteBookmarkView(SuccessMessageMixin, SetCancelUrlMixin, BookmarkMixin, 
     @method_decorator(permission_required("menus.delete_link", _get_bookmark))
     def dispatch(self, request, *args, **kwargs):
         return super(DeleteBookmarkView, self).dispatch(request, *args, **kwargs)
-)

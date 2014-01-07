@@ -96,4 +96,3 @@ def set_path_kwargs(request, **kwargs):
         path += path_kwargs_string
         
     return path
-h

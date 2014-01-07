@@ -60,4 +60,3 @@ def bookmarks_menu(context):
     return menu(context)
         
 register_simple_plugget_source(_("Text plugget"),  _("Simply renders a text paragraph."), form=TextPluggetForm)
-)

@@ -87,4 +87,3 @@ class PluggetTestCase(TestCase):
         """Tests retrieving the Plugget's URL for deletion.
         """
         self.assertEqual(self.p1.get_delete_url(), "/pluggets/%d/delete/" % self.p1.pk)
-)

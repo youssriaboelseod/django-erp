@@ -106,4 +106,3 @@ class Bookmark(Link):
     @models.permalink
     def get_delete_url(self):
         return ('bookmark_delete', (), {"slug": self.slug})
-)

@@ -501,4 +501,3 @@ class DeletePluggetViewTestCase(TestCase):
         self.assertEqual(p, self.p)
         self.assertEqual(v.cancel_url, self.r.get_absolute_url())
         self.assertEqual(v.success_url, self.r.get_absolute_url())
-)

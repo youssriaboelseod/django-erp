@@ -64,4 +64,3 @@ class BookmarkForm(forms.ModelForm):
         return obj
 
 enrich_form(BookmarkForm)
-)

@@ -61,4 +61,3 @@ def render_breadcrumbs(context):
     except AttributeError:
         breadcrumbs = None
     return {'breadcrumbs': breadcrumbs}
-}

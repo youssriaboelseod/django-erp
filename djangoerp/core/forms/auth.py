@@ -108,4 +108,3 @@ class UserForm(BaseUserCreationForm):
         return user
 
 enrich_form(UserForm)
-)

@@ -224,4 +224,3 @@ class DeletePluggetView(SuccessMessageMixin, SetCancelUrlMixin, DeleteView):
         self.cancel_url = self.object.region.get_absolute_url()
         self.success_url = self.object.region.get_absolute_url()
         return self.object
-t

@@ -59,4 +59,3 @@ def user_post_registration(sender, instance, signal, *args, **kwargs):
             email.send()
 
 post_save.connect(user_post_registration, sender=User)
-)

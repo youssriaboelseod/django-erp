@@ -70,4 +70,3 @@ class ManagementTestCase(TestCase):
         
         self.assertTrue(n)
         self.assertTrue(u2.groups.get(name="users"))
-)

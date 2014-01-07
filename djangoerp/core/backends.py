@@ -102,4 +102,3 @@ class ObjectPermissionBackend(object):
         #    perms = ModelBackend().has_perm(user_obj, perm)
         
         return perms
-s

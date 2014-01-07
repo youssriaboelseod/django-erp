@@ -86,4 +86,3 @@ def create_list_actions(cls):
     """
     cls_name = cls.__name__.lower()
     return Menu.objects.get_or_create(slug="%s_list_actions" % (cls_name), description="%s list actions" % (cls_name.capitalize()))
-)

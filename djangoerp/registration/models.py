@@ -29,4 +29,3 @@ class ActivationToken(models.Model):
     class Meta:
         verbose_name = _('activation token')
         verbose_name_plural = _('activation tokens')
-)

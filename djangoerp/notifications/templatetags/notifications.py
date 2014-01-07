@@ -28,4 +28,3 @@ def notification_for(instance):
 @register.assignment_tag
 def unread_notification_for(instance):
     return Notification.objects.unread_for_object(instance)
-)

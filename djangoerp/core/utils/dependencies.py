@@ -31,4 +31,3 @@ def check_dependency(app_name):
     """
     if app_name not in settings.INSTALLED_APPS:
         raise DependencyError(app_name)
-)

@@ -65,4 +65,3 @@ class CustomizePluggetSettingsForm(forms.ModelForm):
 
 enrich_form(SelectPluggetSourceForm)
 enrich_form(CustomizePluggetSettingsForm)
-)

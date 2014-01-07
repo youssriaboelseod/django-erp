@@ -33,4 +33,3 @@ def enrich_form(cls):
         
     if RichForm not in cls.__bases__:
         cls.__bases__ += (RichForm,)
-)

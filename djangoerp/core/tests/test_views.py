@@ -690,4 +690,3 @@ class DeleteUserViewTestCase(TestCase):
         view.get_object()
         
         self.assertEqual(view.success_url, "/")
-)

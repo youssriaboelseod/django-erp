@@ -125,4 +125,3 @@ class ObjectPermission(models.Model):
 
     def __unicode__(self):
         return u"%s | %d" % (self.perm, self.object_id)
-)

@@ -40,4 +40,3 @@ def install(sender, **kwargs):
     )
     
 from signals import *
-*

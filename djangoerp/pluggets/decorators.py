@@ -40,4 +40,3 @@ def is_plugget_editable(get_plugget_func, redirect_to='/'):
             return viewfunc(request, *args, **kwargs)
         return _wrapped_view
     return decorator
-r

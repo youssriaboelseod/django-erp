@@ -142,4 +142,3 @@ class IntegrationTestCase(TestCase):
         
         self.assertTrue(u1.has_perm(p, u))
         self.assertTrue(u2.has_perm(p, u))
-)

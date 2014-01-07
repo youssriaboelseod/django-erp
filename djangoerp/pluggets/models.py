@@ -82,4 +82,3 @@ class Plugget(models.Model):
     @models.permalink
     def get_delete_url(self):
         return ('plugget_delete', (), {"pk": self.pk})
-)

@@ -57,4 +57,3 @@ class UserOfDashboardUtilTestCase(TestCase):
         """Tests raising an error when an invalid dashboard slug is given.
         """
         self.assertRaises(self.user_model.DoesNotExist, lambda : get_user_of("user_2_dashboard"))
-)

@@ -40,4 +40,3 @@ for app in INSTALLED_APPS:
     for attr in dir(app_settings):
         if not attr.startswith('_'):
             globals()[attr] = getattr(app_settings, attr)
-)

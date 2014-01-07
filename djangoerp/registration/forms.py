@@ -35,4 +35,3 @@ class UserRegistrationForm(UserForm):
         if hasattr(self.fields, 'user_permissions'): self.fields.pop('user_permissions')
     
     
- 

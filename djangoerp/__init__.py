@@ -48,4 +48,3 @@ def install_apps(sender, **kwargs):
                 pass
     
 post_syncdb.connect(install_apps, dispatch_uid="install_apps")
-)

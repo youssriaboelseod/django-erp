@@ -154,4 +154,3 @@ class AuthContextProcessorTestCase(TestCase):
             u"%s" % obj_perms['core'],
             "[u'core.view_user.1', u'core.view_user.2', u'core.change_user.1', u'core.change_user.2', u'core.delete_user.1', u'core.delete_user.2']"
         )
-)

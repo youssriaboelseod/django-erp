@@ -83,4 +83,3 @@ def auth(request):
     return {
         'obj_perms': lazy(lambda: ObjPermWrapper(_get_user()), ObjPermWrapper)(),
     }
-}

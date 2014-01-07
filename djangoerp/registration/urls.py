@@ -22,4 +22,3 @@ urlpatterns = patterns('djangoerp.registration.views',
     url(r'^users/register/$', view='user_register', name='user_register'),
     url(r'^users/activate/(?P<activation_key>[\w\d]+)/$', view='user_activate', name='user_activate'),
 )
-)

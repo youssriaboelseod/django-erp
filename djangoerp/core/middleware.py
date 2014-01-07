@@ -74,5 +74,3 @@ class LoggedInUserCacheMiddleware(object):
 
         return None
 
-
-

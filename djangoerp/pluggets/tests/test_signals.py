@@ -109,4 +109,3 @@ class SignalTestCase(TestCase):
         
         u5.delete()
         
- 

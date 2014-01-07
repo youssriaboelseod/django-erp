@@ -28,4 +28,3 @@ def install(sender, **kwargs):
     
     # Permissions.
     users_group.permissions.add(view_notification)
-)

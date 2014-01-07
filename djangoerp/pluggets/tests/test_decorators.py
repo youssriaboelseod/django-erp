@@ -57,4 +57,3 @@ class IsPluggetEditableDecoratorTestCase(TestCase):
         response = self.v(1)
         
         self.assertFalse(isinstance(response, PseudoResponse))
-)

@@ -117,4 +117,3 @@ def score_link(context, link, ref_url, css_class="active"):
     if matched_link == link:
         return css_class
     return ""
-"

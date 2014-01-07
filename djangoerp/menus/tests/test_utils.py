@@ -139,4 +139,3 @@ class CreateListActionsTestCase(TestCase):
         
         self.assertEqual(m.slug, "fakemodel_list_actions")
         self.assertEqual(m.description, "Fakemodel list actions")
-)

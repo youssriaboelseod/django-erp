@@ -48,4 +48,3 @@ class FakeRequest(object):
             'HTTP_REFERER': "http://www.test.com",
             'PATH_INFO': "/home/test/",
         }
-}

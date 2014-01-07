@@ -129,4 +129,3 @@ class SignalTestCase(TestCase):
         
         # Restores previous cached user.
         logged_cache.user = prev_user
-r

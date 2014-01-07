@@ -115,4 +115,3 @@ class BookmarkTestCase(TestCase):
         """Tests retrieving the Bookmark's URL for deletion.
         """
         self.assertEqual(self.b.get_delete_url(), "/bookmarks/b/delete/")
-)

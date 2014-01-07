@@ -29,4 +29,3 @@ class PluggetAdmin(admin.ModelAdmin):
     
 admin.site.register(Region, RegionAdmin)
 admin.site.register(Plugget, PluggetAdmin)
-)

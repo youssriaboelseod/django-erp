@@ -24,4 +24,3 @@ logged_cache = LoggedInUserCache()
 class FakeRequest(object):
     def __init__(self):
         self.META = {'HTTP_HOST': "myhost.com", 'HTTP_REFERER': "http://myhost.com/bookmarks/"}
-}

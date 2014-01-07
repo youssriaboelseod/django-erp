@@ -90,5 +90,3 @@ manage_author_permissions(Plugget)
 
 manage_dashboard(settings.AUTH_USER_MODEL, _('My dashboard'))
 
-
-

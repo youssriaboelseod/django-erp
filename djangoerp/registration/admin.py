@@ -24,4 +24,3 @@ class ActivationTokenAdmin(admin.ModelAdmin):
     list_display  = ('id', 'user', 'key_expiration', )
     
 admin.site.register(ActivationToken, ActivationTokenAdmin)
-)

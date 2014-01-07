@@ -231,4 +231,3 @@ class DeleteBookmarkViewTestCase(TestCase):
         response = self.client.get(resolve_url("bookmark_delete", slug=self.b.slug))
         
         self.assertEqual(response.status_code, 200)
-)

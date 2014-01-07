@@ -72,4 +72,3 @@ class LoggedInUserCacheMiddlewareTestCase(TestCase):
         # Reset (WARNING: DON'T REMOVE!).
         r.user = AnonymousUser()
         m.process_request(r)
-)

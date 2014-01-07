@@ -57,4 +57,3 @@ def obj_permission_required(perm, get_obj_func=None, login_url=None, redirect_fi
             return redirect_to_login(path, login_url, redirect_field_name)
         return _wrapped_view
     return decorator
-r

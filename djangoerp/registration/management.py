@@ -37,4 +37,3 @@ def install(sender, **kwargs):
         only_authenticated=False,
         menu=user_area_not_logged_menu
     )
-)

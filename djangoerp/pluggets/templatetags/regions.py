@@ -126,4 +126,3 @@ def first_region_for(obj):
         return Region.objects.filter(content_type=ContentType.objects.get_for_model(obj), object_id=obj.pk).first()
     except:
         return None
-e

@@ -70,4 +70,3 @@ def user_activate(request, activation_key):
     messages.success(request, _("Congratulations! Your account is now active."))
     token.delete()
     return redirect(reverse('user_login'))
-)

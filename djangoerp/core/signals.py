@@ -99,4 +99,3 @@ def add_view_permission(sender, instance, **kwargs):
 
 post_save.connect(user_post_save, get_user_model())
 post_save.connect(add_view_permission, ContentType)
-)

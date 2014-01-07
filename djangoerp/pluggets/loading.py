@@ -143,4 +143,3 @@ def get_plugget_source_choices(force_discovering=False):
     if force_discovering:
         plugget_source_registry.discovered = False
     return plugget_source_registry.get_source_choices()
-)

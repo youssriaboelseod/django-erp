@@ -138,4 +138,3 @@ class SourceCacheLoadingTestCase(TestCase):
         
         self.assertEqual(plugget_source_registry.discovered, False)
         self.assertEqual(len(get_plugget_sources()), 0)
-)

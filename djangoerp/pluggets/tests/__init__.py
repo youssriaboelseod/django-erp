@@ -20,4 +20,3 @@ from djangoerp.core.cache import LoggedInUserCache
 
 ob = ObjectPermissionBackend()
 logged_cache = LoggedInUserCache()
-)

@@ -33,4 +33,3 @@ def get_user_of(dashboard_slug):
     """
     user_pk = dashboard_slug.split('_')[1]
     return get_user_model().objects.get(pk=user_pk)
-)

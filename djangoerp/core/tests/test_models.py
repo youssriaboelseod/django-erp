@@ -83,4 +83,3 @@ class ObjectPermissionModelTestCase(TestCase):
         p, n = ObjectPermission.objects.get_or_create_by_natural_key("view_user", "core", "user", u1.pk)
         
         self.assertEqual(u"%s" % p, u"core | user | Can view user | %d" % u1.pk)
-)

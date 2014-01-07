@@ -63,4 +63,3 @@ class BookmarkFormTestCase(TestCase):
         f = BookmarkForm(data, instance=b)
         
         self.assertRaises(Menu.DoesNotExist, f.save)
-)

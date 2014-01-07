@@ -88,4 +88,3 @@ class SubscriptionsForm(forms.Form):
                 self.fields[key].initial = (False, False)
                  
 enrich_form(SubscriptionsForm)
-)

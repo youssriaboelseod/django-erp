@@ -249,4 +249,3 @@ models.signals.post_save.connect(send_notification_email, sender=Notification, d
 
 make_notification_target(settings.AUTH_USER_MODEL)
 make_observable(settings.AUTH_USER_MODEL)
-)

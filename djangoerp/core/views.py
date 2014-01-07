@@ -305,4 +305,3 @@ class DeleteUserView(SuccessMessageMixin, SetCancelUrlMixin, UserMixin, DeleteVi
         else:
             self.success_url = '/'
         return self.object
-t

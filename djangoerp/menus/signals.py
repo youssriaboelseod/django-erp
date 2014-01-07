@@ -67,4 +67,3 @@ manage_author_permissions(Link)
 manage_author_permissions(Bookmark)
 
 manage_bookmarks(settings.AUTH_USER_MODEL)
-)

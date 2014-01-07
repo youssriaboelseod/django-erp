@@ -388,4 +388,3 @@ class ScoreLinkTagTestCase(TestCase):
         css = score_link({}, self.l6, "/first/third/fourth/something")
         
         self.assertEqual(css, "active")
-)

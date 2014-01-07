@@ -41,4 +41,3 @@ def user_has_perm(obj, perm_name):
                 return True
                 
     return False
-e

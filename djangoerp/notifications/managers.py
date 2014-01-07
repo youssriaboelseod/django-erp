@@ -107,4 +107,3 @@ class NotificationManager(_GFKManager):
 
     def unread_for_object(self, instance):
         return self.get_query_set().unread_for_object(instance)
-)

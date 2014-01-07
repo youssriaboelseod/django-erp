@@ -80,4 +80,3 @@ class CustomizePluggetSettingsFormTestCase(TestCase):
         f = CustomizePluggetSettingsForm({"title": "Plugget"}, instance=self.p)
         
         self.assertTrue(f.is_valid())
-)

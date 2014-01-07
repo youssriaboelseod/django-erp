@@ -129,4 +129,3 @@ class DeleteNotificationView(SuccessMessageMixin, SetCancelUrlMixin, Notificatio
         self.object = super(DeleteNotificationView, self).get_object(queryset)
         self.success_url = reverse('notification_list', args=[self.object.target._meta.verbose_name_plural, self.object.target_id])
         return self.object
-t

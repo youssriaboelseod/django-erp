@@ -28,4 +28,3 @@ class LinkAdmin(admin.ModelAdmin):
 
 admin.site.register(Menu, MenuAdmin) 
 admin.site.register(Link, LinkAdmin) 
- 

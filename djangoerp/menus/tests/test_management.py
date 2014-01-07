@@ -80,4 +80,3 @@ class ManagementInstallTestCase(TestCase):
         
         self.assertTrue(user_edit_link.only_with_perms.get_by_natural_key("change_user", "core", "user"))
         self.assertTrue(users_group.permissions.get_by_natural_key("add_link", "menus", "link"))
-)

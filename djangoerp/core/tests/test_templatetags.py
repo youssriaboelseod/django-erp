@@ -718,4 +718,3 @@ class AvatarTagTestCase(TestCase):
             avatar("u@u.it", default="http://localhost:8000/my_default_image.jpg"),
             '<span class="avatar"><img width="36" height="36" src="http://www.gravatar.com/avatar/754331256868501f6cdcc08efab6dd1e?s=36&r=g&d=http://localhost:8000/my_default_image.jpg" /></span>'
         )
-)

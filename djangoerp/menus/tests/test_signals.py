@@ -113,4 +113,3 @@ class SignalTestCase(TestCase):
             d = None
             
         self.assertEqual(d, None)
-)

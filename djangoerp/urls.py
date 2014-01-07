@@ -65,4 +65,3 @@ def autodiscover():
     LOADING = False
 
 autodiscover()
-)

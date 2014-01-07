@@ -165,4 +165,3 @@ class FirstRegionForTagTestCase(TestCase):
         """Tests invoking the templatetag with an invalid owner object.
         """
         self.assertEqual(first_region_for(None), None)
-)

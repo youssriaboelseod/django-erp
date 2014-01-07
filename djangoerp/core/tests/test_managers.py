@@ -198,4 +198,3 @@ class ObjectPermissionManagerTestCase(TestCase):
             [repr(self.op2)],
             ordered=False
         )
-)

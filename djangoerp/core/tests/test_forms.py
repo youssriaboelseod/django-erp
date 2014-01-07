@@ -175,4 +175,3 @@ class UserFormTestCase(TestCase):
         
 class AdminUserCreationFormTestCase(TestCase):
     pass
-s
