@@ -32,8 +32,8 @@ class SubscriptionWidget(forms.MultiWidget):
         super(SubscriptionWidget, self).__init__(*args, **kwargs)
 
     def decompress(self, value):
-        if value:
-            return value.values()
+        if isinstance(value, (list, tuple)):
+            return value[:2]
         return (False, False)
 
     def format_output(self, rendered_widgets):

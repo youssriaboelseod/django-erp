@@ -20,6 +20,31 @@ from django.contrib.auth import get_user_model
 
 from ..models import *
 from ..forms import *
+
+class SubscriptionWidgetTestCase(TestCase):
+    def test_decompress_value(self):
+        """Tests decompressing value.
+        """
+        w = SubscriptionWidget()
+        
+        self.assertEqual(w.decompress((True, True)), (True, True))
+        self.assertEqual(w.decompress({'0': True, '1': False}), (False, False))
+        
+    def test_format_output(self):
+        """Tests formatting output.
+        """
+        w = SubscriptionWidget()
+        
+        self.assertEqual(w.format_output(("1")), "<td>1</td>")
+        self.assertEqual(w.format_output(("1", "2")), "<td>1</td>\n<td>2</td>")
+
+class SubscriptionFieldTestCase(TestCase):
+    def test_empty_value(self):
+        """Tests returning None when the field is empty.
+        """
+        f = SubscriptionField()
+        
+        self.assertEqual(f.compress([]), None)
         
 class SubscriptionsFormTestCase(TestCase):
     def test_field_creation(self):
