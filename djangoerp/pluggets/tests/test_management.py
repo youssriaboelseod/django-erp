@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from django.test import TestCase
 
@@ -50,3 +50,4 @@ class ManagementTestCase(TestCase):
         users_group, is_new = Group.objects.get_or_create(name="users")
 
         self.assertTrue(users_group.permissions.get_by_natural_key("add_plugget", "pluggets", "plugget"))
+)

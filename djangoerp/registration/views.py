@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 import datetime
 
@@ -70,3 +70,4 @@ def user_activate(request, activation_key):
     messages.success(request, _("Congratulations! Your account is now active."))
     token.delete()
     return redirect(reverse('user_login'))
+)

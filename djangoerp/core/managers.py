@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from django.db import models
 from django.db.models import Q, get_model, get_models, get_app
@@ -102,3 +102,4 @@ class ObjectPermissionManager(models.Manager):
 
     def get_all_permissions(self, user, obj=None):
         return self.get_by_object(obj).filter(Q(groups__user=user) | Q(users=user))
+)

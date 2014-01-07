@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from django.test import TestCase
 
@@ -83,3 +83,4 @@ class ObjectPermissionModelTestCase(TestCase):
         p, n = ObjectPermission.objects.get_or_create_by_natural_key("view_user", "core", "user", u1.pk)
         
         self.assertEqual(u"%s" % p, u"core | user | Can view user | %d" % u1.pk)
+)

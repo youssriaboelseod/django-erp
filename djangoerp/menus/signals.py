@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from django.conf import settings
 from django.db.models.signals import post_save, pre_delete
@@ -67,3 +67,4 @@ manage_author_permissions(Link)
 manage_author_permissions(Bookmark)
 
 manage_bookmarks(settings.AUTH_USER_MODEL)
+)

@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from hashlib import md5
 from django import template
@@ -39,4 +39,6 @@ def avatar(email, size=36, default=None):
         url = "%s&d=%s" % (url, default)
         
     return '<span class="avatar"><img width="%s" height="%s" src="%s" /></span>' % (size, size, url)
+
+
 

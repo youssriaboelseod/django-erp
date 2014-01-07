@@ -12,11 +12,12 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from djangoerp.core.backends import ObjectPermissionBackend
 from djangoerp.core.cache import LoggedInUserCache
 
 ob = ObjectPermissionBackend()
 logged_cache = LoggedInUserCache()
+)

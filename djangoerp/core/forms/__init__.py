@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from django.forms import BaseForm
 
@@ -33,3 +33,4 @@ def enrich_form(cls):
         
     if RichForm not in cls.__bases__:
         cls.__bases__ += (RichForm,)
+)

@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from django import template
 from django.core.urlresolvers import reverse
@@ -61,3 +61,4 @@ def render_breadcrumbs(context):
     except AttributeError:
         breadcrumbs = None
     return {'breadcrumbs': breadcrumbs}
+}

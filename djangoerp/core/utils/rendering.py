@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from django.utils.formats import localize
 from django.utils.safestring import mark_safe
@@ -158,3 +158,4 @@ def get_field_tuple(name, form_or_model):
             value = value_to_string(field)
 
     return mark_safe(label[:1].capitalize() + label[1:]), flatatt(td_attrs), mark_safe(" ".join([t for t in (value, suffix) if t]))
+)

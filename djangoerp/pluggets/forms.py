@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -65,3 +65,4 @@ class CustomizePluggetSettingsForm(forms.ModelForm):
 
 enrich_form(SelectPluggetSourceForm)
 enrich_form(CustomizePluggetSettingsForm)
+)

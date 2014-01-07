@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 import copy
 from django.test import TestCase
@@ -388,3 +388,4 @@ class ScoreLinkTagTestCase(TestCase):
         css = score_link({}, self.l6, "/first/third/fourth/something")
         
         self.assertEqual(css, "active")
+)

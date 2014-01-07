@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -102,3 +102,4 @@ class ObjectPermissionBackend(object):
         #    perms = ModelBackend().has_perm(user_obj, perm)
         
         return perms
+s

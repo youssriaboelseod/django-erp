@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 class _PluggetSourceCache(object):
     def __init__(self):
@@ -143,3 +143,4 @@ def get_plugget_source_choices(force_discovering=False):
     if force_discovering:
         plugget_source_registry.discovered = False
     return plugget_source_registry.get_source_choices()
+)

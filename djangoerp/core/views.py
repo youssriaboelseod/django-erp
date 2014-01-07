@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from copy import copy
 from django.http import HttpResponseRedirect
@@ -305,3 +305,4 @@ class DeleteUserView(SuccessMessageMixin, SetCancelUrlMixin, UserMixin, DeleteVi
         else:
             self.success_url = '/'
         return self.object
+t

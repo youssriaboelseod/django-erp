@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from django.test import TestCase
 from django.conf import settings
@@ -35,3 +35,4 @@ if "djangoerp.registration" in settings.INSTALLED_APPS:
             register_link, is_new = Link.objects.get_or_create(slug="register")
             self.assertTrue(register_link)
             self.assertFalse(is_new)
+)

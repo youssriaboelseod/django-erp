@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 import urlparse
 from functools import wraps
@@ -57,3 +57,4 @@ def obj_permission_required(perm, get_obj_func=None, login_url=None, redirect_fi
             return redirect_to_login(path, login_url, redirect_field_name)
         return _wrapped_view
     return decorator
+r

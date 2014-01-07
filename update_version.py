@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import datetime
 
 def replace(root, old_string, new_string):
     if root[-1] == "/":
@@ -32,6 +33,9 @@ if __name__ == "__main__":
     text = ref_file.read()
     ref_file.close()
     for line in text.split("\n"):
+        if line.startswith("__copyright__"):
+            replace("djangoerp", line, "__copyright__ = 'Copyright (c) 2013-%s, django ERP Team'" % datetime.now().year)
+            continue
         if line.startswith("__version__"):
             replace("djangoerp", line, "__version__ = '%s'" % sys.argv[1])
             break

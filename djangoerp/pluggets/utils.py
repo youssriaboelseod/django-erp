@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from django.contrib.auth import get_user_model
 
@@ -33,3 +33,4 @@ def get_user_of(dashboard_slug):
     """
     user_pk = dashboard_slug.split('_')[1]
     return get_user_model().objects.get(pk=user_pk)
+)

@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from djangoerp.core.backends import ObjectPermissionBackend
 from djangoerp.core.cache import LoggedInUserCache
@@ -24,3 +24,4 @@ logged_cache = LoggedInUserCache()
 class FakeRequest(object):
     def __init__(self):
         self.META = {'HTTP_HOST': "myhost.com", 'HTTP_REFERER': "http://myhost.com/bookmarks/"}
+}

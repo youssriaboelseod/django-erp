@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse_lazy
@@ -97,3 +97,4 @@ class DeleteBookmarkView(SuccessMessageMixin, SetCancelUrlMixin, BookmarkMixin, 
     @method_decorator(permission_required("menus.delete_link", _get_bookmark))
     def dispatch(self, request, *args, **kwargs):
         return super(DeleteBookmarkView, self).dispatch(request, *args, **kwargs)
+)

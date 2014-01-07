@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from django.conf.urls import *
 
@@ -26,4 +26,5 @@ urlpatterns = patterns('',
     url(r'^(?P<object_model>[\w\d\_]+)/(?P<object_id>\d+)/notifications/$', view=ListNotificationView.as_view(), name='notification_list'),
     url(r'^(?P<object_model>[\w\d\_]+)/(?P<object_id>\d+)/notifications/(?P<pk>\d+)/$', view=DetailNotificationView.as_view(), name='notification_detail'),
     url(r'^(?P<object_model>[\w\d\_]+)/(?P<object_id>\d+)/notifications/(?P<pk>\d+)/delete/$', view=DeleteNotificationView.as_view(), name='notification_delete'),
+)
 )

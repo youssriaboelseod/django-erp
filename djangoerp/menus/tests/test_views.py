@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from django.test import TestCase
 from django.shortcuts import resolve_url
@@ -231,3 +231,4 @@ class DeleteBookmarkViewTestCase(TestCase):
         response = self.client.get(resolve_url("bookmark_delete", slug=self.b.slug))
         
         self.assertEqual(response.status_code, 200)
+)

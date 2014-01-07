@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 import django.dispatch
 from django.db import models
@@ -249,3 +249,4 @@ models.signals.post_save.connect(send_notification_email, sender=Notification, d
 
 make_notification_target(settings.AUTH_USER_MODEL)
 make_observable(settings.AUTH_USER_MODEL)
+)

@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from django.conf.urls import *
 
@@ -25,4 +25,5 @@ urlpatterns = patterns('',
     url(r'^bookmarks/add/$', view=CreateBookmarkView.as_view(), name='bookmark_add'),
     url(r'^bookmarks/(?P<slug>[-\w]+)/edit/$', view=UpdateBookmarkView.as_view(), name='bookmark_edit'),
     url(r'^bookmarks/(?P<slug>[-\w]+)/delete/$', view=DeleteBookmarkView.as_view(), name='bookmark_delete'),
+)
 )

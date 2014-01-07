@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from django.db.models.loading import cache
 from django.db.models.signals import post_syncdb
@@ -48,3 +48,4 @@ def install_apps(sender, **kwargs):
                 pass
     
 post_syncdb.connect(install_apps, dispatch_uid="install_apps")
+)

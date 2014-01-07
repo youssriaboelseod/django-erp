@@ -12,8 +12,8 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.4'
+__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__version__ = '0.0.5'
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model
@@ -154,3 +154,4 @@ class AuthContextProcessorTestCase(TestCase):
             u"%s" % obj_perms['core'],
             "[u'core.view_user.1', u'core.view_user.2', u'core.change_user.1', u'core.change_user.2', u'core.delete_user.1', u'core.delete_user.2']"
         )
+)
