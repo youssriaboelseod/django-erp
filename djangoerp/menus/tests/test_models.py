@@ -90,6 +90,14 @@ class LinkTestCase(TestCase):
         l5, n = Link.objects.get_or_create(title="Test Link 5", slug="l5", url="invalid_private_url", menu=self.m)
         
         self.assertEqual(l5.get_absolute_url(), "invalid_private_url")
+        
+    def test_silent_exceptions_on_absolute_url_reversion(self):
+        """Tests silent any exception on context variable lookup.
+        """
+        l6, n = Link.objects.get_or_create(title="Test Link 6", slug="l6", url="private_zone_url", context='{"id": "object.pk"}', menu=self.m)
+        
+        # Lookup failed, so raw url is returned. No exception is raised.
+        self.assertEqual(l6.get_absolute_url(), "private_zone_url")
     
 class BookmarkTestCase(TestCase):
     def setUp(self):
