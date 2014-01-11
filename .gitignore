@@ -38,6 +38,11 @@ nosetests.xml
 .project
 .pydevproject
 
+# GitHub Pages
+.bundle
+Gemfile.lock
+_site
+
 # Linux
 *~
 
