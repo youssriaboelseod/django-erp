@@ -6,7 +6,7 @@ django ERP
  * **Official website:** http://djangoerpteam.github.io/django-erp/
  * **Development:** https://github.com/djangoERPTeam/django-erp/
  * **Issue tracker:** https://github.com/djangoERPTeam/django-erp/issues/
- * **Wiki:** https://github.com/djangoERPTeam/django-erp/wiki
+ * **Wiki:** https://github.com/djangoERPTeam/django-erp/wiki/
 
 Pre-requisites
 --------------
@@ -34,15 +34,26 @@ Installation
 1. Checkout sources from the GIT repository:
 
     `git clone https://github.com/djangoERPTeam/django-erp.git`
+    
+   It will clone the entire repository in a folder called **django-erp**:
 
-2. Copy and rename **djangoerp/settings/base.py.tmpl** to  **djangoerp/settings/base.py**.
+    `cd django-erp`
+
+2. Install all **pre-requisities** using [pip] (better if inside a [virtualenv]):
+
+    `pip install -r requirements.txt`
+
+3. Copy and rename **djangoerp/settings/base.py.tmpl** to  **djangoerp/settings/base.py**.
  
-3. Edit the **djangoerp/settings/base.py** content.
+4. Edit the **djangoerp/settings/base.py** content.
 
-4. Initialize the database and all applications:
+5. Initialize the database and all applications:
 
     `python manage syncdb`
 
-5. Test the installation running the development web-server (http://localhost:8000 on your browser):
+6. Test the installation running the development web-server (http://localhost:8000 on your browser):
 
     `python manage runserver`
+    
+[pip]: http://www.pip-installer.org/en/latest/
+[virtualenv]: http://www.virtualenv.org/en/latest/
