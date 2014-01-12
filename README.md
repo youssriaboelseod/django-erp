@@ -39,7 +39,7 @@ Installation
 
     `cd django-erp`
 
-2. Install all **pre-requisities** using [pip] (better if inside a [virtualenv]):
+2. Install all **pre-requisities** (better inside a [virtualenv]) using [pip]:
 
     `pip install -r requirements.txt`
 
@@ -54,6 +54,6 @@ Installation
 6. Test the installation running the development web-server (http://localhost:8000 on your browser):
 
     `python manage runserver`
-    
+
+[virtualenv]: http://www.virtualenv.org/en/latest/    
 [pip]: http://www.pip-installer.org/en/latest/
-[virtualenv]: http://www.virtualenv.org/en/latest/
