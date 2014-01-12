@@ -110,25 +110,20 @@ class Activity(models.Model):
     def __unicode__(self):
         try:
             return self.title % self.get_context()
-        except:
+        except KeyError:
             return self.title
 
     def get_context(self):
-        try:
-            return json.loads(unicode(self.context))
-        except:
-            return {}
+        return json.loads(unicode(self.context or u"{}"))
+        
+    def get_template_name(self):
+        return self.template  or "notifications/activities/%s.html" % self.signature
 
     def get_content(self):
-        template_name = "notifications/activities/%s.html" % self.signature
-        if self.template:
-            template_name = self.template
-        return render_to_string(template_name, self.get_context())
+        return render_to_string(self.get_template_name(), self.get_context())
         
     def get_absolute_url(self):
-        if self.backlink:
-            return self.backlink
-        return ""
+        return self.backlink or ""
 
 class Notification(models.Model):
     """A notification notifies a specific event to a specific target.
@@ -156,29 +151,29 @@ class Notification(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        if self.target:
-            return ('notification_detail', (), {"object_model": self.target._meta.verbose_name_plural, "object_id": self.target.pk, "pk": self.pk})
-        return None
+        return ('notification_detail', (), {"object_model": self.target._meta.verbose_name_plural, "object_id": self.target.pk, "pk": self.pk})
 
     @models.permalink
     def get_delete_url(self):
-        if self.target:
-            return ('notification_delete', (), {"object_model": self.target._meta.verbose_name_plural, "object_id": self.target.pk, "pk": self.pk})
-        return None
+        return ('notification_delete', (), {"object_model": self.target._meta.verbose_name_plural, "object_id": self.target.pk, "pk": self.pk})
 
-    def clean(self):
-        if not Subscription.objects.filter(subscriber=self.target, signature=self.signature):
-            raise ValidationError('The target is not subscribed for this kind of notification.')
-        super(Notification, self).clean()
+    def clean_fields(self, exclude=None):
+        if not self.dispatch_uid:
+            self.dispatch_uid = hashlib.md5(u"%s%s%s" % (self.title, self.description, datetime.now())).hexdigest()
+        """if not Subscription.objects.filter(subscriber=self.target, signature=self.signature):
+            raise ValidationError('The target is not subscribed for this kind of notification.')"""
+        super(Notification, self).clean_fields(exclude)
 
     def save(self, *args, **kwargs):
-        if self.dispatch_uid is None:
-            self.dispatch_uid = hashlib.md5(self.title + self.description + datetime.now()).hexdigest()
+        self.full_clean()
         super(Notification, self).save(*args, **kwargs)
 
 class Observable(object):
     """Mix-in that sends a special signal when a field is changed.
     """
+    __change_exclude = []
+    __subscriber_fields = []
+    
     def __init__(self, *args, **kwargs):
         super(Observable, self).__init__(*args, **kwargs)
         self.__changes = {}
@@ -219,10 +214,8 @@ class Observable(object):
             followers = [followers]
 
         for f in followers:
-            if not isinstance(f, models.Model):
-                continue
-
-            r = FollowRelation.objects.get_or_create(follower=f, followed=self)
+            if isinstance(f, models.Model):
+                FollowRelation.objects.get_or_create(follower=f, followed=self)
 
     def unfollow(self, followers):
         """Unregisters the given followers.
@@ -231,10 +224,8 @@ class Observable(object):
             followers = [followers]
 
         for f in followers:
-            if not isinstance(f, models.Model):
-                continue
-
-            FollowRelation.objects.filter(follower=f, followed=self).delete()
+            if isinstance(f, models.Model):
+                FollowRelation.objects.filter(follower=f, followed=self).delete()
 
 class NotificationTarget(object):
     """Mix-in that adds some useful methods to retrieve related notifications.
