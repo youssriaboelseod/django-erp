@@ -15,9 +15,8 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
-from datetime import datetime
-
 from django.test import TestCase
+from django.utils.timezone import now
 from django.contrib.auth import get_user_model
 
 from ..models import *
@@ -31,7 +30,7 @@ class NotificationQuerySetTestCase(TestCase):
         self.u1 = user_model.objects.create(username=u"u1")
         self.u2 = user_model.objects.create(username=u"u2")
         self.signature = Signature.objects.create(slug=u"object-created")
-        self.read_datetime = make_aware(datetime(2014, 1, 12, 16, 27, 0), get_current_timezone())
+        self.read_datetime = now()
         self.n1 = Notification.objects.create(title=u"n1", target=self.u1, signature=self.signature)
         self.n2 = Notification.objects.create(title=u"n2", target=self.u1, signature=self.signature)
         self.n3 = Notification.objects.create(title=u"n3", target=self.u2, signature=self.signature)

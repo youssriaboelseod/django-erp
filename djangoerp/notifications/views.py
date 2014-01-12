@@ -15,11 +15,11 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
-from datetime import datetime
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.utils.decorators import method_decorator
+from django.utils.timezone import now
 from django.core.urlresolvers import reverse
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import DeleteView
@@ -112,7 +112,7 @@ class DetailNotificationView(NotificationMixin, DetailView):
     def get_object(self, *args, **kwargs):
         from datetime import datetime
         obj = super(DetailNotificationView, self).get_object(*args, **kwargs)
-        obj.read = datetime.now()
+        obj.read = now()
         obj.save()
         return obj
         
