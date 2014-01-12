@@ -18,7 +18,6 @@ __version__ = '0.0.5'
 from django.db import models
 from django.db.models.query import QuerySet
 from django.core.exceptions import ValidationError
-from django.template import TemplateDoesNotExist
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 
@@ -71,12 +70,8 @@ class ActivityManager(_GFKManager):
         source = kwargs.get("source", None)
 
         instance = super(ActivityManager, self).create(*args, **kwargs)
-
-        try:
-            content = instance.get_content()
-        except TemplateDoesNotExist:
-            content = ""
-            
+        
+        content = instance.get_content()    
         signature, is_new = Signature.objects.get_or_create(slug=instance.signature)
         followers = source.followers()
         subscribers = [s.subscriber for s in Subscription.objects.filter(signature=signature).distinct()]

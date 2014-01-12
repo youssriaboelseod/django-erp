@@ -117,10 +117,14 @@ class Activity(models.Model):
         return json.loads(unicode(self.context or u"{}"))
         
     def get_template_name(self):
-        return self.template  or "notifications/activities/%s.html" % self.signature
+        return self.template or "notifications/activities/%s.html" % self.signature
 
     def get_content(self):
-        return render_to_string(self.get_template_name(), self.get_context())
+        from django.template import TemplateDoesNotExist
+        try:
+            return render_to_string(self.get_template_name(), self.get_context())
+        except: # Catching all exceptions avoid any rendering issue.
+            return ""
         
     def get_absolute_url(self):
         return self.backlink or ""

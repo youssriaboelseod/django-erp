@@ -97,20 +97,33 @@ class ActivityTestCase(TestCase):
         
         self.assertEqual(a3.get_template_name(), u"notifications/activities/%s.html" % self.signature)
         
-        a3.template = u"index.html"
+        a3.template = u"notifications/activities/index.html"
         
-        self.assertEqual(a3.get_template_name(), u"index.html")
+        self.assertEqual(a3.get_template_name(), u"notifications/activities/index.html")
+        
+    def test_get_content(self):
+        """Tests "get_content" method.
+        """
+        from django.template.loader import render_to_string
+        
+        a4 = Activity.objects.create(title=u"Activity 4", source=self.u1, signature=self.signature)
+        
+        self.assertEqual(a4.get_content(), render_to_string("notifications/activities/object-changed.html", a4.get_context()))
+        
+        a4.template = u"notifications/activities/index.html"
+        
+        self.assertEqual(a4.get_content(), "")
         
     def test_get_absolute_url(self):
         """Tests "get_absolute_url" method.
         """
-        a4 = Activity.objects.create(title=u"Activity 4", source=self.u1, signature=self.signature)
+        a5 = Activity.objects.create(title=u"Activity 5", source=self.u1, signature=self.signature)
         
-        self.assertEqual(a4.get_absolute_url(), u"")
+        self.assertEqual(a5.get_absolute_url(), u"")
         
-        a4.backlink = self.u1.get_absolute_url()
+        a5.backlink = self.u1.get_absolute_url()
         
-        self.assertEqual(a4.get_absolute_url(), self.u1.get_absolute_url())
+        self.assertEqual(a5.get_absolute_url(), self.u1.get_absolute_url())
 
 class NotificationTestCase(TestCase):
     def setUp(self):
