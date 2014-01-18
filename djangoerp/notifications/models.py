@@ -174,6 +174,8 @@ class Notification(models.Model):
 
 class Observable(object):
     """Mix-in that sends a special signal when a field is changed.
+    
+    It also offers a simple API to (un)follow any kind of model instance.
     """
     __change_exclude = []
     __subscriber_fields = []

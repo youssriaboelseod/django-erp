@@ -66,7 +66,7 @@ class NotificationMixin(object):
 
 @permission_required(_get_object_view_perm, _get_object)
 def object_follow(request, object_model, object_id, path=None, **kwargs):
-    """The current user starts to follow object's activies.
+    """The current user starts to follow object's activities.
     """
     obj = _get_object_by(object_model, object_id)
     follower = request.user
@@ -79,7 +79,7 @@ def object_follow(request, object_model, object_id, path=None, **kwargs):
 
 @permission_required(_get_object_view_perm, _get_object)
 def object_unfollow(request, object_model, object_id, path=None, **kwargs):
-    """The current user stops to follow object's activies.
+    """The current user stops to follow object's activities.
     """
     obj = _get_object_by(object_model, object_id)
     follower = request.user
@@ -110,7 +110,6 @@ class DetailNotificationView(NotificationMixin, DetailView):
         return super(DetailNotificationView, self).dispatch(request, *args, **kwargs)
     
     def get_object(self, *args, **kwargs):
-        from datetime import datetime
         obj = super(DetailNotificationView, self).get_object(*args, **kwargs)
         obj.read = now()
         obj.save()
