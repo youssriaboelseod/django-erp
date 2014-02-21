@@ -175,7 +175,7 @@ class Notification(models.Model):
 class Observable(object):
     """Mix-in that sends a special signal when a field is changed.
     
-    It also offers a simple API to (un)follow any kind of model instance.
+    It also offers a simple API to manage followers.
     """
     __change_exclude = []
     __subscriber_fields = []
@@ -212,8 +212,26 @@ class Observable(object):
         if self.__followers_cache:
             return self.__followers_cache
         return [r.follower for r in FollowRelation.objects.filter(followed=self)]
+        
+    def is_followed_by(self, followers):  
+        """Checks if all given instances are followers of this object.
+        """      
+        if not isinstance(followers, (tuple, list)):
+            followers = [followers]
+            
+        cache_followers = self.followers()
+        
+        for follower in followers:
+            found = False
+            for cache_follower in cache_followers:
+                if follower == cache_follower:
+                    found = True
+            if not found:
+                return False
+                
+        return True
 
-    def follow(self, followers):
+    def add_followers(self, followers):
         """Registers the given followers.
         """
         if not isinstance(followers, (tuple, list)):
@@ -223,7 +241,7 @@ class Observable(object):
             if isinstance(f, models.Model):
                 FollowRelation.objects.get_or_create(follower=f, followed=self)
 
-    def unfollow(self, followers):
+    def remove_followers(self, followers):
         """Unregisters the given followers.
         """
         if not isinstance(followers, (tuple, list)):

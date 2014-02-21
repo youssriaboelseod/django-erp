@@ -72,8 +72,8 @@ def object_follow(request, object_model, object_id, path=None, **kwargs):
     follower = request.user
     
     if isinstance(obj, Observable):
-        obj.follow(follower)
-        messages.success(request, _("You're now following %(obj)s.") % {"obj": obj})
+        obj.add_followers(follower)
+        messages.success(request, _("You're now following %(obj)s.") % {"obj": obj}, fail_silently=True)
 
     return HttpResponseRedirect(path or clean_http_referer(request))
 
@@ -85,8 +85,8 @@ def object_unfollow(request, object_model, object_id, path=None, **kwargs):
     follower = request.user
 
     if isinstance(obj, Observable):
-        obj.unfollow(follower)
-        messages.success(request, _("You don't follow %(obj)s anymore.") % {"obj": obj})
+        obj.remove_followers(follower)
+        messages.success(request, _("You don't follow %(obj)s anymore.") % {"obj": obj}, fail_silently=True)
 
     return HttpResponseRedirect(path or clean_http_referer(request))
     

@@ -46,11 +46,11 @@ def _notify_changes(sender, instance, **kwargs):
     if issubclass(sender, Observable):
 
         if kwargs['created']:
-            instance.follow(instance)
+            instance.add_followers(instance)
             for sf in instance._Observable__subscriber_fields:
                 if hasattr(instance, sf):
                     follower = getattr(instance, sf)
-                    instance.follow(follower)
+                    instance.add_followers(follower)
 
         else:
             changes = {}
@@ -58,8 +58,8 @@ def _notify_changes(sender, instance, **kwargs):
                 if value != old_value:
                     changes[name] = (old_value, value)
                     if name in instance._Observable__subscriber_fields:
-                        instance.unfollow(old_value)
-                        instance.follow(value)
+                        instance.remove_followers(old_value)
+                        instance.add_followers(value)
             instance._Observable__changes = {}
             if changes:
                 post_change.send(sender=sender, instance=instance, changes=changes)

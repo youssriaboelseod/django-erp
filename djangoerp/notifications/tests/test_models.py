@@ -184,7 +184,7 @@ class ObservableTestCase(TestCase):
     def test_followers(self):
         """Tests following logic.
         """
-        self.u1.follow(self.u1)
+        self.u1.add_followers(self.u1)
         
         self.assertEqual(self.u1.followers(), [self.u1])
         
@@ -194,7 +194,7 @@ class ObservableTestCase(TestCase):
         
         self.u1._Observable__followers_cache = None
         
-        self.u1.unfollow(self.u1)
+        self.u1.remove_followers(self.u1)
         
         self.assertEqual(self.u1.followers(), [])
         
