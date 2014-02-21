@@ -116,3 +116,46 @@ class ObjectFollowViewTestCase(TestCase):
         
         self.assertTrue(self.obj.is_followed_by(self.u2))
         self.assertEqual(response.url, "/success-redirect")
+        
+class ObjectUnfollowViewTestCase(TestCase):
+    def setUp(self):            
+        self.factory = RequestFactory()
+        
+        user_model = get_user_model()
+        
+        self.obj = user_model.objects.create(username="u1")
+        self.u2 = user_model.objects.create(username="u2")
+        self.u3 = user_model.objects.create(username="u3")
+        self.op, n = ObjectPermission.objects.get_or_create_by_uid("core.view_user.%d" % self.obj.pk)
+        self.op.users.add(self.u2)
+        
+    def test_adding_new_follower(self):
+        """Tests removing a follower.
+        """
+        # Reset followers.
+        self.obj.remove_followers(self.obj.followers())
+        
+        self.obj.add_followers(self.u2)
+        
+        view_kwargs = {"object_model": "user", "object_id": self.obj.pk}
+        
+        request = self.factory.get(reverse("object_unfollow", kwargs=view_kwargs))
+        request.user = self.u3
+        
+        self.assertFalse(self.obj.is_followed_by(self.u3))
+        
+        response = object_unfollow(request, **view_kwargs)
+        
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(self.obj.is_followed_by(self.u3))
+        self.assertEqual(response.url, reverse("user_login")[:-1] + "?next=%s" % request.get_full_path())
+        
+        request.user = self.u2
+        request.META["HTTP_REFERER"] = "/success-redirect"
+        
+        self.assertTrue(self.obj.is_followed_by(self.u2))
+        
+        response = object_unfollow(request, **view_kwargs)
+        
+        self.assertFalse(self.obj.is_followed_by(self.u2))
+        self.assertEqual(response.url, "/success-redirect")
