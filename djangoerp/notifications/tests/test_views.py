@@ -205,3 +205,40 @@ class ListNotificationViewTestCase(TestCase):
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, 200)
+        
+class DetailNotificationViewTestCase(TestCase):
+    def test_permissions(self):
+        """Tests view's permissions.
+        """        
+        user_model = get_user_model()
+        
+        u2 = user_model.objects.create_user(username="u2", email="u2@u.it", password="p")
+        u3 = user_model.objects.create_user(username="u3", email="u3@u.it", password="p")
+        
+        signature = Signature.objects.create(title="Tests notification")
+        notification = Notification.objects.create(title="Test!", signature=signature, target=u2)
+        
+        url = reverse('notification_detail', kwargs={"object_model": "user", "object_id": u2.pk, "pk": notification.pk})
+        
+        self.assertFalse(notification.read)
+        
+        # With invalid owner.        
+        self.client.login(username="u3", password="p")
+        
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "http://testserver" + reverse("user_login")[:-1] + "?next=%s" % url)
+        
+        notification = Notification.objects.get(pk=notification.pk)
+        self.assertFalse(notification.read)
+        
+        # With valid owner.        
+        self.client.login(username="u2", password="p")
+        
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, 200)
+        
+        notification = Notification.objects.get(pk=notification.pk)
+        self.assertTrue(notification.read)
