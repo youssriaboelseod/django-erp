@@ -80,6 +80,40 @@ class GetterFunctionsTestCase(TestCase):
         
         self.assertEqual(_get_notification(self.request, pk=nt.pk), nt)
         
+class NotificationMixinTestCase(TestCase):
+    def test_get_queryset(self):
+        """Test "get_queryset" method.
+        """        
+        user_model = get_user_model()
+        
+        u1 = user_model.objects.create(username="u1")
+        u2 = user_model.objects.create(username="u2")
+        
+        signature = Signature.objects.create(title="Tests notification")
+        
+        n1 = Notification.objects.create(title="Test1", signature=signature, target=u1)
+        n2 = Notification.objects.create(title="Test2", signature=signature, target=u1)
+        n3 = Notification.objects.create(title="Test3", signature=signature, target=u2)
+        
+        class FakeBaseView:
+            request = None
+            args = ()
+            kwargs = {"object_model": "users", "object_id": u1.pk}
+            
+            def get_queryset(self, *args, **kwargs):
+                return Notification.objects.all()
+            
+        class TestView(NotificationMixin, FakeBaseView):
+            pass
+            
+        v = TestView()
+        
+        self.assertQuerysetEqual(
+            v.get_queryset(),
+            [repr(n1), repr(n2)],
+            ordered=False
+        )
+        
 class ObjectFollowViewTestCase(TestCase):
     def setUp(self):            
         self.factory = RequestFactory()

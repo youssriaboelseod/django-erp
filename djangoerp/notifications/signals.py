@@ -93,7 +93,7 @@ def notify_object_created(sender, instance, *args, **kwargs):
     """Generates an activity related to the creation of a new object.
     """
     if kwargs['created']:
-        author = LoggedInUserCache().current_user
+        author = LoggedInUserCache().user
         title = _("%(class)s %(name)s created")
         context = {
             "class": sender.__name__.lower(),
@@ -119,8 +119,8 @@ def notify_object_created(sender, instance, *args, **kwargs):
 
 def notify_object_changed(sender, instance, changes, *args, **kwargs):
     """Generates an activity related to the change of an existing object.
-    """
-    author = LoggedInUserCache().current_user
+    """    
+    author = LoggedInUserCache().user
     title = _("%(class)s %(name)s changed")
     context = {
         "class": sender.__name__.lower(),
@@ -148,7 +148,7 @@ def notify_object_changed(sender, instance, changes, *args, **kwargs):
 def notify_object_deleted(sender, instance, *args, **kwargs):
     """Generates an activity related to the deletion of an existing object.
     """
-    author = LoggedInUserCache().current_user
+    author = LoggedInUserCache().user
     title = _("%(class)s %(name)s deleted")
     context = {
         "class": sender.__name__.lower(),
@@ -216,9 +216,7 @@ def make_observable(cls, exclude=['modified'], auto_subscriber_fields=['parent',
 def make_default_notifier(cls, exclude=['modified'], auto_subscriber_fields=['parent', 'owner', 'author', 'created_by']):
     """Makes the class observable and notify creation, changing and deletion.
     
-    Be sure "cls" do not already inherit from Observable mixin before calling
-    this function, otherwise it will not take any effect on it and no notififies
-    will be posted automatically.
+    This implicitly adds Observable to "cls".
 
     @param cls The object class which should automatically post notifies.
     @param exclude The list of fields that should not be notified on changes.
@@ -226,12 +224,11 @@ def make_default_notifier(cls, exclude=['modified'], auto_subscriber_fields=['pa
                                   added as subscribers.
     """
     cls = get_model(cls)
-    if not issubclass(cls, Observable):
-        make_observable(cls, exclude, auto_subscriber_fields)
-        models.signals.post_save.connect(notify_object_created, sender=cls, dispatch_uid="%s_created" % cls.__name__)
-        post_change.connect(notify_object_changed, sender=cls, dispatch_uid="%s_changed" % cls.__name__)
-        models.signals.m2m_changed.connect(notify_m2m_changed, sender=cls, dispatch_uid="%s_m2m_changed" % cls.__name__)
-        models.signals.post_delete.connect(notify_object_deleted, sender=cls, dispatch_uid="%s_deleted" % cls.__name__)
+    make_observable(cls, exclude, auto_subscriber_fields)
+    models.signals.post_save.connect(notify_object_created, sender=cls, dispatch_uid="%s_created" % cls.__name__)
+    post_change.connect(notify_object_changed, sender=cls, dispatch_uid="%s_changed" % cls.__name__)
+    models.signals.m2m_changed.connect(notify_m2m_changed, sender=cls, dispatch_uid="%s_m2m_changed" % cls.__name__)
+    models.signals.post_delete.connect(notify_object_deleted, sender=cls, dispatch_uid="%s_deleted" % cls.__name__)
         
 def make_notification_target(cls):
     """Adds NotificationTarget mix-in to the given class.
@@ -247,5 +244,5 @@ def make_notification_target(cls):
 models.signals.post_save.connect(update_user_subscription_email, sender=get_user_model(), dispatch_uid="update_user_subscription_email")
 models.signals.post_save.connect(send_notification_email, sender=Notification, dispatch_uid="send_notification_email")
 
+make_observable(settings.AUTH_USER_MODEL, ['modified', 'password'])
 make_notification_target(settings.AUTH_USER_MODEL)
-make_observable(settings.AUTH_USER_MODEL)

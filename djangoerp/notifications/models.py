@@ -149,6 +149,12 @@ class Notification(models.Model):
         verbose_name_plural = _('notifications')
         ordering = ('-created', 'id')
         get_latest_by = '-created'
+        unique_together = (
+            ("target_content_type", "target_id", "dispatch_uid"),
+        )
+        index_together = (
+            ("target_content_type", "target_id", "dispatch_uid"),
+        )
 
     def __unicode__(self):
         return self.title

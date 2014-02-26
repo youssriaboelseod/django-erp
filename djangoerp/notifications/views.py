@@ -63,6 +63,11 @@ def _get_notification(request, *args, **kwargs):
     
 class NotificationMixin(object):
     model = Notification
+    
+    def get_queryset(self):
+        qs = super(NotificationMixin, self).get_queryset()
+        target = _get_object(self.request, *self.args, **self.kwargs)
+        return qs.filter(target=target)
 
 @permission_required(_get_object_view_perm, _get_object)
 def object_follow(request, object_model, object_id, path=None, **kwargs):
