@@ -44,10 +44,10 @@ class _PluggetSourceCache(object):
     def get_source_choices(self):
         return [(k, k) for k, s in self.sources.items()]
 
-    def __get_sources(self):
+    @property
+    def sources(self):
         self.auto_discover()
         return self.__sources
-    sources = property(__get_sources)
     
     def auto_discover(self):
         """ Auto discover pluggets of installed applications.
