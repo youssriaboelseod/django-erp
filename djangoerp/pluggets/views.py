@@ -29,7 +29,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from djangoerp.core.views import SetCancelUrlMixin
 from djangoerp.core.decorators import obj_permission_required as permission_required
 
-from loading import get_plugget_sources, get_plugget_source
+from loading import registry
 from decorators import is_plugget_editable
 from models import *
 from forms import *
@@ -120,7 +120,7 @@ class PluggetWizard(SetCancelUrlMixin, SessionWizardView):
         
         data0 = self.storage.get_step_data("0")
         data1 = self.storage.get_step_data("1")
-        sources = get_plugget_sources()
+        sources = registry.get_plugget_sources()
         
         if self.instance:
             source_uid = self.instance.source
@@ -169,7 +169,7 @@ class PluggetWizard(SetCancelUrlMixin, SessionWizardView):
         f0 = form_list[0]
         
         source_uid = f0.cleaned_data['source_uid']
-        source = get_plugget_source(source_uid)
+        source = registry.get_plugget_source(source_uid)
         
         # Second step:
         f1 = form_list[1]

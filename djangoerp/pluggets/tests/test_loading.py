@@ -17,7 +17,7 @@ __version__ = '0.0.5'
 
 from django.test import TestCase
 
-from ..loading import *
+from ..loading import registry
 
 class SourceCacheLoadingTestCase(TestCase):        
     def test_register_source(self):
@@ -27,8 +27,8 @@ class SourceCacheLoadingTestCase(TestCase):
             return context
             
         title = "plugget"
-        register_plugget_source(foo, title)
-        sources = get_plugget_sources()
+        registry.register_plugget_source(foo, title)
+        sources = registry.get_plugget_sources()
         self.assertTrue(title in sources)
         self.assertEqual(sources[title].get("func", None), foo)
         
@@ -36,20 +36,20 @@ class SourceCacheLoadingTestCase(TestCase):
         """Tests registering a simple plugget source.
         """
         title = "simple plugget"
-        register_simple_plugget_source(title)
-        sources = get_plugget_sources()
+        registry.register_simple_plugget_source(title)
+        sources = registry.get_plugget_sources()
         self.assertTrue(title in sources)
-        self.assertEqual(sources[title].get("func", None), plugget_source_registry.default_func)
+        self.assertEqual(sources[title].get("func", None), registry.default_func)
         
     def test_get_source(self):
         """Tests retrieving a specific plugget source, giving its title.
         """        
-        register_simple_plugget_source("Plugget 1")
+        registry.register_simple_plugget_source("Plugget 1")
         
         self.assertEqual(
-            get_plugget_source("Plugget 1"),
+            registry.get_plugget_source("Plugget 1"),
             {
-                "func": plugget_source_registry.default_func,
+                "func": registry.default_func,
                 "description": "A simple plugget.",
                 "default_template": "pluggets/base_plugget.html",
                 "form": None
@@ -59,14 +59,14 @@ class SourceCacheLoadingTestCase(TestCase):
     def test_get_source_choices(self):
         """Tests retrieving a list of choices for the registered plugget sources.
         """
-        plugget_source_registry.clear()
-        plugget_source_registry.discovered = True
+        registry.clear()
+        registry.discovered = True
         
-        register_simple_plugget_source("Plugget 1")
-        register_simple_plugget_source("Plugget 2")
+        registry.register_simple_plugget_source("Plugget 1")
+        registry.register_simple_plugget_source("Plugget 2")
         
         self.assertEqual(
-            get_plugget_source_choices(),
+            registry.get_plugget_source_choices(),
             [
                 ("Plugget 1", "Plugget 1"),
                 ("Plugget 2", "Plugget 2"),
@@ -74,7 +74,7 @@ class SourceCacheLoadingTestCase(TestCase):
         )
         
         self.assertTrue(
-            ("Text plugget", "Text plugget") in get_plugget_source_choices(True)
+            ("Text plugget", "Text plugget") in registry.get_plugget_source_choices(True)
         )
         
     def test_unique_source_title(self):
@@ -85,10 +85,10 @@ class SourceCacheLoadingTestCase(TestCase):
         
         title = "plugget"
         
-        register_plugget_source(foo_func1, title)
-        self.assertEqual(get_plugget_sources()[title]["func"], foo_func1)
-        register_plugget_source(foo_func2, title)  
-        self.assertEqual(get_plugget_sources()[title]["func"], foo_func2)
+        registry.register_plugget_source(foo_func1, title)
+        self.assertEqual(registry.get_plugget_sources()[title]["func"], foo_func1)
+        registry.register_plugget_source(foo_func2, title)  
+        self.assertEqual(registry.get_plugget_sources()[title]["func"], foo_func2)
         
     def test_inspected_title(self):
         """Tests inspection of source title from its docstring.
@@ -98,8 +98,8 @@ class SourceCacheLoadingTestCase(TestCase):
             """
             return context
             
-        register_plugget_source(foo_func)
-        sources = get_plugget_sources()
+        registry.register_plugget_source(foo_func)
+        sources = registry.get_plugget_sources()
         
         self.assertTrue("A foo plugget" in sources)
         self.assertEqual(sources["A foo plugget"]["func"], foo_func)
@@ -116,25 +116,25 @@ class SourceCacheLoadingTestCase(TestCase):
             """
             return context
             
-        register_plugget_source(foo_func)
-        sources = get_plugget_sources()
+        registry.register_plugget_source(foo_func)
+        sources = registry.get_plugget_sources()
         
         self.assertEqual(sources["A foo plugget with description"]["description"], "With a foo description. Multiline.")
         
     def test_source_cache_auto_discovering(self):
         """Tests the auto-discovering of plugget sources.
         """
-        self.assertTrue("Text plugget" in get_plugget_sources(True))
+        self.assertTrue("Text plugget" in registry.get_plugget_sources(True))
         
     def test_source_cache_clearing(self):
         """Tests clearing of plugget sources.
         """
-        register_simple_plugget_source("Garbage")
+        registry.register_simple_plugget_source("Garbage")
         
-        self.assertEqual(plugget_source_registry.discovered, True)
-        self.assertTrue(len(get_plugget_sources()) > 0)
+        self.assertEqual(registry.discovered, True)
+        self.assertTrue(len(registry.get_plugget_sources()) > 0)
         
-        plugget_source_registry.clear()
+        registry.clear()
         
-        self.assertEqual(plugget_source_registry.discovered, False)
-        self.assertEqual(len(get_plugget_sources()), 0)
+        self.assertEqual(registry.discovered, False)
+        self.assertEqual(len(registry.get_plugget_sources()), 0)

@@ -81,6 +81,7 @@ def manage_dashboard(cls, default_title=_("Dashboard")):
     be used ("Dashboard").
     """
     cls = get_model(cls)
+    global _dashboard_registry
     _dashboard_registry.manage_dashboard(cls, default_title)
 
 ## CONNECTIONS ##

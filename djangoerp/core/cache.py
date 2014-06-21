@@ -19,7 +19,7 @@ from django.contrib.auth.models import AnonymousUser
 
 # Inspired by http://stackoverflow.com/a/7469395/1063729
 
-class _Singleton(type):
+class Singleton(type):
     """Singleton pattern.
     """
     def __init__(cls, name, bases, dicts):
@@ -27,14 +27,14 @@ class _Singleton(type):
 
     def __call__(cls, *args, **kwargs):
         if cls.instance is None:
-            cls.instance = super(_Singleton, cls).__call__(*args, **kwargs)
+            cls.instance = super(Singleton, cls).__call__(*args, **kwargs)
         return cls.instance
 
 class LoggedInUserCache(object):
     """Stores the current user as a member attribute of a singleton.
     
     WARNING: if you manually change the value of "LoggedInUserCanche.user"
-    property for your special purposes, remember to restore it ot its previous
+    property for your special purposes, remember to restore it on its previous
     value at the end of your special code block. i.e.:
 
     >> logged_cache = LoggedInUserCache()
@@ -43,7 +43,7 @@ class LoggedInUserCache(object):
     >> # ... code ... #
     >> logged_cache.user = current_user # Restore the value!
     """
-    __metaclass__ = _Singleton
+    __metaclass__ = Singleton
 
     user = AnonymousUser()
 

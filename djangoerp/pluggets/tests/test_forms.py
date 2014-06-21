@@ -19,21 +19,21 @@ from django.test import TestCase
 from django.forms import ValidationError
 
 from ..models import Region, Plugget
-from ..loading import plugget_source_registry, register_simple_plugget_source
+from ..loading import registry
 from ..forms import *
 
 class SelectPluggetSourceFormTestCase(TestCase):
     def test_populate_source_choices(self):
         """Tests correct populating of source choices.
         """
-        plugget_source_registry.clear()
-        plugget_source_registry.discovered = True
+        registry.clear()
+        registry.discovered = True
         
         source_title1 = "Source 1"
         source_title2 = "Source 2"
         
-        register_simple_plugget_source(source_title1)
-        register_simple_plugget_source(source_title2)
+        registry.register_simple_plugget_source(source_title1)
+        registry.register_simple_plugget_source(source_title2)
         
         f = SelectPluggetSourceForm()
         choices = f.fields['source_uid'].choices

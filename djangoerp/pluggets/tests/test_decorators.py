@@ -19,7 +19,7 @@ from django.test import TestCase
 from django.shortcuts import render_to_response
 
 from ..models import Region, Plugget
-from ..loading import register_simple_plugget_source
+from ..loading import registry
 from ..decorators import *
 
 class PseudoResponse:
@@ -28,7 +28,7 @@ class PseudoResponse:
 class IsPluggetEditableDecoratorTestCase(TestCase):
     def setUp(self):
         source_title = "Editable plugget"
-        register_simple_plugget_source(source_title)
+        registry.register_simple_plugget_source(source_title)
         
         self.r = Region.objects.create(slug="r")
         self.pluggets = (

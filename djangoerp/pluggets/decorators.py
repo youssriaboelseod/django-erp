@@ -29,13 +29,13 @@ def is_plugget_editable(get_plugget_func, redirect_to='/'):
     def decorator(viewfunc):
         @wraps(viewfunc, assigned=available_attrs(viewfunc))
         def _wrapped_view(request, *args, **kwargs):
-            from loading import get_plugget_sources
+            from loading import registry
             plugget = None
             if callable(get_plugget_func):
                 plugget = get_plugget_func(request, *args, **kwargs)
             if plugget\
             and (not isinstance(plugget, Plugget)\
-                or (plugget.source not in get_plugget_sources())):
+                or (plugget.source not in registry.get_plugget_sources())):
                 return redirect(redirect_to)
             return viewfunc(request, *args, **kwargs)
         return _wrapped_view

@@ -19,6 +19,7 @@ from django.test import TestCase
 from django.template import Variable, Context
 from django.contrib.sites.models import Site
 
+from djangoerp.core.cache import LoggedInUserCache
 from ..models import Region, Plugget
 from ..templatetags.regions import *
         
@@ -27,11 +28,11 @@ def _clean_output(output):
 
 class RenderPluggetTagTestCase(TestCase):
     def setUp(self):
-        from ..loading import plugget_source_registry, register_simple_plugget_source
+        from ..loading import registry
+
+        LoggedInUserCache().clear()
         
-        plugget_source_registry.clear()
-        
-        register_simple_plugget_source("Something")
+        registry.register_simple_plugget_source("Something")
         
         self.r = Region.objects.create(slug="r")
         self.p1 = Plugget.objects.create(title="Plugget", source="djangoerp.pluggets.pluggets.dummy", context='{"text": "Hi!"}', region=self.r)
@@ -105,7 +106,9 @@ class RenderPluggetTagTestCase(TestCase):
         self.assertEqual(render_plugget(Context(), 4), "")
 
 class RenderRegionTagTestCase(TestCase):
-    def setUp(self):        
+    def setUp(self):
+        LoggedInUserCache().clear()
+
         self.r = Region.objects.create(slug="r")
         
     def test_with_valid_region(self):
@@ -151,7 +154,9 @@ class RegionsForTagTestCase(TestCase):
         self.assertEqual(regions_for(None), [])
 
 class FirstRegionForTagTestCase(TestCase):
-    def setUp(self):        
+    def setUp(self):
+        LoggedInUserCache().clear()
+
         self.s1 = Site.objects.create(domain="s1", name="s1")
         self.r1 = Region.objects.create(slug="r1", owner_object=self.s1)
         self.r2 = Region.objects.create(slug="r2", owner_object=self.s1)

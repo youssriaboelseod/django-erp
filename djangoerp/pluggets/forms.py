@@ -21,7 +21,7 @@ from django.contrib.contenttypes.models import ContentType
 from djangoerp.core.forms import enrich_form
 
 from models import *
-from loading import get_plugget_source_choices
+from loading import registry
 
 class TextPluggetForm(forms.Form):
     """A form to set context variables of text plugget.
@@ -35,7 +35,7 @@ class SelectPluggetSourceForm(forms.Form):
     
     def __init__(self, *args, **kwargs):
         super(SelectPluggetSourceForm, self).__init__(*args, **kwargs)
-        self.fields['source_uid'].choices = get_plugget_source_choices()
+        self.fields['source_uid'].choices = registry.get_plugget_source_choices()
 
 class CustomizePluggetSettingsForm(forms.ModelForm):
     """A form to customize the plugget appearance source-specific settings.

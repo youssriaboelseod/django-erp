@@ -24,7 +24,7 @@ from django.template.loader import render_to_string
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
 
-from ..loading import get_plugget_sources
+from ..loading import registry
 from ..models import Region, Plugget
 
 register = template.Library()
@@ -54,7 +54,7 @@ def render_plugget(context, plugget_pk, template_name=None):
         plugget = Plugget.objects.get(pk=plugget_pk)
         if plugget.context:
             context.update(json.loads(plugget.context))
-        sources = get_plugget_sources()
+        sources = registry.get_plugget_sources()
         source = sources.get(plugget.source, None)
         func = None
         if source:

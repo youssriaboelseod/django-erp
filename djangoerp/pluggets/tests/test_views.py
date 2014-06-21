@@ -20,6 +20,7 @@ from django.shortcuts import resolve_url
 from django.contrib.auth import get_user_model
 from djangoerp.core.models import Permission, ObjectPermission
 
+from ..loading import registry
 from ..models import Region, Plugget
 from ..views import *
 from ..views import _get_plugget, _get_plugget_add_or_edit_perm, _get_region # NOTE: not in public API!
@@ -77,7 +78,6 @@ class GetterFunctionsTestCase(TestCase):
 class PluggetWizardTestCase(TestCase):
     def setUp(self):
         from django import forms
-        from ..loading import register_simple_plugget_source
         
         self.factory = RequestFactory()
         
@@ -87,7 +87,7 @@ class PluggetWizardTestCase(TestCase):
             text = forms.CharField(initial="Something...", required=True, widget=forms.Textarea)
             user = forms.ModelChoiceField(queryset=user_model.objects.all())
 
-        register_simple_plugget_source("Test", description="A test plugget source", form=TestForm)
+        registry.register_simple_plugget_source("Test", description="A test plugget source", form=TestForm)
                
         self.u1 = user_model.objects.create_user("u1", "u@u.it", "password")
         self.u2 = user_model.objects.create_user("u2", "u@u.it", "password")
@@ -185,7 +185,6 @@ class PluggetWizardTestCase(TestCase):
         """Tests "get_form" method.
         """
         from django import forms
-        from ..loading import get_plugget_source
                 
         v = PluggetWizard()
         v.storage = FakeStorage()
@@ -195,7 +194,7 @@ class PluggetWizardTestCase(TestCase):
             '0': PluggetWizard.DEFAULT_FORMS[0],
             '1': PluggetWizard.DEFAULT_FORMS[1],
         }
-        v.source = get_plugget_source(self.p.source)
+        v.source = registry.get_plugget_source(self.p.source)
         
         f = v.get_form('1')
         
@@ -338,9 +337,7 @@ class PluggetWizardTestCase(TestCase):
         
     def test_get_context_data(self):
         """Tests "get_context_data" method.
-        """
-        from ..loading import get_plugget_source
-        
+        """        
         v = PluggetWizard(region=self.r)
         v.storage = FakeStorage()
         v.steps = FakeSteps()
@@ -365,7 +362,7 @@ class PluggetWizardTestCase(TestCase):
         self.assertEqual(context['object'], self.p)    
         
         v.steps.current = '1'
-        v.source = get_plugget_source(self.p.source)
+        v.source = registry.get_plugget_source(self.p.source)
         
         context = v.get_context_data(None)
         
@@ -379,7 +376,6 @@ class PluggetWizardTestCase(TestCase):
     def test_wizard_done(self):
         """Tests "done" method.
         """
-        from ..loading import get_plugget_source
         
         class FakeMessageStorage(object):
             def add(*args, **kwargs):
@@ -395,7 +391,7 @@ class PluggetWizardTestCase(TestCase):
             cleaned_data = {"title": "Another Plugget", "text": "Something.", "user": self.u1}
                 
         v = PluggetWizard()
-        v.source = get_plugget_source(self.p.source)
+        v.source = registry.get_plugget_source(self.p.source)
         
         v.request = self.factory.get(self.add_url)
         v.request._messages = FakeMessageStorage()
