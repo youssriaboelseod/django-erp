@@ -33,7 +33,7 @@ Installation
 
 1. Checkout sources from the GIT repository:
 
-    `git clone https://github.com/djangoERPTeam/django-erp.git`
+    `git clone https://github.com/django-erp/django-erp.git`
     
    It will clone the entire repository in a folder called **django-erp**:
 
