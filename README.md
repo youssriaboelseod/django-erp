@@ -3,10 +3,10 @@ django ERP
 
 **Django ERP** is an _open-source_, _user-oriented_, *ERP system* based on [Django](http://www.djangoproject.com) framework.
 
- * **Official website:** http://djangoerpteam.github.io/django-erp/
- * **Development:** https://github.com/djangoERPTeam/django-erp/
- * **Issue tracker:** https://github.com/djangoERPTeam/django-erp/issues/
- * **Wiki:** https://github.com/djangoERPTeam/django-erp/wiki/
+ * **Official website:** http://django-erp.github.io/django-erp/
+ * **Development:** https://github.com/django-erp/django-erp/
+ * **Issue tracker:** https://github.com/django-erp/django-erp/issues/
+ * **Wiki:** https://github.com/django-erp/django-erp/wiki/
 
 Pre-requisites
 --------------
