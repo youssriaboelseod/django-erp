@@ -15,10 +15,14 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
-from django.conf.urls import *
 
-urlpatterns = patterns('djangoerp.registration.views',
+from django.conf.urls import url
 
-    url(r'^users/register/$', view='user_register', name='user_register'),
-    url(r'^users/activate/(?P<activation_key>[\w\d]+)/$', view='user_activate', name='user_activate'),
-)
+from views import *
+
+
+urlpatterns = [
+
+    url(r'^users/register/$', view=user_register, name='user_register'),
+    url(r'^users/activate/(?P<activation_key>[\w\d]+)/$', view=user_activate, name='user_activate'),
+]

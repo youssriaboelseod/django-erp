@@ -15,7 +15,9 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from djangoerp.core.cache import Singleton
+
 
 class PluggetSourceCache(object):
     """Stores all plugget sources.
@@ -146,5 +148,6 @@ class PluggetSourceCache(object):
         if force_discovering:
             self.discovered = False
         return self.get_source_choices()
+
 
 registry = PluggetSourceCache()

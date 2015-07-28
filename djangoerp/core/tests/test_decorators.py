@@ -15,6 +15,7 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django.test import TestCase, RequestFactory
 from django.test.utils import override_settings
 from django.shortcuts import render_to_response
@@ -24,7 +25,8 @@ from django.conf import settings
 
 from ..models import Permission, ObjectPermission
 from ..decorators import *
-    
+
+
 def _get_user(request, *args, **kwargs):
     pk = kwargs.get("pk")
     user = None
@@ -35,6 +37,7 @@ def _get_user(request, *args, **kwargs):
 def _get_perm_name(request, *args, **kwargs):
     return "core.view_user"
 
+
 @obj_permission_required("core.view_user", _get_user)        
 def test_decorator_view(request, *args, **kwargs):
     return render_to_response('index.html')
@@ -42,6 +45,7 @@ def test_decorator_view(request, *args, **kwargs):
 @obj_permission_required(_get_perm_name, _get_user)        
 def test_decorator_view2(request, *args, **kwargs):
     return render_to_response('index.html')
+
 
 @override_settings(
     LOGIN_REQUIRED_URLS_EXCEPTIONS=(r'/(.*)$',),

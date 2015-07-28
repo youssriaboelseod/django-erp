@@ -15,11 +15,13 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from functools import wraps
 from django.shortcuts import redirect
 from django.utils.decorators import available_attrs
 
 from models import Plugget
+
 
 def is_plugget_editable(get_plugget_func, redirect_to='/'):
     """Checks if the plugget returned by "get_plugget_func" is editable or not.

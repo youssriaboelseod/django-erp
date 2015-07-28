@@ -15,6 +15,7 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django.test import TestCase
 from django.utils.safestring import mark_safe
 from django.template.loader import render_to_string
@@ -28,6 +29,7 @@ from ..templatetags.permfuncs import *
 from ..templatetags.breadcrumbs import *
 from ..templatetags.avatar import *
         
+
 class JoinStringsTemplateTagTestCase(TestCase):
     def test_join_list_with_empty_string(self):
         """Tests "join" templatetag must exclude empty/invalid strings.
@@ -506,8 +508,8 @@ class ModelDetailsTagTestCase(TestCase):
             "num_cols": 1,
             "layout": [
                 [{"name": "Permissions:", "attrs": "", "value": mark_safe(render_to_string("elements/empty.html").strip())}],
-                [{"name": "ID:", "attrs": "", "value": "#1"}],
-                [{"name": "Name:", "attrs": "", "value": "g"}],
+                [{"name": "ID:", "attrs": "", "value": "#%d" % g.pk}],
+                [{"name": "Name:", "attrs": "", "value": g.name}],
             ]
         }
         

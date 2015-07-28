@@ -15,13 +15,15 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils.translation import ugettext_lazy as _
 from djangoerp.core.models import validate_json
-    
+
+
 class Region(models.Model):
     """A logical area that could host any kind of Pluggets.
     
@@ -31,7 +33,7 @@ class Region(models.Model):
     title = models.CharField(max_length=256, blank=True, null=True, verbose_name=_('title'))
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
-    owner_object = generic.GenericForeignKey('content_type', 'object_id')
+    owner_object = GenericForeignKey('content_type', 'object_id')
 
     class Meta:
         verbose_name = _('region')

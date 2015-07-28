@@ -60,6 +60,13 @@ class ObjectPermissionBackend(object):
         # This backend doesn't handle user authentication.
         return None
 
+    def get_user_permissions(self, user_obj, obj=None):
+        """Returns all and only the object perms granted to the user_obj itself.
+        """
+        if True: # not hasattr(user_obj, '_user_obj_perm_cache'):
+            user_obj._user_obj_perm_cache = set([p.uid for p in user_obj.objectpermissions.get_by_object(obj)])
+        return user_obj._user_obj_perm_cache
+
     def get_group_permissions(self, user_obj, obj=None):
         """Returns all and only the object perms granted to the groups of the given user_obj.
         """
@@ -75,7 +82,7 @@ class ObjectPermissionBackend(object):
         if user_obj.is_anonymous():
             return set()
         if True: # not hasattr(user_obj, '_obj_perm_cache'):
-            user_obj._obj_perm_cache = set([p.uid for p in user_obj.objectpermissions.get_by_object(obj)])
+            user_obj._obj_perm_cache = self.get_user_permissions(user_obj, obj)
             user_obj._obj_perm_cache.update(self.get_group_permissions(user_obj, obj))
         return user_obj._obj_perm_cache
 

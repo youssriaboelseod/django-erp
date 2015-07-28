@@ -54,15 +54,17 @@ class DeleteBookmarksUtilTestCase(TestCase):
         m, n = create_bookmarks(u1)
         
         self.assertTrue(isinstance(m, Menu))
-        self.assertQuerysetEqual(
-            Menu.objects.all(),
-            [repr(m)],
-            ordered=False
+        self.assertEqual(
+            Menu.objects.filter(slug=get_bookmarks_slug_for(u1)).exists(),
+            True
         )
         
         delete_bookmarks(u1)
-        
-        self.assertEqual(Menu.objects.exists(), False)
+
+        self.assertEqual(
+            Menu.objects.filter(slug=get_bookmarks_slug_for(u1)).exists(),
+            False
+        )
         
     def test_delete_bookmarks_for_any_model(self):
         """Tests deleting bookmarks of a generic model instance.
@@ -71,26 +73,34 @@ class DeleteBookmarksUtilTestCase(TestCase):
         m, n = create_bookmarks(fm)
         
         self.assertTrue(isinstance(m, Menu))
-        self.assertQuerysetEqual(
-            Menu.objects.all(),
-            [repr(m)],
-            ordered=False
+        self.assertEqual(
+            Menu.objects.filter(slug=get_bookmarks_slug_for(fm)).exists(),
+            True
         )
         
         delete_bookmarks(fm)
-        
-        self.assertEqual(Menu.objects.exists(), False)
+
+        self.assertEqual(
+            Menu.objects.filter(slug=get_bookmarks_slug_for(fm)).exists(),
+            False
+        )
         
     def test_delete_bookmarks_without_bookmarks(self):
         """Tests calling "delete_bookmarks" on an instance without bookmarks.
         """           
         fm = FakeModel()
         
-        self.assertEqual(Menu.objects.exists(), False)
+        self.assertEqual(
+            Menu.objects.filter(slug=get_bookmarks_slug_for(fm)).exists(),
+            False
+        )
         
         delete_bookmarks(fm)
         
-        self.assertEqual(Menu.objects.exists(), False)
+        self.assertEqual(
+            Menu.objects.filter(slug=get_bookmarks_slug_for(fm)).exists(),
+            False
+        )
         
 class GetBookmarksForUtilTestCase(TestCase):
     def test_bookmarks_for_user(self):
@@ -100,7 +110,7 @@ class GetBookmarksForUtilTestCase(TestCase):
         
         self.assertTrue(n)
         
-        bookmarks = Menu.objects.get(slug="user_1_bookmarks")
+        bookmarks = Menu.objects.get(slug=get_bookmarks_slug_for(u1))
         
         self.assertEqual(get_bookmarks_for(u1.username), bookmarks)
        

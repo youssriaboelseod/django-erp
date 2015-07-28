@@ -15,12 +15,14 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django.test import TestCase
 from django.contrib.auth.hashers import make_password
 
 from . import *
 from ..models import ObjectPermission, User, Group
-        
+      
+  
 class UserManagerTestCase(TestCase):
     def test_create_user_helper(self):
         """Test "create_user" helper function.

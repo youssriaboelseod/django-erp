@@ -15,12 +15,14 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
-from django.conf.urls import patterns, url
+
+from django.conf.urls import url
 from django.views.generic import TemplateView
 
 from views import *
 
-urlpatterns = patterns('',
+
+urlpatterns = [
 
     # User authentication management.
     url(r'^users/login/$', 'django.contrib.auth.views.login', {'template_name': 'auth/login.html'}, name='user_login'),
@@ -30,5 +32,5 @@ urlpatterns = patterns('',
     url(r'^users/(?P<pk>\d+)/delete/$', view=DeleteUserView.as_view(), name='user_delete'),
     
     # Homepage.
-    (r'^$', TemplateView.as_view(template_name="index.html")),
-)
+    url(r'^$', TemplateView.as_view(template_name="index.html")),
+]

@@ -1,36 +1,26 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""This file is part of the django ERP project.
+from __future__ import unicode_literals
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-"""
-
-__author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
-__version__ = '0.0.5'
-
-from djangoerp.core.utils.dependencies import check_dependency
-
-check_dependency('djangoerp.core')
-
+from django.db import models, migrations
 from django.utils.translation import ugettext_noop as _
 from django.core.urlresolvers import reverse
-from djangoerp.core.models import User, Group, Permission
 
-from utils import create_detail_actions, create_detail_navigation
-from models import Menu, Link
+from ..utils import create_detail_actions, create_detail_navigation
 
-def install(sender, **kwargs):
+
+def install(apps, schema_editor):
+    # Models.
+    User = apps.get_model('core.User')
+    Group = apps.get_model('core.Group')
+    Permission = apps.get_model('core.Permission')
+    Menu = apps.get_model('menus.Menu')
+    Link = apps.get_model('menus.Link')
+
+    # Instances.
     users_group, is_new = Group.objects.get_or_create(name="users")
-    add_bookmark, is_new = Permission.objects.get_or_create_by_natural_key("add_link", "menus", "link")
-    edit_user, is_new = Permission.objects.get_or_create_by_natural_key("change_user", "core", "user")
-    delete_user, is_new = Permission.objects.get_or_create_by_natural_key("delete_user", "core", "user")
+    add_bookmark, is_new = Permission.objects.get_or_create_by_natural_key("add_link", "menus", "Link")
+    edit_user, is_new = Permission.objects.get_or_create_by_natural_key("change_user", "core", "User")
+    delete_user, is_new = Permission.objects.get_or_create_by_natural_key("delete_user", "core", "User")
     
     # Menus.
     main_menu, is_new = Menu.objects.get_or_create(
@@ -49,12 +39,11 @@ def install(sender, **kwargs):
     )
     
     user_detail_actions, is_new = create_detail_actions(User)
-    
     user_detail_navigation, is_new = create_detail_navigation(User)
     
     # Links.
     my_dashboard_link, is_new = Link.objects.get_or_create(
-        menu=main_menu,
+        menu_id=main_menu.pk,
         title=_("My Dashboard"),
         slug="my-dashboard",
         description=_("Go back to your dashboard"),
@@ -67,7 +56,7 @@ def install(sender, **kwargs):
         description=_("Login"),
         url=reverse("user_login"),
         only_authenticated=False,
-        menu=user_area_not_logged_menu
+        menu_id=user_area_not_logged_menu.pk
     )
     
     administration_link, is_new = Link.objects.get_or_create(
@@ -76,7 +65,7 @@ def install(sender, **kwargs):
         description=_("Administration panel"),
         url="/admin/",
         only_staff=True,
-        menu=user_area_logged_menu
+        menu_id=user_area_logged_menu.pk
     )
     
     logout_link, is_new = Link.objects.get_or_create(
@@ -84,7 +73,7 @@ def install(sender, **kwargs):
         slug="logout",
         description=_("Logout"),
         url=reverse("user_logout"),
-        menu=user_area_logged_menu
+        menu_id=user_area_logged_menu.pk
     )
     
     user_edit_link, is_new = Link.objects.get_or_create(
@@ -93,7 +82,7 @@ def install(sender, **kwargs):
         description=_("Edit"),
         url="user_edit",
         context='{"pk": "object.pk"}',
-        menu=user_detail_actions
+        menu_id=user_detail_actions.pk
     )
     user_edit_link.only_with_perms=[edit_user]
     
@@ -103,9 +92,22 @@ def install(sender, **kwargs):
         description=_("Delete"),
         url="user_delete",
         context='{"pk": "object.pk"}',
-        menu=user_detail_actions
+        menu_id=user_detail_actions.pk
     )
     user_delete_link.only_with_perms=[delete_user]
     
     # Permissions.
     users_group.permissions.add(add_bookmark)
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('menus', '0001_initial'),
+        ('contenttypes', '0002_remove_content_type_name'),
+        ('core', '0002_initial_fixture'),
+    ]
+
+    operations = [
+        migrations.RunPython(install),
+    ]

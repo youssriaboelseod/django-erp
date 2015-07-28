@@ -68,7 +68,7 @@ def manage_author_permissions(cls, enabled=True):
     else:
         post_save.disconnect(_update_author_permissions, cls, dispatch_uid=dispatch_uid)
 
-def user_post_save(sender, instance, signal, *args, **kwargs):
+def user_post_save(sender, instance, created, *args, **kwargs):
     """Add view/delete/change object permissions to users (on themselves).
     
     It also adds new user instances to "users" group.
@@ -85,8 +85,9 @@ def user_post_save(sender, instance, signal, *args, **kwargs):
     can_delete_this_user.users.add(instance)
     
     # All new users are members of "users" group.
-    users_group, is_new = Group.objects.get_or_create(name='users')
-    instance.groups.add(users_group)
+    if created:
+        users_group, is_new = Group.objects.get_or_create(name='users')
+        instance.groups.add(users_group)
 
 def add_view_permission(sender, instance, **kwargs):
     """Adds a view permission related to each new ContentType instance.

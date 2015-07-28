@@ -137,7 +137,12 @@ class CreateBookmarkViewTestCase(TestCase):
     def test_logged_user_without_perms(self):
         """Tests logged users without correct perms can not access the view.
         """
-        u1 = get_user_model().objects.create_user("u1", "u@u.it", "password")
+        from djangoerp.core.models import User, Group
+
+        u1 = User.objects.create_user("u1", "u@u.it", "password")
+
+        # Permission to add bookmarks is given by default "users" Group.
+        u1.groups.remove(Group.objects.get(name="users"))
         
         self.client.login(username='u1', password='password')
         response = self.client.get(resolve_url("bookmark_add"))
@@ -148,9 +153,10 @@ class CreateBookmarkViewTestCase(TestCase):
         """Tests logged users with correct perms can access the view.
         """
         from djangoerp.core.models import Permission
-        
+
         u2 = get_user_model().objects.create_user("u2", "u@u.it", "password")
         p, n = Permission.objects.get_or_create_by_uid("menus.add_link")
+
         u2.user_permissions.add(p)
         
         self.client.login(username='u2', password='password')

@@ -110,8 +110,8 @@ class ObjectPermission(models.Model):
     """
     object_id = models.PositiveIntegerField()
     perm = models.ForeignKey(Permission, verbose_name=_("permission"))
-    users = models.ManyToManyField(User, null=True, blank=True, related_name='objectpermissions', verbose_name=_("users"))
-    groups = models.ManyToManyField(Group, null=True, blank=True, related_name='objectpermissions', verbose_name=_("groups"))
+    users = models.ManyToManyField(User, blank=True, related_name='objectpermissions', verbose_name=_("users"))
+    groups = models.ManyToManyField(Group, blank=True, related_name='objectpermissions', verbose_name=_("groups"))
 
     objects = ObjectPermissionManager()
 

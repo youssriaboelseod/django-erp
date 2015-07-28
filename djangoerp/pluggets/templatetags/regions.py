@@ -15,9 +15,11 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 import re
 import json
 from copy import copy
+
 from django import template
 from django.utils.translation import ugettext as _
 from django.template.loader import render_to_string
@@ -27,8 +29,10 @@ from django.contrib.contenttypes.models import ContentType
 from ..loading import registry
 from ..models import Region, Plugget
 
+
 register = template.Library()
-        
+
+
 @register.simple_tag(takes_context=True)
 def render_plugget(context, plugget_pk, template_name=None):
     """Renders the plugget identified by the given ID with the given template.

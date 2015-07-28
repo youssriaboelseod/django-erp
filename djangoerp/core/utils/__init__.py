@@ -15,6 +15,7 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+from django.apps import apps as app_registry
 from django.db import models
 from django import forms
 
@@ -41,7 +42,7 @@ def get_model(klass):
         
     elif isinstance(klass, basestring):
         app_label, sep, model_name = klass.rpartition('.')
-        return models.get_model(app_label, model_name)
+        return app_registry.get_model(app_label, model_name)
         
     raise ValueError
         

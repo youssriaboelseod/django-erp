@@ -15,11 +15,13 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 import urlparse
 from functools import wraps
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.utils.decorators import available_attrs
+
 
 def obj_permission_required(perm, get_obj_func=None, login_url=None, redirect_field_name=REDIRECT_FIELD_NAME):
     """Checks if the user has "perm" for obj returned by "get_obj_func".

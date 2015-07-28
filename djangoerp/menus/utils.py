@@ -19,6 +19,12 @@ from django.contrib.auth import get_user_model
 
 from models import Menu
 
+def get_bookmarks_slug_for(instance):
+    """Returns the slug for a bookmark menu valid for the given model instance.
+    """
+    kls = instance.__class__
+    return "%s_%d_bookmarks" % (kls.__name__.lower(), instance.pk)
+
 def create_bookmarks(instance):
     """Creates a new bookmarks list for the given object.
     """            
@@ -32,7 +38,7 @@ def create_bookmarks(instance):
         
     kls = instance.__class__
             
-    bookmarks, is_new = Menu.objects.get_or_create(slug="%s_%d_bookmarks" % (kls.__name__.lower(), instance.pk), description="Bookmarks for %s:%s" % (kls.__name__, instance.pk))
+    bookmarks, is_new = Menu.objects.get_or_create(slug=get_bookmarks_slug_for(instance), description="Bookmarks for %s:%s" % (kls.__name__, instance.pk))
             
     logged_cache.user = current_user
     
@@ -42,8 +48,7 @@ def delete_bookmarks(instance):
     """Deletes the bookmarks list of the given object.
     """
     try:
-        kls = instance.__class__
-        bookmarks = Menu.objects.get(slug="%s_%d_bookmarks" % (kls.__name__.lower(), instance.pk))
+        bookmarks = Menu.objects.get(slug=get_bookmarks_slug_for(instance))
         bookmarks.delete()
     except Menu.DoesNotExist:
         pass
@@ -52,7 +57,7 @@ def get_bookmarks_for(username):
     """Returns the bookmarks menu for the user with the given username.
     """
     user = get_user_model().objects.get(username=username)
-    return Menu.objects.get(slug="user_%s_bookmarks" % user.pk)
+    return Menu.objects.get(slug=get_bookmarks_slug_for(user))
     
 def get_user_of(bookmarks_menu_slug):
     """Returns the owner of the given bookmarks list.

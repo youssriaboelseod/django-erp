@@ -15,13 +15,15 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
-from django.conf.urls import *
+
+from django.conf.urls import url
 
 from views import *
 
-urlpatterns = patterns('',
+
+urlpatterns = [
 
     url(r'^pluggets/add/(?P<slug>[-\w]+)/$', view=PluggetWizard.as_view(PluggetWizard.DEFAULT_FORMS), name='plugget_add'),
     url(r'^pluggets/(?P<pk>[\d]+)/edit/$', view=PluggetWizard.as_view(PluggetWizard.DEFAULT_FORMS), name='plugget_edit'),
     url(r'^pluggets/(?P<pk>[\d]+)/delete/$', view=DeletePluggetView.as_view(), name='plugget_delete'),
-)
+]

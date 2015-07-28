@@ -20,7 +20,7 @@ from datetime import datetime
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.template.loader import render_to_string
 from djangoerp.core.models import validate_json
@@ -33,10 +33,10 @@ class FollowRelation(models.Model):
     """
     followed_content_type = models.ForeignKey(ContentType, related_name="+")
     followed_id = models.PositiveIntegerField()
-    followed = generic.GenericForeignKey('followed_content_type', 'followed_id')
+    followed = GenericForeignKey('followed_content_type', 'followed_id')
     follower_content_type = models.ForeignKey(ContentType, related_name="+")
     follower_id = models.PositiveIntegerField()
-    follower = generic.GenericForeignKey('follower_content_type', 'follower_id')
+    follower = GenericForeignKey('follower_content_type', 'follower_id')
 
     objects = FollowRelationManager()
     
@@ -71,7 +71,7 @@ class Subscription(models.Model):
     """
     subscriber_content_type = models.ForeignKey(ContentType, related_name="+")
     subscriber_id = models.PositiveIntegerField()
-    subscriber = generic.GenericForeignKey('subscriber_content_type', 'subscriber_id')
+    subscriber = GenericForeignKey('subscriber_content_type', 'subscriber_id')
     signature = models.ForeignKey(Signature)
     send_email = models.BooleanField(default=True, verbose_name=_('send email'))
     email = models.EmailField(null=True, blank=True, verbose_name=_('email'))
@@ -98,7 +98,7 @@ class Activity(models.Model):
     backlink = models.CharField(_('backlink'), blank=True, null=True, max_length=200)
     source_content_type = models.ForeignKey(ContentType, related_name="+")
     source_id = models.PositiveIntegerField()
-    source = generic.GenericForeignKey('source_content_type', 'source_id')
+    source = GenericForeignKey('source_content_type', 'source_id')
 
     objects = ActivityManager()
     
@@ -136,7 +136,7 @@ class Notification(models.Model):
     description = models.TextField(blank=True, null=True, verbose_name=_('description'))
     target_content_type = models.ForeignKey(ContentType, related_name="+")
     target_id = models.PositiveIntegerField()
-    target = generic.GenericForeignKey('target_content_type', 'target_id')
+    target = GenericForeignKey('target_content_type', 'target_id')
     signature = models.ForeignKey(Signature, verbose_name=_('signature'))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_('created on'))
     read = models.DateTimeField(blank=True, null=True, verbose_name=_('read on'))

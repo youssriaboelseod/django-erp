@@ -15,6 +15,7 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.shortcuts import resolve_url
@@ -25,6 +26,7 @@ from . import FakeRequest
 from ..models import User, ObjectPermission
 from ..views import _get_user # Is not in the public API.
 from ..views import *
+
 
 class GetterTestCase(TestCase):
     def test_get_user_from_kwargs(self):

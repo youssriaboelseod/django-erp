@@ -15,9 +15,11 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django.contrib import admin
 
 from models import *
+
 
 class RegionAdmin(admin.ModelAdmin):
     list_display  = ('__unicode__', 'slug')
@@ -26,6 +28,7 @@ class RegionAdmin(admin.ModelAdmin):
 class PluggetAdmin(admin.ModelAdmin):
     list_display  = ('__unicode__', 'description', 'slug')
     search_fields = ('title', 'slug')
-    
+
+
 admin.site.register(Region, RegionAdmin)
 admin.site.register(Plugget, PluggetAdmin)

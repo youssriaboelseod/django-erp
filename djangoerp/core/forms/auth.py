@@ -31,23 +31,6 @@ class BaseUserCreationForm(UserCreationForm):
         # This is the custom User model, not the Django's one.
         model = get_user_model()
 
-    def clean_username(self):
-        # Since User.username is unique, this check is redundant,
-        # but it sets a nicer error message than the ORM. See #13147.
-        username = self.cleaned_data.get("username")
-        user_model = get_user_model()
-        try:
-            # This is the custom User model, not the Django's one.
-            u = user_model.objects.get(username=username)
-            if u == self.instance:
-                raise user_model.DoesNotExist
-        except user_model.DoesNotExist:
-            return username
-        raise forms.ValidationError(
-            self.error_messages['duplicate_username'],
-            code='duplicate_username',
-        )
-
     def clean_password1(self):
         """Checks for a valid password1.
         """

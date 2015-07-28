@@ -15,6 +15,7 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django.conf import settings
 from django.dispatch import receiver
 from django.utils.translation import ugettext_noop as _
@@ -25,6 +26,7 @@ from djangoerp.core.utils import get_model
 from djangoerp.core.signals import manage_author_permissions
 
 from models import *
+
 
 class _DashboardRegistry:
     def __init__(self, *args, **kwargs):

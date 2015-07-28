@@ -15,30 +15,19 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
 from . import *
 from ..models import Permission, Group
-from ..management import *
+from ..apps import *
 
-class ManagementTestCase(TestCase):
-    def test_install(self):
-        """Tests app installation.
-        """
-        from ..management import install
-        
-        install(None)
-        
-        users_group, is_new = Group.objects.get_or_create(name="users")
 
-        self.assertTrue(users_group)
-        self.assertFalse(is_new)
-        
+class AppConfigTestCase(TestCase):        
     def test_user_has_perms_on_itself(self):
         """Tests obj permissions to itself must be auto-added to user.
         """
-        
         u1, n = get_user_model().objects.get_or_create(username="u1")
         
         self.assertTrue(ob.has_perm(u1, "%s.view_user" % auth_app, u1))
@@ -56,7 +45,7 @@ class ManagementTestCase(TestCase):
         self.assertEqual(ContentType.objects.filter(model=model_name).count(), 0)
         self.assertEqual(Permission.objects.filter(codename=codename).count(), 0)
         
-        ContentType.objects.get_or_create(model=model_name, app_label=model_name, name=model_name.capitalize())
+        ContentType.objects.get_or_create(model=model_name, app_label=model_name)
         
         self.assertEqual(Permission.objects.filter(codename=codename).count(), 1)
         
@@ -69,4 +58,16 @@ class ManagementTestCase(TestCase):
         u2, n = get_user_model().objects.get_or_create(username="u2")
         
         self.assertTrue(n)
-        self.assertTrue(u2.groups.get(name="users"))
+        self.assertEqual(
+            u2.groups.filter(name="users").exists(),
+            True
+        )
+
+        # Only new created users are associated to "users" group.
+        u2.groups.remove(Group.objects.get(name="users"))
+        u2.save()
+
+        self.assertEqual(
+            u2.groups.filter(name="users").exists(),
+            False
+        )

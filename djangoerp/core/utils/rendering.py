@@ -22,7 +22,7 @@ from django.template.loader import render_to_string
 from django.db import models
 from django import forms
 from django.forms.forms import BoundField, pretty_name
-from django.forms.util import flatatt
+from django.forms.utils import flatatt
 
 def value_to_string(value):
     """Tries to return a smart string representation of the given value.

@@ -15,9 +15,11 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django.test import TestCase
 
 from ..models import *
+
 
 class JSONValidationCase(TestCase):
     def test_correct_json_validation(self):

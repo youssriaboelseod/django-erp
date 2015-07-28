@@ -15,16 +15,14 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
-from djangoerp.core.utils.dependencies import check_dependency
 
-check_dependency('djangoerp.core')
-check_dependency('djangoerp.menus')
+from django.apps import AppConfig
+from djangoerp.core.utils.apps import AppConfigMixin
 
-from djangoerp.core.models import Group, Permission
 
-def install(sender, **kwargs):
-    users_group, is_new = Group.objects.get_or_create(name="users")
-    view_notification, is_new = Permission.objects.get_or_create_by_natural_key("view_notification", "notifications", "notification")
-    
-    # Permissions.
-    users_group.permissions.add(view_notification)
+class RegistrationAppConfig(AppConfigMixin, AppConfig):
+    name = "djangoerp.registration"
+    dependencies = [
+        'djangoerp.core',
+        'djangoerp.menus',
+    ]

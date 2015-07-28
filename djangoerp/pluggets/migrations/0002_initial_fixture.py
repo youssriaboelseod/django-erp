@@ -1,34 +1,16 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""This file is part of the django ERP project.
+from __future__ import unicode_literals
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-"""
-
-__author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
-__version__ = '0.0.5'
-
-from djangoerp.core.utils.dependencies import check_dependency
-
-check_dependency('django.contrib.contenttypes')
-check_dependency('django.contrib.sites')
-check_dependency('djangoerp.core')
-check_dependency('djangoerp.menus')
-
-from django.conf import settings
+from django.db import models, migrations
 from django.utils.translation import ugettext_noop as _
-from djangoerp.core.models import Group, Permission
 
-from models import *
 
-def install(sender, **kwargs):
+def install(apps, schema_editor):
+    Group = apps.get_model('core.Group')
+    Permission = apps.get_model('core.Permission')
+    Region = apps.get_model('pluggets.Region')
+    Plugget = apps.get_model('pluggets.Plugget')
+
     users_group, is_new = Group.objects.get_or_create(name="users")
     add_plugget, is_new = Permission.objects.get_or_create_by_natural_key("add_plugget", "pluggets", "plugget")
     
@@ -49,7 +31,7 @@ def install(sender, **kwargs):
         source="djangoerp.pluggets.pluggets.menu",
         template="pluggets/menu.html",
         context='{"name": "main"}',
-        region=sidebar_region
+        region_id=sidebar_region.pk
     )
     
     powered_by_plugget, is_new = Plugget.objects.get_or_create(
@@ -58,9 +40,20 @@ def install(sender, **kwargs):
         source="djangoerp.pluggets.pluggets.text",
         template="pluggets/powered-by.html",
         context='{"name": "django ERP", "url": "https://github.com/djangoERPTeam/django-erp"}',
-        region=footer_region
+        region_id=footer_region.pk
     )
     
     # Permissions.
     users_group.permissions.add(add_plugget)
-    
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('pluggets', '0001_initial'),
+        ('core', '0002_initial_fixture'),
+    ]
+
+    operations = [
+        migrations.RunPython(install),
+    ]

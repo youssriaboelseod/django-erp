@@ -15,7 +15,9 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django.contrib.auth import get_user_model
+
 
 def get_dashboard_for(username):
     """Returns the bookmarks menu for the user with the given username.
@@ -28,6 +30,7 @@ def get_dashboard_for(username):
         raise Region.DoesNotExist
     return Region.objects.get(slug="user_%s_dashboard" % user.pk)
     
+
 def get_user_of(dashboard_slug):
     """Returns the owner of the given bookmarks list.
     """

@@ -103,7 +103,7 @@ class RenderPluggetTagTestCase(TestCase):
     def test_with_invalid_plugget(self):
         """Tests invoking the templatetag with an invalid Plugget ID.
         """
-        self.assertEqual(render_plugget(Context(), 4), "")
+        self.assertEqual(render_plugget(Context(), 5454454557576557), "")
 
 class RenderRegionTagTestCase(TestCase):
     def setUp(self):

@@ -15,12 +15,14 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
 from . import *
 from ..models import *
 from ..backends import *
+
 
 class ObjectPermissionBackendTestCase(TestCase):
     def test_always_fail_authentication(self):

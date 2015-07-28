@@ -15,6 +15,7 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 import json
 
 from django.db.models import Model as DjangoModel
@@ -23,9 +24,9 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import DeleteView
-from django.contrib.formtools.wizard.views import SessionWizardView
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from formtools.wizard.views import SessionWizardView
 from djangoerp.core.views import SetCancelUrlMixin
 from djangoerp.core.decorators import obj_permission_required as permission_required
 
@@ -33,6 +34,7 @@ from loading import registry
 from decorators import is_plugget_editable
 from models import *
 from forms import *
+
 
 def _get_plugget(*args, **kwargs):
     """Returns the plugget instance associated to the "pk" kwarg, None otherwise.

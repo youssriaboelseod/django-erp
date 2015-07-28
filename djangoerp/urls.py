@@ -15,53 +15,39 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
-from django.conf.urls import *
+
+from django.conf.urls import url, include
 from django.conf import settings
+from django.apps import apps as app_registry
+
+
+urlpatterns = []
+
+
+def has_urls(app):
+    if app:
+        try:
+            return getattr(app, 'urls', None) or  __import__("%s.urls" % app.name, {}, {}, ["*"])
+        except ImportError:
+            pass
+    return False
+
 
 # Basic URL patterns bootstrap.
-urlpatterns = patterns('',)
-
 if 'django.contrib.admin' in settings.INSTALLED_APPS:
-  if 'django.contrib.admindocs' in settings.INSTALLED_APPS:
-    urlpatterns += patterns('', (r'^admin/doc/', include('django.contrib.admindocs.urls')))
-  from django.contrib import admin
-  admin.autodiscover()
-  urlpatterns += patterns('', (r'^admin/', include(admin.site.urls)))
+    if 'django.contrib.admindocs' in settings.INSTALLED_APPS:
+        urlpatterns += [
+            url(r'^admin/doc/', include('django.contrib.admindocs.urls'))
+        ]
+    from django.contrib import admin
+    admin.autodiscover()
+    urlpatterns += [
+        url(r'^admin/', include(admin.site.urls))
+    ]
 
 if 'django.contrib.staticfiles' in settings.INSTALLED_APPS:
-  from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-  urlpatterns += staticfiles_urlpatterns()
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+    urlpatterns += staticfiles_urlpatterns()
 
-# Application specific URL patterns discovering.
-LOADING = False
 
-def autodiscover():
-    """ Auto discover urls and signals of installed applications.
-    """
-    global LOADING
-    if LOADING:
-        return
-    
-    LOADING = True
-    
-    for app in settings.INSTALLED_APPS:
-        if app.startswith('django.'):
-            continue
-
-        # Step 1: import URLs.
-        try:
-            urls = __import__("%s.urls" % app, {}, {}, ["*"])
-            global urlpatterns
-            urlpatterns += patterns("", (r'^', include('%s.urls' % app)))
-        except ImportError:
-            pass
-            
-        # Step 2: import signals logic.
-        try:
-            signals = __import__("%s.signals" % app, {}, {}, ["*"])
-        except ImportError:
-            pass
-        
-    LOADING = False
-
-autodiscover()
+urlpatterns += [url(r'^', include('%s.urls' % app.name)) for app in app_registry.get_app_configs() if has_urls(app)]

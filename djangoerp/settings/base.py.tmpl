@@ -15,10 +15,12 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 import os
 import datetime
 from pytz import common_timezones
 from django.utils.translation import ugettext_lazy as _
+
 
 PROJECT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.pardir))
 THEME_PATH = os.path.join(PROJECT_PATH, 'themes', 'default')
@@ -217,7 +219,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     #'django.contrib.admindocs',
     'django.contrib.redirects',
-    'django.contrib.formtools',
+
+    'formtools',
     
     'djangoerp.core',
     'djangoerp.menus',

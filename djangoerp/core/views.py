@@ -15,6 +15,7 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from copy import copy
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
@@ -31,6 +32,7 @@ from decorators import obj_permission_required as permission_required
 from utils import clean_http_referer, set_path_kwargs
 from models import User
 from forms.auth import UserForm
+
 
 def _get_user(request, *args, **kwargs):
     pk = kwargs.get("pk", None)

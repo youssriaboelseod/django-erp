@@ -15,6 +15,8 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
+import sys
 import django.dispatch
 from django.db import models
 from django.conf import settings
@@ -26,6 +28,7 @@ from djangoerp.core.models import Permission, ObjectPermission
 from djangoerp.core.cache import LoggedInUserCache
 
 from models import *
+
 
 ## HANDLERS ##
 
@@ -207,6 +210,10 @@ def make_observable(cls, exclude=['modified'], auto_subscriber_fields=['parent',
         class _Observable(Observable):
             __change_exclude = exclude
             __subscriber_fields = auto_subscriber_fields
+
+        _Observable.__name__ = cls.__name__ + "Observable"
+
+        setattr(sys.modules[__name__], _Observable.__name__, _Observable)
 
         cls.__bases__ += (_Observable,)
 

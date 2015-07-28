@@ -15,18 +15,17 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django.test import TestCase
 
 from ..models import Region, Plugget
 
-class ManagementTestCase(TestCase):
-    def test_install(self):
-        """Tests app installation.
+
+class AppConfigTestCase(TestCase):
+    def test_initial_fixture_installation(self):
+        """Tests installation of initial fixture.
         """
         from djangoerp.core.models import Group
-        from ..management import install
-        
-        install(None)
         
         # Regions.
         footer_region, is_new = Region.objects.get_or_create(slug="footer")

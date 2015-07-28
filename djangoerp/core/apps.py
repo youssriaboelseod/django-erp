@@ -15,25 +15,20 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
-from djangoerp.core.utils.dependencies import check_dependency
 
-check_dependency('djangoerp.core')
-check_dependency('djangoerp.menus')
+from django.apps import AppConfig
+from utils.apps import AppConfigMixin
 
-from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext_noop as _
 
-from djangoerp.menus.models import Menu, Link
-
-def install(sender, **kwargs):
-    user_area_not_logged_menu, is_new = Menu.objects.get_or_create(slug="user_area_not_logged")
-    
-    # Links.
-    register_link, is_new = Link.objects.get_or_create(
-        title=_("Register"),
-        slug="register",
-        description=_("Register a new account"),
-        url=reverse("user_register"),
-        only_authenticated=False,
-        menu=user_area_not_logged_menu
-    )
+class CoreAppConfig(AppConfigMixin, AppConfig):
+    name = "djangoerp.core"
+    dependencies = [
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.sites',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+        'django.contrib.redirects',
+        'formtools',
+    ]

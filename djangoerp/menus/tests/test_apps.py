@@ -15,19 +15,18 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django.test import TestCase
 
 from ..models import *
 from ..utils import *
-    
-class ManagementInstallTestCase(TestCase):
-    def test_install(self):
-        """Tests app installation.
+
+
+class AppConfigTestCase(TestCase):
+    def test_initial_fixture_installation(self):
+        """Tests installation of initial fixture.
         """
         from djangoerp.core.models import Group, Permission
-        from ..management import install
-        
-        install(None)
         
         # Menus.
         main_menu, is_new = Menu.objects.get_or_create(slug="main")

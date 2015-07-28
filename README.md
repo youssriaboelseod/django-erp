@@ -16,10 +16,10 @@ Make sure you have the following pre-requisites installed:
  * **python** >= 2.7 (required)
    http://www.python.org
 
- * **pytz** >= 2011h (required)
+ * **pytz** >= 2015.4 (required)
    http://pytz.sourceforge.net/
 
- * **django** >= 1.6.0 (required)
+ * **django** >= 1.8.x (required)
    http://www.djangoproject.com
 
  * **apache2** (optional)
@@ -49,7 +49,7 @@ Installation
 
 5. Initialize the database and all applications:
 
-    `python manage syncdb`
+    `python manage migrate`
 
 6. Test the installation running the development web-server (http://localhost:8000 on your browser):
 

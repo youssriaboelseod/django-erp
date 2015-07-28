@@ -15,15 +15,20 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
+from django.apps import apps as app_registry
 from django.db import models
-from django.db.models import Q, get_model, get_models, get_app
+from django.db.models import Q
 from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager, PermissionManager as DjangoPermissionManager
 from django.contrib.contenttypes.models import ContentType
 
+
 class UserManager(BaseUserManager):
     """Manager for custom User model.
     """
+    use_in_migrations = True
+
     def _create_user(self, username, email, password, is_staff, is_superuser, **extra_fields):
         """Creates and saves a User with the given email and password.
         """
@@ -55,11 +60,11 @@ class PermissionManager(DjangoPermissionManager):
     """Custom manager for Permission model.
     """
     def get_or_create_by_natural_key(self, codename, app_label, model):
-        get_models(get_app(app_label))
-        ct = ContentType.objects.get_for_model(get_model(app_label, model))
+        model_class = app_registry.get_model(app_label, model)
+        ct = ContentType.objects.db_manager(self.db).get_for_model(model_class)
         action, sep, model_name = codename.rpartition('_')
         name = "Can %s %s" % (action.replace('_', ' '), ct.name)
-        return self.get_or_create(codename=codename, name=name, content_type=ct)
+        return self.get_or_create(codename=codename, name=name, content_type_id=ct.pk)
         
     def get_by_uid(self, uid):
         app_label, sep, codename = uid.rpartition('.')
@@ -73,10 +78,12 @@ class PermissionManager(DjangoPermissionManager):
 class ObjectPermissionManager(models.Manager):
     """Custom manager for ObjectPermission model.
     """
+    use_in_migrations = True
+
     def get_by_object(self, obj):
         if obj is None:
             return self.all()
-        ct = ContentType.objects.get_for_model(obj.__class__)
+        ct = ContentType.objects.db_manager(self.db).get_for_model(obj.__class__)
         return self.filter(perm__content_type=ct, object_id=obj.pk)
         
     def get_by_natural_key(self, codename, app_label, model, object_id):

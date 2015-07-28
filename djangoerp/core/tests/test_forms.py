@@ -15,6 +15,7 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django.test import TestCase
 from django.forms import Form, ModelForm, ValidationError
 from django.utils.encoding import force_text
@@ -22,6 +23,7 @@ from django.contrib.auth import get_user_model
 
 from ..forms import *
 from ..forms.auth import *
+
 
 class EnrichFormTestCase(TestCase):
     def test_enrich_form_class(self):
@@ -68,6 +70,7 @@ class EnrichFormTestCase(TestCase):
         class TestModelForm(ModelForm):
             class Meta:
                 model = get_user_model()
+                fields = ["id", "username",]
             
         f = TestModelForm()
             
@@ -85,18 +88,6 @@ class UserFormTestCase(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create(username="u1", email="u@u.it")
         self.user_data = {'username': 'u1', 'email': 'u@u.it', 'timezone': 'GMT', 'language': 'en'}
-        
-    def test_clean_username(self):
-        """Tests clean_username function which checks username must be unique.
-        """
-        test_data = self.user_data
-        test_data.update({"password1": "password", "password2": "password"})
-        
-        f = UserForm(test_data)
-        
-        self.assertFalse(f.is_valid())
-        #self.assertRaises(ValidationError, f.clean_username)
-        self.assertTrue("A user with that username already exists." in f.errors.get("username", []))
         
     def test_raise_exception_if_no_password1_on_creation(self):
         """Tests raising an error when no password is provided on user creation.

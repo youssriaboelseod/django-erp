@@ -19,7 +19,7 @@ from django.db import models
 from django.db.models.query import QuerySet
 from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.generic import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 class _GFKQuerySet(QuerySet):
     def filter(self, **kwargs):
@@ -95,16 +95,16 @@ class NotificationManager(_GFKManager):
         return NotificationQuerySet(self.model)
 
     def read(self):
-        return self.get_query_set().read()
+        return self.get_queryset().read()
 
     def unread(self):
-        return self.get_query_set().unread()
+        return self.get_queryset().unread()
 
     def for_object(self, instance):
-        return self.get_query_set().for_object(instance)
+        return self.get_queryset().for_object(instance)
         
     def read_for_object(self, instance):
-        return self.get_query_set().read_for_object(instance)
+        return self.get_queryset().read_for_object(instance)
 
     def unread_for_object(self, instance):
-        return self.get_query_set().unread_for_object(instance)
+        return self.get_queryset().unread_for_object(instance)

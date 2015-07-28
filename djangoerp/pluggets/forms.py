@@ -15,6 +15,7 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -22,6 +23,7 @@ from djangoerp.core.forms import enrich_form
 
 from models import *
 from loading import registry
+
 
 class TextPluggetForm(forms.Form):
     """A form to set context variables of text plugget.
@@ -62,6 +64,7 @@ class CustomizePluggetSettingsForm(forms.ModelForm):
             pass
             
         return title
+
 
 enrich_form(SelectPluggetSourceForm)
 enrich_form(CustomizePluggetSettingsForm)

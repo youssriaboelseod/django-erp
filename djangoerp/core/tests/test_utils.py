@@ -15,21 +15,23 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django.test import TestCase
 from django.db import models
 from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.template.loader import render_to_string
-from django.contrib.auth import get_user_model
 
 from . import *
-from ..models import Group
+from .models import *
+from ..models import Group, User
 from ..forms.auth import UserForm
 from ..utils import *
 from ..utils.dependencies import *
 from ..utils.rendering import *
           
+
 class GetModelTestCase(TestCase):
     def test_invalid_klass(self):
         """Tests "get_model" func must raise a ValueError.
@@ -44,8 +46,8 @@ class GetModelTestCase(TestCase):
         """Tests "get_model" func when a real model class is passed.
         """
         try:
-            m = get_model(get_user_model())
-            self.assertEqual(m, get_user_model())
+            m = get_model(User)
+            self.assertEqual(m, User)
         except ValueError:
             self.fail()
             
@@ -53,9 +55,9 @@ class GetModelTestCase(TestCase):
         """Tests "get_model" func when a real model instance is passed.
         """
         try:
-            u, n = get_user_model().objects.get_or_create(username="user_instance")
+            u, n = User.objects.get_or_create(username="user_instance")
             m = get_model(u)
-            self.assertEqual(m, get_user_model())
+            self.assertEqual(m, User)
         except ValueError:
             self.fail()
             
@@ -63,9 +65,9 @@ class GetModelTestCase(TestCase):
         """Tests "get_model" func when a real model queryset is passed.
         """
         try:
-            qs = get_user_model().objects.all()
+            qs = User.objects.all()
             m = get_model(qs)
-            self.assertEqual(m, get_user_model())
+            self.assertEqual(m, User)
         except ValueError:
             self.fail()
             
@@ -74,13 +76,13 @@ class GetModelTestCase(TestCase):
         """
         try:
             m = get_model(user_model_string)
-            self.assertEqual(m, get_user_model())
+            self.assertEqual(m, User)
         except ValueError:
             self.fail()
             
 class GetFieldsTestCase(TestCase):
     def setUp(self):
-        self.u = get_user_model().objects.create(username="u", email="u@u.it", password="password")
+        self.u = User.objects.create(username="u", email="u@u.it", password="password")
         self.f = UserForm(instance=self.u)
         
     def test_get_model_fields(self):
@@ -261,19 +263,9 @@ class RenderingValueToStringTestCase(TestCase):
         
 class RenderingFieldToValueTestCase(TestCase):
     def setUp(self):
-        user_model = get_user_model()    
+        user_model = User    
         
-        self.u1 = user_model.objects.create(username="u1")     
-        
-        class TestModelInstance(models.Model):
-            id = models.PositiveIntegerField(default=5, primary_key=True)
-            user = models.ForeignKey(user_model, default=self.u1.pk)
-            group = models.ForeignKey(Group, default=self.u1.groups.first().pk)
-            slug = models.SlugField(default="fake_object")
-            url = models.URLField(default="http://localhost:8000/test")
-            email = models.EmailField(default="u@u.it")
-            choice = models.TextField(default="test", choices=[("test", "A test")])
-            flag = models.BooleanField(default=True)
+        self.u1 = user_model.objects.create(username="u1")
                 
         self.test_obj = TestModelInstance()
         self.field_list = dict([(f.name, f) for f in (self.test_obj._meta.fields)])
@@ -381,7 +373,7 @@ class RenderGetFieldTupeTestCase(TestCase):
             test2.short_description = "Something"
             
         self.o = FakeObject()
-        self.m = get_user_model().objects.create(username="u", email="u@u.it", password="password")
+        self.m = User.objects.create(username="u", email="u@u.it", password="password")
         self.f = UserForm({"username": "u", "email": "u@u.it", "password1": "password"}, instance=self.m)
         
     def test_get_typle_for_object_attr(self):
@@ -404,16 +396,16 @@ class RenderGetFieldTupeTestCase(TestCase):
         self.assertEqual(
             get_field_tuple("username", self.f),
             (
-                u'<label for="id_username">Username:</label>',
+                u'<label class="required" for="id_username">Username:</label>',
                 u' class="required"',
-                u'<input id="id_username" maxlength="30" name="username" type="text" value="u" /><br/><span title="Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only." class="helptext helppopup">Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only.</span>'
+                u'<input id="id_username" maxlength="30" name="username" type="text" value="u" /><br/><span title="Required. 30 characters or fewer. Letters, numbers and @/./+/-/_ characters" class="helptext helppopup">Required. 30 characters or fewer. Letters, numbers and @/./+/-/_ characters</span>'
             )
         )
         
         self.assertEqual(
             get_field_tuple("email", self.f),
             (
-                u'<label for="id_email">Email:</label>',
+                u'<label class="required" for="id_email">Email:</label>',
                 u' class="required"',
                 u'<input id="id_email" maxlength="254" name="email" type="email" value="u@u.it" />'
             )
