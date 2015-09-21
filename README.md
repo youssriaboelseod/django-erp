@@ -57,3 +57,20 @@ Installation
 
 [virtualenv]: http://www.virtualenv.org/en/latest/    
 [pip]: http://www.pip-installer.org/en/latest/
+
+
+Compile documentation 
+----------------------
+
+1. Install required packages 
+
+    `pip install sphinx sphinx-autobuild`
+
+2. Change to docs directory
+
+    `cd docs`
+
+3. Run builder 
+
+    `make html`
+
