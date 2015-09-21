@@ -63,7 +63,7 @@ class PermissionManager(DjangoPermissionManager):
         model_class = app_registry.get_model(app_label, model)
         ct = ContentType.objects.db_manager(self.db).get_for_model(model_class)
         action, sep, model_name = codename.rpartition('_')
-        name = "Can %s %s" % (action.replace('_', ' '), ct.name)
+        name = "Can %s %s" % (action.replace('_', ' '), model_name)
         return self.get_or_create(codename=codename, name=name, content_type_id=ct.pk)
         
     def get_by_uid(self, uid):
