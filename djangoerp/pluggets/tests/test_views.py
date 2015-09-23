@@ -221,12 +221,12 @@ class PluggetWizardTestCase(TestCase):
             pass
                 
         class FirstStepFinishedStorage(FakeStorage):
-            data = {'0': {u'0-source_uid': "Test"}}
+            data = {'0': {'0-source_uid': "Test"}}
                 
         class AllStepFinishedStorage(FakeStorage):
             data = {
-                '0': {u'0-source_uid': "Test"},
-                '1': {u'1-title': "My Title", u'1-text': "A text paragraph.", u"1-user": 1}
+                '0': {'0-source_uid': "Test"},
+                '1': {'1-title': "My Title", '1-text': "A text paragraph.", "1-user": 1}
             }
                 
         v = PluggetWizard(region=self.r)

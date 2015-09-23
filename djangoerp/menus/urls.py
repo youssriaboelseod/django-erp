@@ -17,7 +17,7 @@ __version__ = '0.0.5'
 
 from django.conf.urls import *
 
-from views import *
+from .views import *
 
 urlpatterns = [
 

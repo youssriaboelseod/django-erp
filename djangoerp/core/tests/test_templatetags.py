@@ -529,27 +529,27 @@ class UserHasPermTagTestCase(TestCase):
         
         # Checking perms for u7 (saved in LoggedInUserCache).
         logged_cache.user = u7
-        self.assertFalse(user_has_perm(u8, u"%s.view_user" % auth_app))
-        self.assertFalse(user_has_perm(u8, u"%s.change_user" % auth_app))
-        self.assertFalse(user_has_perm(u8, u"%s.delete_user" % auth_app))
+        self.assertFalse(user_has_perm(u8, "%s.view_user" % auth_app))
+        self.assertFalse(user_has_perm(u8, "%s.change_user" % auth_app))
+        self.assertFalse(user_has_perm(u8, "%s.delete_user" % auth_app))
         
         op, n = ObjectPermission.objects.get_or_create_by_uid("%s.view_user.%s" % (auth_app, u8.pk))
         u7.objectpermissions.add(op)
         
         clear_perm_caches(u7)
     
-        self.assertTrue(user_has_perm(u8, u"%s.view_user" % auth_app))
-        self.assertFalse(user_has_perm(u8, u"%s.change_user" % auth_app))
-        self.assertFalse(user_has_perm(u8, u"%s.delete_user" % auth_app))
+        self.assertTrue(user_has_perm(u8, "%s.view_user" % auth_app))
+        self.assertFalse(user_has_perm(u8, "%s.change_user" % auth_app))
+        self.assertFalse(user_has_perm(u8, "%s.delete_user" % auth_app))
         
         p, n = Permission.objects.get_or_create_by_uid("%s.change_user" % auth_app)
         u7.user_permissions.add(p)
         
         clear_perm_caches(u7)
         
-        self.assertTrue(user_has_perm(u8, u"%s.view_user" % auth_app))
-        self.assertTrue(user_has_perm(u8, u"%s.change_user" % auth_app))
-        self.assertFalse(user_has_perm(u8, u"%s.delete_user" % auth_app))
+        self.assertTrue(user_has_perm(u8, "%s.view_user" % auth_app))
+        self.assertTrue(user_has_perm(u8, "%s.change_user" % auth_app))
+        self.assertFalse(user_has_perm(u8, "%s.delete_user" % auth_app))
         
         # Restores previous cached user.
         logged_cache.user = prev_user

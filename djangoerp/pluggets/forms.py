@@ -21,8 +21,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from djangoerp.core.forms import enrich_form
 
-from models import *
-from loading import registry
+from .models import *
+from .loading import registry
 
 
 class TextPluggetForm(forms.Form):

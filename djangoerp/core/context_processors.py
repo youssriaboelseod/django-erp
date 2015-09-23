@@ -17,7 +17,7 @@ __version__ = '0.0.5'
 
 from django.utils.functional import lazy
 
-from models import *
+from .models import *
 
 # ObjPermWrapper and ObjPermLookupDict proxy the permissions system into objects
 # the template system could understand.
@@ -38,7 +38,7 @@ class ObjPermLookupDict(object):
             return [obj.pk for p in perms for obj in p.content_type.model_class().objects.all()]
         return [p.object_id for p in self.user.objectpermissions.filter(perm__content_type__app_label=self.module_name, perm__codename=perm_name)]
 
-    def __nonzero__(self):
+    def __bool__(self):
         if self.user.is_superuser:
             return True
         return self.user.objectpermissions.filter(perm__content_type__app_label=self.module_name).exists()

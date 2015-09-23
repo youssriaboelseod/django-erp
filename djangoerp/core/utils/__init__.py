@@ -15,9 +15,12 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
+from django.utils import six
 from django.apps import apps as app_registry
 from django.db import models
 from django import forms
+
 
 def get_model(klass):
     """Returns the model class identified by klass.
@@ -40,7 +43,7 @@ def get_model(klass):
     elif isinstance(klass, models.query.QuerySet):
         return klass.model
         
-    elif isinstance(klass, basestring):
+    elif isinstance(klass, six.string_types):
         app_label, sep, model_name = klass.rpartition('.')
         return app_registry.get_model(app_label, model_name)
         
@@ -84,13 +87,13 @@ def set_path_kwargs(request, **kwargs):
     path = request.META['PATH_INFO']
     path_kwargs = {}
     
-    for k, v in request.GET.items():
+    for k, v in list(request.GET.items()):
         if not k in kwargs:
             path_kwargs.update({k: ''.join(v)})
             
     path_kwargs.update(kwargs)
             
-    path_kwargs_string = ';'.join(["%s=%s" % (k, v) for k, v in path_kwargs.items() if v])
+    path_kwargs_string = ';'.join(["%s=%s" % (k, v) for k, v in list(path_kwargs.items()) if v])
     if path_kwargs_string:
         if path[-1] != '?':
             path += '?'

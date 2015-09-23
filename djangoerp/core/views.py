@@ -28,10 +28,10 @@ from django.template.response import TemplateResponse
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 
-from decorators import obj_permission_required as permission_required
-from utils import clean_http_referer, set_path_kwargs
-from models import User
-from forms.auth import UserForm
+from .decorators import obj_permission_required as permission_required
+from .utils import clean_http_referer, set_path_kwargs
+from .models import User
+from .forms.auth import UserForm
 
 
 def _get_user(request, *args, **kwargs):
@@ -129,7 +129,7 @@ class ModelListDeleteMixin(object):
             selected_uids = "*"
             
         else:
-            for k, v in request.POST.items():
+            for k, v in list(request.POST.items()):
                 if k.startswith("%sselect_" % prefix) and v:
                     selected_uids.append(k.rpartition('_')[2])
                     
@@ -192,18 +192,18 @@ class ModelListFilteringMixin(object):
         context = super(ModelListFilteringMixin, self).get_context_data(*args, **kwargs)
         filter_query = self.get_filter_query_from_get()
         context['unfiltered_object_list'] = super(ModelListFilteringMixin, self).get_queryset()
-        context['%slist_filter_by' % self.get_list_prefix()] = dict([(k.rpartition('__')[0] or k.rpartition('__')[2], (k.rpartition('__')[2], v)) for k, v in filter_query.items()]) or None
+        context['%slist_filter_by' % self.get_list_prefix()] = dict([(k.rpartition('__')[0] or k.rpartition('__')[2], (k.rpartition('__')[2], v)) for k, v in list(filter_query.items())]) or None
         return context
         
     def post(self, request, *args, **kwargs):
         list_prefix = self.get_list_prefix()
         filter_by_key = "%sfilter_by_" % list_prefix
         filter_query = self.get_filter_query_from_post()
-        filter_kwargs = dict([("%s%s" % (filter_by_key, f), None) for f, v in self.get_filter_query_from_get().items()])
-        filter_kwargs.update(dict([('%s%s' % (filter_by_key, k), v) for k, v in filter_query.items()]))
+        filter_kwargs = dict([("%s%s" % (filter_by_key, f), None) for f, v in list(self.get_filter_query_from_get().items())])
+        filter_kwargs.update(dict([('%s%s' % (filter_by_key, k), v) for k, v in list(filter_query.items())]))
                 
         if "%sreset_filters" % list_prefix in request.POST:
-            for k, v in filter_kwargs.items():
+            for k, v in list(filter_kwargs.items()):
                 filter_kwargs[k] = None
                     
         return HttpResponseRedirect(set_path_kwargs(request, **filter_kwargs))
@@ -213,7 +213,7 @@ class ModelListFilteringMixin(object):
         list_prefix = self.get_list_prefix()
         filter_arg_name_prefix = "%sfilter_by_" % list_prefix
         filter_arg_expr_prefix = "%sfilter_expr_" % list_prefix
-        for arg_name, arg_value in self.request.POST.items():
+        for arg_name, arg_value in list(self.request.POST.items()):
             if arg_name.startswith(filter_arg_name_prefix):
                 arg_name = arg_name.replace(filter_arg_name_prefix, "")
                 arg_expr = self.request.POST.get(filter_arg_expr_prefix + arg_name, None)
@@ -227,7 +227,7 @@ class ModelListFilteringMixin(object):
         filter_query = {}
         list_prefix = self.get_list_prefix()
         filter_arg_name_prefix = "%sfilter_by_" % list_prefix
-        for arg_name, arg_value in self.request.GET.items():
+        for arg_name, arg_value in list(self.request.GET.items()):
             if arg_value and arg_name.startswith(filter_arg_name_prefix):
                 arg_name = arg_name.replace(filter_arg_name_prefix, "")
                 filter_query.update({arg_name: arg_value})

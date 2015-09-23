@@ -15,10 +15,14 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
+import collections
 from django import template
 from django.template.defaultfilters import stringfilter
 
+
 register = template.Library()
+
 
 @register.assignment_tag
 def join(join_str, *args):
@@ -30,6 +34,7 @@ def join(join_str, *args):
     """
     return join_str.join(["%s" % a for a in args if a])
 
+
 @register.filter
 @stringfilter
 def split(string, sep):
@@ -38,6 +43,7 @@ def split(string, sep):
     Example usage: {{ request.path|split:"/" }}
     """
     return string.split(sep)
+
 
 @register.filter
 def get(obj, attr_name):
@@ -55,12 +61,13 @@ def get(obj, attr_name):
 
     elif hasattr(obj, attr_name):
         value = getattr(obj, attr_name)
-        if callable(value):
+        if isinstance(value, collections.Callable):
             return value()
         return value
 
     return ""
     
+
 @register.filter
 def diff(obj, amount):
     """Returns the difference between obj and amount (obj - amount).

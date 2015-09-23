@@ -19,7 +19,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from djangoerp.core.forms import enrich_form
 
-from models import Menu, Bookmark
+from .models import Menu, Bookmark
 
 class BookmarkForm(forms.ModelForm):
     """Form for bookmark data.

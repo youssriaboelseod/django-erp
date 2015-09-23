@@ -19,7 +19,7 @@ __version__ = '0.0.5'
 from django.test import TestCase
 from django.conf import settings
 
-from models import *
+from .models import *
 
 if "djangoerp.registration" in settings.INSTALLED_APPS:
 

@@ -30,10 +30,10 @@ from formtools.wizard.views import SessionWizardView
 from djangoerp.core.views import SetCancelUrlMixin
 from djangoerp.core.decorators import obj_permission_required as permission_required
 
-from loading import registry
-from decorators import is_plugget_editable
-from models import *
-from forms import *
+from .loading import registry
+from .decorators import is_plugget_editable
+from .models import *
+from .forms import *
 
 
 def _get_plugget(*args, **kwargs):
@@ -128,19 +128,19 @@ class PluggetWizard(SetCancelUrlMixin, SessionWizardView):
             source_uid = self.instance.source
             title = self.instance.title
             if data0:
-                source_uid = data0.get(u'0-source_uid', self.instance.source)
+                source_uid = data0.get('0-source_uid', self.instance.source)
             self.source = sources.get(source_uid, {})
             self.source['source_uid'] = source_uid
             if data1:
-                title = data1.get(u'1-title', self.instance.title)
+                title = data1.get('1-title', self.instance.title)
             
         else:
             if data0:
-                source_uid = data0.get(u'0-source_uid', None)
+                source_uid = data0.get('0-source_uid', None)
             self.source = sources.get(source_uid, {})
             self.source['source_uid'] = source_uid
             if data1:
-                title = data1.get(u'1-title', source_uid)
+                title = data1.get('1-title', source_uid)
 
         if step == "0":
             initial['region_slug'] = self.region.slug
@@ -179,7 +179,7 @@ class PluggetWizard(SetCancelUrlMixin, SessionWizardView):
         title = f1.cleaned_data['title']
         context = {}
         
-        for k, v in f1.cleaned_data.items():
+        for k, v in list(f1.cleaned_data.items()):
             if k != "title":
                 context[k] = v
                 if isinstance(v, DjangoModel):

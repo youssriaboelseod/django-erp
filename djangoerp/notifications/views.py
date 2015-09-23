@@ -30,8 +30,8 @@ from djangoerp.core.utils import clean_http_referer
 from djangoerp.core.decorators import obj_permission_required as permission_required
 from djangoerp.core.views import SetCancelUrlMixin, ModelListView
 
-from models import *
-from forms import *
+from .models import *
+from .forms import *
 
 def _get_content_type_by(name):
     model_name = name

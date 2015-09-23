@@ -26,7 +26,7 @@ from django.template.loader import render_to_string
 from djangoerp.core.models import validate_json
 from djangoerp.core.utils.rendering import field_to_string
 
-from managers import *
+from .managers import *
 
 class FollowRelation(models.Model):
     """It represents a relation  model between a watcher and a watched object.
@@ -114,7 +114,7 @@ class Activity(models.Model):
             return self.title
 
     def get_context(self):
-        return json.loads(unicode(self.context or u"{}"))
+        return json.loads(str(self.context or "{}"))
         
     def get_template_name(self):
         return self.template or "notifications/activities/%s.html" % self.signature
@@ -169,7 +169,7 @@ class Notification(models.Model):
 
     def clean_fields(self, exclude=None):
         if not self.dispatch_uid:
-            self.dispatch_uid = hashlib.md5(u"%s%s%s" % (self.title, self.description, datetime.now())).hexdigest()
+            self.dispatch_uid = hashlib.md5("%s%s%s" % (self.title, self.description, datetime.now())).hexdigest()
         """if not Subscription.objects.filter(subscriber=self.target, signature=self.signature):
             raise ValidationError('The target is not subscribed for this kind of notification.')"""
         super(Notification, self).clean_fields(exclude)
@@ -196,7 +196,7 @@ class Observable(object):
         try:
             if self.pk and name in self.__field_cache:
                 field = self.__field_cache[name]
-                label = u"%s" % field.verbose_name
+                label = "%s" % field.verbose_name
                 if name not in self.__change_exclude:
                     old_value = field_to_string(field, self)
                     if label in self.__changes:
@@ -204,7 +204,7 @@ class Observable(object):
                     super(Observable, self).__setattr__(name, value)
                     value = field_to_string(field, self)
                     if value != old_value:
-                        self.__changes[label] = (u"%s" % old_value, u"%s" % value)
+                        self.__changes[label] = ("%s" % old_value, "%s" % value)
                 return
 
         except:

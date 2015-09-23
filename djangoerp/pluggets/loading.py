@@ -16,13 +16,15 @@ __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
 
+import collections
+from django.utils import six
 from djangoerp.core.cache import Singleton
 
 
+@six.add_metaclass(Singleton)
 class PluggetSourceCache(object):
     """Stores all plugget sources.
     """
-    __metaclass__ = Singleton
 
     def __init__(self):
         self.default_func = lambda x: x
@@ -30,7 +32,7 @@ class PluggetSourceCache(object):
         self.auto_discover()
         
     def register(self, func, title, description, template, form):        
-        if not callable(func):
+        if not isinstance(func, collections.Callable):
             func = self.default_func
             
         import inspect
@@ -55,7 +57,7 @@ class PluggetSourceCache(object):
         return self.__sources
 
     def get_source_choices(self):
-        return [(k, k) for k, s in self.sources.items()]
+        return [(k, k) for k, s in list(self.sources.items())]
     
     def auto_discover(self):
         """ Auto discover pluggets of installed applications.

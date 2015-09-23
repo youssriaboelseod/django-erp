@@ -26,7 +26,7 @@ class DependencyError(Exception):
         self._app_name = app_name
 
     def __str__(self):
-        return u"A dependency is not satisfied: %s" % self._app_name
+        return "A dependency is not satisfied: %s" % self._app_name
 
 
 def check_dependency(app_name):

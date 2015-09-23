@@ -19,7 +19,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend as DjangoModelBackend
 
-from models import *
+from .models import *
 
 class ModelBackend(DjangoModelBackend):
     """A proxy model-level backend.

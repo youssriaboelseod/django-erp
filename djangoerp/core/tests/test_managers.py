@@ -119,7 +119,7 @@ class ObjectPermissionManagerTestCase(TestCase):
         """
         self.assertQuerysetEqual(
             ObjectPermission.objects.get_by_object(None),
-            map(repr, ObjectPermission.objects.all()),
+            list(map(repr, ObjectPermission.objects.all())),
             ordered=False
         )
         

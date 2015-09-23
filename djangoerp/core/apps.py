@@ -17,7 +17,7 @@ __version__ = '0.0.5'
 
 
 from django.apps import AppConfig
-from utils.apps import AppConfigMixin
+from .utils.apps import AppConfigMixin
 
 
 class CoreAppConfig(AppConfigMixin, AppConfig):

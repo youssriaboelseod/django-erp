@@ -26,7 +26,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, Group as DjangoGroup, Permission as DjangoPermission
 
-from managers import *
+from .managers import *
         
 def validate_json(value):
     """Validates a JSON snippet.
@@ -91,7 +91,7 @@ class Group(DjangoGroup):
     def __unicode__(self):
         """In this proxy class the name is returned already translated.
         """
-        return u"%s" % _(super(Group, self).__unicode__())
+        return "%s" % _(super(Group, self).__unicode__())
 
 class Permission(DjangoPermission):
     """A proxy for Permission model which uses a custom manager.
@@ -103,7 +103,7 @@ class Permission(DjangoPermission):
         
     @property
     def uid(self):
-        return u"%s.%s" % (self.content_type.app_label, self.codename)
+        return "%s.%s" % (self.content_type.app_label, self.codename)
 
 class ObjectPermission(models.Model):
     """A generic object/row-level permission.
@@ -121,7 +121,7 @@ class ObjectPermission(models.Model):
         
     @property
     def uid(self):
-        return u"%s.%s" % (self.perm.uid, self.object_id)
+        return "%s.%s" % (self.perm.uid, self.object_id)
 
     def __unicode__(self):
-        return u"%s | %d" % (self.perm, self.object_id)
+        return "%s | %d" % (self.perm, self.object_id)

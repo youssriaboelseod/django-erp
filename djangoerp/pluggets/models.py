@@ -69,10 +69,10 @@ class Plugget(models.Model):
         unique_together = ('region', 'title')
 
     def __unicode__(self):
-        return u"%s | %s" % (self.region, self.title)
+        return "%s | %s" % (self.region, self.title)
         
     def slug(self):
-        return slugify(u"%s_%s" % (self.region, self.title))
+        return slugify("%s_%s" % (self.region, self.title))
 
     def get_absolute_url(self):
         return self.region.get_absolute_url()

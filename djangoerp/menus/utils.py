@@ -17,7 +17,7 @@ __version__ = '0.0.5'
 
 from django.contrib.auth import get_user_model
 
-from models import Menu
+from .models import Menu
 
 def get_bookmarks_slug_for(instance):
     """Returns the slug for a bookmark menu valid for the given model instance.

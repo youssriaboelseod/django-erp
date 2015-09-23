@@ -75,7 +75,7 @@ class GroupModelTestCase(TestCase):
         """
         g, n = Group.objects.get_or_create(name="users")
         
-        self.assertEqual(u"%s" % g, u"users")
+        self.assertEqual("%s" % g, "users")
         
 class ObjectPermissionModelTestCase(TestCase):
     def test_unicode(self):
@@ -84,4 +84,4 @@ class ObjectPermissionModelTestCase(TestCase):
         u1, n = User.objects.get_or_create(username="u1")
         p, n = ObjectPermission.objects.get_or_create_by_natural_key("view_user", "core", "user", u1.pk)
         
-        self.assertEqual(u"%s" % p, u"core | user | Can view user | %d" % u1.pk)
+        self.assertEqual("%s" % p, "core | user | Can view user | %d" % u1.pk)

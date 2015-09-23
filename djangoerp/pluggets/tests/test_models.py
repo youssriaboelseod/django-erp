@@ -55,8 +55,8 @@ class RegionTestCase(TestCase):
     def test_unicode(self):
         """Tests getting correct unicode representation.
         """
-        self.assertEqual(u"%s" % self.r1, u"r1")
-        self.assertEqual(u"%s" % self.r2, u"Region 2")
+        self.assertEqual("%s" % self.r1, "r1")
+        self.assertEqual("%s" % self.r2, "Region 2")
 
 class PluggetTestCase(TestCase):
     def setUp(self):
@@ -71,12 +71,12 @@ class PluggetTestCase(TestCase):
     def test_unicode(self):
         """Tests getting correct unicode representation.
         """
-        self.assertEqual(u"%s" % self.p1, u"%s | %s" % (self.r1, self.p1.title))
+        self.assertEqual("%s" % self.p1, "%s | %s" % (self.r1, self.p1.title))
         
     def test_slug_func(self):
         """Tests getting Plugget slug.
         """
-        self.assertEqual(self.p1.slug(), u"region-1_plugget-1")
+        self.assertEqual(self.p1.slug(), "region-1_plugget-1")
         
     def test_get_edit_url(self):
         """Tests retrieving the Plugget's URL for editing.

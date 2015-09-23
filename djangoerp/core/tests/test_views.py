@@ -228,7 +228,7 @@ class ModelListDeleteMixinTestCase(TestCase):
         # 1) Show confirm deletion template.
         self.assertQuerysetEqual(
             qs,
-            map(repr, user_model.objects.all()),
+            list(map(repr, user_model.objects.all())),
             ordered=False
         )
         self.assertEqual(qs.count(), 3)
@@ -239,7 +239,7 @@ class ModelListDeleteMixinTestCase(TestCase):
         self.assertEqual(response.template_name, self.m.get_delete_template_name())
         self.assertQuerysetEqual(
             response.context_data['object_list'],
-            map(repr, qs),
+            list(map(repr, qs)),
             ordered=False
         )
         
@@ -267,7 +267,7 @@ class ModelListDeleteMixinTestCase(TestCase):
         # 1) Show confirm deletion template.   
         self.assertQuerysetEqual(
             qs,
-            map(repr, user_model.objects.all()),
+            list(map(repr, user_model.objects.all())),
             ordered=False
         )
         self.assertEqual(qs.count(), 3)
@@ -278,7 +278,7 @@ class ModelListDeleteMixinTestCase(TestCase):
         self.assertEqual(response.template_name, self.m.get_delete_template_name())
         self.assertQuerysetEqual(
             response.context_data['object_list'],
-            map(repr, user_model.objects.filter(pk__in=[1, 3])),
+            list(map(repr, user_model.objects.filter(pk__in=[1, 3]))),
             ordered=False
         )
         
@@ -361,7 +361,7 @@ class ModelListFilteringMixinTestCase(TestCase):
         self.assertEqual(qs.count(), 4)
         self.assertQuerysetEqual(
             qs,
-            map(repr, user_model.objects.all()),
+            list(map(repr, user_model.objects.all())),
             ordered=False
         )
         
@@ -371,7 +371,7 @@ class ModelListFilteringMixinTestCase(TestCase):
         self.assertEqual(qs.count(), 3)
         self.assertQuerysetEqual(
             qs,
-            map(repr, user_model.objects.filter(username__lt="u4")),
+            list(map(repr, user_model.objects.filter(username__lt="u4"))),
             ordered=False
         )
         
@@ -381,7 +381,7 @@ class ModelListFilteringMixinTestCase(TestCase):
         self.assertEqual(qs.count(), 2)
         self.assertQuerysetEqual(
             qs,
-            map(repr, user_model.objects.filter(username__lt="u4", email__gte="u2@u.it")),
+            list(map(repr, user_model.objects.filter(username__lt="u4", email__gte="u2@u.it"))),
             ordered=False
         )
         self.assertQuerysetEqual(
@@ -401,7 +401,7 @@ class ModelListFilteringMixinTestCase(TestCase):
         self.assertTrue("unfiltered_object_list" in context)
         self.assertQuerysetEqual(
             context['unfiltered_object_list'],
-            map(repr, user_model.objects.all()),
+            list(map(repr, user_model.objects.all())),
             ordered=False
         )
         
@@ -516,32 +516,32 @@ class ModelListOrderingMixinTestCase(TestCase):
         qs = self.m.get_queryset()
         
         self.assertEqual(
-            map(repr, qs),
-            map(repr, user_model.objects.all()),
+            list(map(repr, qs)),
+            list(map(repr, user_model.objects.all())),
         )
         
         self.m.request.GET = {"order_by": "username"}
         qs = self.m.get_queryset()
         
         self.assertEqual(
-            map(repr, qs),
-            map(repr, user_model.objects.order_by("username")),
+            list(map(repr, qs)),
+            list(map(repr, user_model.objects.order_by("username"))),
         )
         
         self.m.request.GET = {"order_by": "-username"}
         qs = self.m.get_queryset()
         
         self.assertEqual(
-            map(repr, qs),
-            map(repr, user_model.objects.order_by("-username")),
+            list(map(repr, qs)),
+            list(map(repr, user_model.objects.order_by("-username"))),
         )
         
         self.m.request.GET = {"order_by": "email"}
         qs = self.m.get_queryset()
         
         self.assertEqual(
-            map(repr, qs),
-            map(repr, user_model.objects.order_by("email")),
+            list(map(repr, qs)),
+            list(map(repr, user_model.objects.order_by("email"))),
         )
         
     def test_get_context_data(self):

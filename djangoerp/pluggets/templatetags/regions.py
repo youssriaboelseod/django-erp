@@ -28,6 +28,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from ..loading import registry
 from ..models import Region, Plugget
+import collections
 
 
 register = template.Library()
@@ -71,7 +72,7 @@ def render_plugget(context, plugget_pk, template_name=None):
                 context = func(context)
             except:
                 pass
-        if callable(func):
+        if isinstance(func, collections.Callable):
             context = func(context)
         return render_to_string(template_name or plugget.template, {'plugget': plugget}, context)
             

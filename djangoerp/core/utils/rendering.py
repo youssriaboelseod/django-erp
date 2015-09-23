@@ -15,6 +15,8 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
+import collections
 from django.utils.formats import localize
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -23,6 +25,7 @@ from django.db import models
 from django import forms
 from django.forms.forms import BoundField, pretty_name
 from django.forms.utils import flatatt
+
 
 def value_to_string(value):
     """Tries to return a smart string representation of the given value.
@@ -39,7 +42,7 @@ def value_to_string(value):
             output = render_to_string('elements/no.html', {})
 
     elif isinstance(value, float):
-        output = u'%.2f' % value
+        output = '%.2f' % value
 
     elif isinstance(value, int):
         output = '%d' % value
@@ -56,7 +59,7 @@ def field_to_value(field, instance):
 
     if field.primary_key or isinstance(field, (models.SlugField, models.PositiveIntegerField)):
         if value:
-          return u'#%s' % value
+          return '#%s' % value
 
     elif isinstance(field, (models.ForeignKey, models.OneToOneField)):
         try:
@@ -70,7 +73,7 @@ def field_to_value(field, instance):
             try:
                 items.append(render_to_string('elements/link.html', {'url': item.get_absolute_url(), 'caption': item}))
             except AttributeError:
-                items.append(u'%s' % item)
+                items.append('%s' % item)
         return items
 
     elif isinstance(field, models.URLField) and value:
@@ -130,15 +133,15 @@ def get_field_tuple(name, form_or_model):
             name = field.short_description
 
     if isinstance(field, models.Field):
-        label = u'%s:' % field.verbose_name
+        label = '%s:' % field.verbose_name
         value = field_to_string(field, form_or_model)
 
     elif isinstance(field, forms.Field):
         bf = BoundField(form_or_model, field, name)
-        label = u'%s' % bf.label_tag()
-        value = u'%s' % bf
+        label = '%s' % bf.label_tag()
+        value = '%s' % bf
         if bf.help_text:
-            value += '<br/><span title="%(help_text)s" class="helptext helppopup">%(help_text)s</span>' % {"help_text": u'%s' % bf.help_text}
+            value += '<br/><span title="%(help_text)s" class="helptext helppopup">%(help_text)s</span>' % {"help_text": '%s' % bf.help_text}
         errors = bf.errors
         if errors:
             value += '<br/>\n<ul class="errorlist">\n'
@@ -151,8 +154,8 @@ def get_field_tuple(name, form_or_model):
 
     else:
         name = _(pretty_name(name).lower())
-        label = u'%s:' % name.capitalize()
-        if callable(field):
+        label = '%s:' % name.capitalize()
+        if isinstance(field, collections.Callable):
             value = value_to_string(field())
         else:
             value = value_to_string(field)

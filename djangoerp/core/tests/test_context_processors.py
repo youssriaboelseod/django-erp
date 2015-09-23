@@ -131,7 +131,7 @@ class AuthContextProcessorTestCase(TestCase):
         obj_perms = data['obj_perms']
         
         self.assertEqual(
-            u"%s" % obj_perms['core']['view_user'],
+            "%s" % obj_perms['core']['view_user'],
             "[1]"
         )
         
@@ -142,7 +142,7 @@ class AuthContextProcessorTestCase(TestCase):
         obj_perms = data['obj_perms']
         
         self.assertEqual(
-            u"%s" % obj_perms['core'],
+            "%s" % obj_perms['core'],
             "[u'core.view_user.1', u'core.change_user.1', u'core.delete_user.1']"
         )
         
@@ -153,6 +153,6 @@ class AuthContextProcessorTestCase(TestCase):
         obj_perms = data['obj_perms']
         
         self.assertEqual(
-            u"%s" % obj_perms['core'],
+            "%s" % obj_perms['core'],
             "[u'core.view_user.1', u'core.view_user.2', u'core.change_user.1', u'core.change_user.2', u'core.delete_user.1', u'core.delete_user.2']"
         )

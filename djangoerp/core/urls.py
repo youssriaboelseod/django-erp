@@ -19,7 +19,7 @@ __version__ = '0.0.5'
 from django.conf.urls import url
 from django.views.generic import TemplateView
 
-from views import *
+from .views import *
 
 
 urlpatterns = [

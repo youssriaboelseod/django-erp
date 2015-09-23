@@ -20,8 +20,8 @@ from django.utils.translation import ugettext_noop as _
 from djangoerp.menus.utils import get_bookmarks_for
 from djangoerp.menus.models import Menu
 
-from loading import registry
-from forms import TextPluggetForm
+from .loading import registry
+from .forms import TextPluggetForm
 
 
 def dummy(context):
@@ -38,13 +38,13 @@ def menu(context):
      * name -- Slug of selected menu.
     """
     pk = None
-    if u"menu_id" in context:
+    if "menu_id" in context:
         # NOTE: Here, "context" is not a simple dict instance, so we can't use:
         #
         #       >> pk = context.pop("menu_id", None)
         #
-        pk = context.get(u'menu_id')
-        del context[u'menu_id']
+        pk = context.get('menu_id')
+        del context['menu_id']
     if pk:
         menu = Menu.objects.get(pk=pk)
         context["name"] = menu.slug
@@ -56,7 +56,7 @@ def bookmarks_menu(context):
     Shows all your bookmarks.
     """
     if 'user' in context:
-        context[u'menu_id'] = get_bookmarks_for(context['user'].username).pk  
+        context['menu_id'] = get_bookmarks_for(context['user'].username).pk  
     return menu(context)
         
 registry.register_simple_plugget_source(_("Text plugget"),  _("Simply renders a text paragraph."), form=TextPluggetForm)

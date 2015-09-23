@@ -19,7 +19,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from djangoerp.core.forms import enrich_form
 
-from models import *
+from .models import *
 
 class SubscriptionWidget(forms.MultiWidget):
     """Widget for subscription entry.
@@ -75,7 +75,7 @@ class SubscriptionsForm(forms.Form):
     def save(self):
         self.full_clean()
         data = self.cleaned_data
-        for key, (subscribe, email) in data.iteritems():
+        for key, (subscribe, email) in data.items():
             signature = Signature.objects.get(slug=key)
             is_subscriber = (Subscription.objects.filter(subscriber=self.subscriber, signature=signature).count() > 0)
             if subscribe:

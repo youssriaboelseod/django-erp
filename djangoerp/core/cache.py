@@ -15,7 +15,10 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
+from django.utils import six
 from django.contrib.auth.models import AnonymousUser
+
 
 # Inspired by http://stackoverflow.com/a/7469395/1063729
 
@@ -30,6 +33,8 @@ class Singleton(type):
             cls.instance = super(Singleton, cls).__call__(*args, **kwargs)
         return cls.instance
 
+
+@six.add_metaclass(Singleton)
 class LoggedInUserCache(object):
     """Stores the current user as a member attribute of a singleton.
     
@@ -43,7 +48,6 @@ class LoggedInUserCache(object):
     >> # ... code ... #
     >> logged_cache.user = current_user # Restore the value!
     """
-    __metaclass__ = Singleton
 
     user = AnonymousUser()
 

@@ -20,8 +20,8 @@ from django.db.models.signals import post_save, pre_delete
 from djangoerp.core.utils import get_model
 from djangoerp.core.signals import manage_author_permissions
 
-from models import Menu, Link, Bookmark
-from utils import create_bookmarks, delete_bookmarks
+from .models import Menu, Link, Bookmark
+from .utils import create_bookmarks, delete_bookmarks
 
 ## HANDLERS ##
 

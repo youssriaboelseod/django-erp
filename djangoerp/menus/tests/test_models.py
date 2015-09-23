@@ -25,11 +25,11 @@ class MenuTestCase(TestCase):
         """
         m = Menu.objects.create(slug="menu")
         
-        self.assertEqual(u"%s" % m, "menu")
+        self.assertEqual("%s" % m, "menu")
         
         m.description = "A test menu."
         
-        self.assertEqual(u"%s" % m, "A test menu.")
+        self.assertEqual("%s" % m, "A test menu.")
     
 class LinkTestCase(TestCase):
     urls = 'djangoerp.menus.tests.urls'
@@ -42,12 +42,12 @@ class LinkTestCase(TestCase):
         """
         l, n = Link.objects.get_or_create(title="Test Link", slug="l", url="/", menu=self.m)
         
-        self.assertEqual(u"%s" % l, u"menu | Test Link")
+        self.assertEqual("%s" % l, "menu | Test Link")
         
         l.title = "Test %(model_name)s"
         l.extra_context = {"model_name": "Connection"}
         
-        self.assertEqual(u"%s" % l, u"menu | Test Connection")
+        self.assertEqual("%s" % l, "menu | Test Connection")
         
     def test_plain_absolute_url(self):
         """Tests retrieving a plain Link's absolute URL.
@@ -107,12 +107,12 @@ class BookmarkTestCase(TestCase):
     def test_unicode_representation(self):
         """Tests Bookmark's unicode representation.
         """
-        self.assertEqual(u"%s" % self.b, "Test Bookmark")
+        self.assertEqual("%s" % self.b, "Test Bookmark")
         
         self.b.title = "Test %(model_name)s"
         self.b.extra_context = {"model_name": "Connection"}
         
-        self.assertEqual(u"%s" % self.b, u"Test Connection")
+        self.assertEqual("%s" % self.b, "Test Connection")
         
     def test_get_edit_url(self):
         """Tests retrieving the Bookmark's URL for editing.

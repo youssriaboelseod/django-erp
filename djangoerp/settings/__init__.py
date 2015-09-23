@@ -15,7 +15,9 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
-from base import *
+
+from .base import *
+
 
 # Auto-discovering of application specific settings.
 for app in INSTALLED_APPS:

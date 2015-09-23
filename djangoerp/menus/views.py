@@ -25,9 +25,9 @@ from djangoerp.core.utils import clean_http_referer
 from djangoerp.core.views import SetCancelUrlMixin, ModelListView
 from djangoerp.core.decorators import obj_permission_required as permission_required
 
-from utils import get_bookmarks_for
-from models import *
-from forms import *
+from .utils import get_bookmarks_for
+from .models import *
+from .forms import *
 
 def _get_bookmarks(request, *args, **kwargs):
     return get_bookmarks_for(request.user.username)

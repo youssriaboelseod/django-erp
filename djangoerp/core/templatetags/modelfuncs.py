@@ -15,7 +15,9 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from copy import copy
+from django.utils import six
 from django.db import models
 from django.utils.encoding import force_text
 from django import template
@@ -24,7 +26,9 @@ from django.contrib.contenttypes.models import ContentType
 from djangoerp.core.utils import get_model, get_fields
 from djangoerp.core.utils.rendering import field_to_string, get_field_type, get_field_tuple
 
+
 register = template.Library()
+
 
 @register.filter
 def model_name(obj):
@@ -39,6 +43,7 @@ def model_name(obj):
         pass
     return ""
 
+
 @register.filter
 def model_name_plural(obj):
     """Returns the pluralized model name for the given instance.
@@ -51,6 +56,7 @@ def model_name_plural(obj):
     except:
         pass
     return ""
+
 
 @register.filter
 def raw_model_name(obj):
@@ -73,9 +79,10 @@ def raw_model_name_plural(obj):
     """
     name = raw_model_name(obj)
     if name:
-        return u"%ss" % name
+        return "%ss" % name
     return ""
     
+
 @register.simple_tag(takes_context=True)
 def render_model_list(context, object_list, field_list=[], template_name="elements/model_list.html", uid=""):
     """Renders a table with given fields for all given model instances.
@@ -118,6 +125,7 @@ def render_model_list(context, object_list, field_list=[], template_name="elemen
     
     return render_to_string(template_name, new_context)
 
+
 @register.simple_tag(takes_context=True)
 def render_model_details(context, objects, field_layout=[], template_name="elements/model_details.html", uid=""):
     """Renders a details table from one or more model forms and/or instances.
@@ -129,12 +137,12 @@ def render_model_details(context, objects, field_layout=[], template_name="eleme
 
     Example tag usage: {% render_model_details "[object, form]" "[field1, [0.field2, 1.field3], field4]" %}
     """
-    if objects and isinstance(objects, basestring):
+    if objects and isinstance(objects, six.string_types):
         objects = eval(objects, {}, context)
     if not isinstance(objects, (list, tuple)):
         objects = [objects]
     
-    if isinstance(field_layout, basestring) and field_layout:
+    if isinstance(field_layout, six.string_types) and field_layout:
         field_layout = eval(field_layout)
     elif not field_layout:
         field_layout = []

@@ -17,7 +17,7 @@ __version__ = '0.0.5'
 
 
 from django.apps import apps as app_registry
-from dependencies import check_dependency
+from .dependencies import check_dependency
 
 
 class AppConfigMixin(object):

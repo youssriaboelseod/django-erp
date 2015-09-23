@@ -40,9 +40,9 @@ class SignalTestCase(TestCase):
         u1, n = get_user_model().objects.get_or_create(username="u1")
         dashboard = get_dashboard_for(u1.username)
         
-        self.assertTrue(ob.has_perm(u1, u"pluggets.view_region", dashboard))
-        self.assertTrue(ob.has_perm(u1, u"pluggets.change_region", dashboard))
-        self.assertTrue(ob.has_perm(u1, u"pluggets.delete_region", dashboard))        
+        self.assertTrue(ob.has_perm(u1, "pluggets.view_region", dashboard))
+        self.assertTrue(ob.has_perm(u1, "pluggets.change_region", dashboard))
+        self.assertTrue(ob.has_perm(u1, "pluggets.delete_region", dashboard))        
         
     def test_manage_author_permissions_on_plugget(self):
         """Tests that "manage_author_permissions" auto-generate perms for author. 
@@ -57,13 +57,13 @@ class SignalTestCase(TestCase):
         
         p1, n = Plugget.objects.get_or_create(region=get_dashboard_for(u2.username), title="p1", source="djangoerp.pluggets.base.dummy", template="pluggets/base_plugget.html")
         
-        self.assertTrue(ob.has_perm(u2, u"pluggets.view_plugget", p1))
-        self.assertTrue(ob.has_perm(u2, u"pluggets.change_plugget", p1))
-        self.assertTrue(ob.has_perm(u2, u"pluggets.delete_plugget", p1))
+        self.assertTrue(ob.has_perm(u2, "pluggets.view_plugget", p1))
+        self.assertTrue(ob.has_perm(u2, "pluggets.change_plugget", p1))
+        self.assertTrue(ob.has_perm(u2, "pluggets.delete_plugget", p1))
         
-        self.assertFalse(ob.has_perm(u3, u"pluggets.view_plugget", p1))
-        self.assertFalse(ob.has_perm(u3, u"pluggets.change_plugget", p1))
-        self.assertFalse(ob.has_perm(u3, u"pluggets.delete_plugget", p1))
+        self.assertFalse(ob.has_perm(u3, "pluggets.view_plugget", p1))
+        self.assertFalse(ob.has_perm(u3, "pluggets.change_plugget", p1))
+        self.assertFalse(ob.has_perm(u3, "pluggets.delete_plugget", p1))
         
         # Restores previous cached user.
         logged_cache.user = prev_user

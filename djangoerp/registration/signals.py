@@ -27,7 +27,7 @@ from django.template.loader import render_to_string
 from django.contrib.sites.models import Site
 from djangoerp.core.models import User
 
-from models import *
+from .models import *
 
 def user_post_registration(sender, instance, signal, *args, **kwargs):
     if kwargs['created'] \

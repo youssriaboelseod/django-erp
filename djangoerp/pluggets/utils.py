@@ -22,7 +22,7 @@ from django.contrib.auth import get_user_model
 def get_dashboard_for(username):
     """Returns the bookmarks menu for the user with the given username.
     """
-    from models import Region
+    from .models import Region
     user_model = get_user_model()
     try:
         user = user_model.objects.get(username=username)

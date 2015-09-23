@@ -41,7 +41,7 @@ class NotificationForTagTestCase(TestCase):
             ordered=False
         )
         
-        signature = Signature.objects.create(slug=u"test-notification")
+        signature = Signature.objects.create(slug="test-notification")
         
         n1 = Notification.objects.create(
             title="Test!",
@@ -93,7 +93,7 @@ class UnreadNotificationForTagTestCase(TestCase):
             ordered=False
         )
         
-        signature = Signature.objects.create(slug=u"test-notification")
+        signature = Signature.objects.create(slug="test-notification")
         
         n1 = Notification.objects.create(
             title="Test!",

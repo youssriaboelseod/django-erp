@@ -20,8 +20,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin, GroupAdmin
 from django.contrib.auth.models import Group as DjangoGroup
 
-from models import *
-from forms.auth import *
+from .models import *
+from .forms.auth import *
 
 class UserAdmin(DjangoUserAdmin):
     """Admin for custom User model.

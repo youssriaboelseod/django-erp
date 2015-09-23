@@ -20,7 +20,7 @@ import re
 from django.conf import settings  
 from django.contrib.auth.decorators import login_required
 
-from cache import LoggedInUserCache
+from .cache import LoggedInUserCache
 
 # Inspired by http://www.djangosnippets.org/snippets/1220/
 

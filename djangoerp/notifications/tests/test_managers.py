@@ -27,15 +27,15 @@ class NotificationQuerySetTestCase(TestCase):
         
         user_model = get_user_model()
         
-        self.u1 = user_model.objects.create(username=u"u1")
-        self.u2 = user_model.objects.create(username=u"u2")
-        self.signature = Signature.objects.create(slug=u"object-created")
+        self.u1 = user_model.objects.create(username="u1")
+        self.u2 = user_model.objects.create(username="u2")
+        self.signature = Signature.objects.create(slug="object-created")
         self.read_datetime = now()
-        self.n1 = Notification.objects.create(title=u"n1", target=self.u1, signature=self.signature)
-        self.n2 = Notification.objects.create(title=u"n2", target=self.u1, signature=self.signature)
-        self.n3 = Notification.objects.create(title=u"n3", target=self.u2, signature=self.signature)
-        self.n4 = Notification.objects.create(title=u"n4", target=self.u1, signature=self.signature, read=self.read_datetime)
-        self.n5 = Notification.objects.create(title=u"n5", target=self.u2, signature=self.signature, read=self.read_datetime)
+        self.n1 = Notification.objects.create(title="n1", target=self.u1, signature=self.signature)
+        self.n2 = Notification.objects.create(title="n2", target=self.u1, signature=self.signature)
+        self.n3 = Notification.objects.create(title="n3", target=self.u2, signature=self.signature)
+        self.n4 = Notification.objects.create(title="n4", target=self.u1, signature=self.signature, read=self.read_datetime)
+        self.n5 = Notification.objects.create(title="n5", target=self.u2, signature=self.signature, read=self.read_datetime)
         
     def test_read(self):
         """Tests returning read notifications.

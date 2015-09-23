@@ -27,7 +27,7 @@ from djangoerp.core.utils import get_model
 from djangoerp.core.models import Permission, ObjectPermission
 from djangoerp.core.cache import LoggedInUserCache
 
-from models import *
+from .models import *
 
 
 ## HANDLERS ##
@@ -57,7 +57,7 @@ def _notify_changes(sender, instance, **kwargs):
 
         else:
             changes = {}
-            for name, (old_value, value) in instance._Observable__changes.items():
+            for name, (old_value, value) in list(instance._Observable__changes.items()):
                 if value != old_value:
                     changes[name] = (old_value, value)
                     if name in instance._Observable__subscriber_fields:

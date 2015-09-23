@@ -25,7 +25,7 @@ from django.contrib.auth import get_user_model
 from djangoerp.core.utils import get_model
 from djangoerp.core.signals import manage_author_permissions
 
-from models import *
+from .models import *
 
 
 class _DashboardRegistry:

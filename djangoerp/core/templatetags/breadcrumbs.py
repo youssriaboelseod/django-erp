@@ -35,7 +35,7 @@ def add_crumb(context, crumb, url=None, *args):
             href = reverse(url, args=args)
         if not hasattr(context['request'], "breadcrumbs"):
             context['request'].breadcrumbs = []
-        context['request'].breadcrumbs.append((u'%s' % crumb, href))
+        context['request'].breadcrumbs.append(('%s' % crumb, href))
     return ""
 
 @register.simple_tag(takes_context=True)

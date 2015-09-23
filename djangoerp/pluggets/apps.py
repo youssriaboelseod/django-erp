@@ -19,7 +19,7 @@ __version__ = '0.0.5'
 from django.apps import AppConfig
 from djangoerp.core.utils.apps import AppConfigMixin
 
-from loading import registry
+from .loading import registry
 
 
 class PluggetsAppConfig(AppConfigMixin, AppConfig):

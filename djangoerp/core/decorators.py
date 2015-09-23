@@ -16,8 +16,9 @@ __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
 
-import urlparse
-from functools import wraps
+import collections
+from django.utils import six
+from django.utils.six.moves.urllib.parse import urlparse
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.utils.decorators import available_attrs
@@ -35,23 +36,23 @@ def obj_permission_required(perm, get_obj_func=None, login_url=None, redirect_fi
     passing the arguments of the decorated view).
     """
     def decorator(viewfunc):
-        @wraps(viewfunc, assigned=available_attrs(viewfunc))
+        @six.wraps(viewfunc, assigned=available_attrs(viewfunc))
         def _wrapped_view(request, *args, **kwargs):
             obj = None
             perm_name = perm
-            if callable(perm):
+            if isinstance(perm, collections.Callable):
                 perm_name = perm(request, *args, **kwargs)
             if request.user.has_perm(perm_name):
                 return viewfunc(request, *args, **kwargs)
-            if callable(get_obj_func):
+            if isinstance(get_obj_func, collections.Callable):
                 obj = get_obj_func(request, *args, **kwargs)
             if request.user.has_perm(perm_name, obj):
                 return viewfunc(request, *args, **kwargs)
             path = request.build_absolute_uri()
             # If the login url is the same scheme and net location then just
             # use the path as the "next" url.
-            login_scheme, login_netloc = urlparse.urlparse(login_url or settings.LOGIN_URL)[:2]
-            current_scheme, current_netloc = urlparse.urlparse(path)[:2]
+            login_scheme, login_netloc = urlparse(login_url or settings.LOGIN_URL)[:2]
+            current_scheme, current_netloc = urlparse(path)[:2]
             if ((not login_scheme or login_scheme == current_scheme) and
                 (not login_netloc or login_netloc == current_netloc)):
                 path = request.get_full_path()

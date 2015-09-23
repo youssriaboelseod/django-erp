@@ -20,9 +20,9 @@ from django.db.models.signals import post_save
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 
-from utils import get_model
-from cache import LoggedInUserCache
-from models import Permission, ObjectPermission, Group
+from .utils import get_model
+from .cache import LoggedInUserCache
+from .models import Permission, ObjectPermission, Group
 
 ## HANDLERS ##
 

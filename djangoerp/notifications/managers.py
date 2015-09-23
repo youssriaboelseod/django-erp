@@ -26,7 +26,7 @@ class _GFKQuerySet(QuerySet):
         gfk_fields = [g for g in self.model._meta.virtual_fields if isinstance(g, GenericForeignKey)]
 
         for gfk in gfk_fields:
-            if kwargs.has_key(gfk.name):
+            if gfk.name in kwargs:
                 param = kwargs.pop(gfk.name)
                 kwargs[gfk.fk_field] = param.pk
                 kwargs[gfk.ct_field] = ContentType.objects.get_for_model(param)
@@ -65,7 +65,7 @@ class ActivityManager(_GFKManager):
     def create(self, *args, **kwargs):
         """Create and notifies the activity to all the followers.
         """
-        from models import Signature, Subscription, Notification
+        from .models import Signature, Subscription, Notification
 
         source = kwargs.get("source", None)
 
@@ -79,7 +79,7 @@ class ActivityManager(_GFKManager):
             # NOTE: Don't change "==" to "is".
             if (follower == source and instance.source) or (follower in subscribers):
                 notification, is_new = Notification.objects.get_or_create(
-                    title=u"%s" % instance,
+                    title="%s" % instance,
                     description=content,
                     target=follower,
                     signature=signature,

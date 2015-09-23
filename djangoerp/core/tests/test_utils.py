@@ -202,7 +202,7 @@ class DependencyTestCase(TestCase):
           check_dependency("supercalifragidilistichespiralidoso.core")
           self.fail()
         except DependencyError as e:
-          self.assertEqual("%s" % e, u"A dependency is not satisfied: supercalifragidilistichespiralidoso.core")
+          self.assertEqual("%s" % e, "A dependency is not satisfied: supercalifragidilistichespiralidoso.core")
 
 class RenderingValueToStringTestCase(TestCase):
     def test_empty_value_to_string(self):
@@ -284,7 +284,7 @@ class RenderingFieldToValueTestCase(TestCase):
         """
         self.assertEqual(
             field_to_value(self.field_list['user'], self.test_obj),
-            mark_safe(render_to_string('elements/link.html', {"url": self.u1.get_absolute_url(), "caption": u"%s" % self.u1}))
+            mark_safe(render_to_string('elements/link.html', {"url": self.u1.get_absolute_url(), "caption": "%s" % self.u1}))
         )
         
         self.assertEqual(
@@ -379,16 +379,16 @@ class RenderGetFieldTupeTestCase(TestCase):
     def test_get_typle_for_object_attr(self):
         """Tests returning a tuple for an arbitrary object's attribute.
         """
-        self.assertEqual(get_field_tuple("test", self.o), (u'Test:', u'', 'A small test'))
-        self.assertEqual(get_field_tuple("test1", self.o), (u'Test1:', u'', 'Test'))
-        self.assertEqual(get_field_tuple("test2", self.o), (u'Something:', u'', 'Foo'))
+        self.assertEqual(get_field_tuple("test", self.o), ('Test:', '', 'A small test'))
+        self.assertEqual(get_field_tuple("test1", self.o), ('Test1:', '', 'Test'))
+        self.assertEqual(get_field_tuple("test2", self.o), ('Something:', '', 'Foo'))
         
     def test_get_typle_for_model_field(self):
         """Tests returning a tuple for a model instance's field.
         """
-        self.assertEqual(get_field_tuple("username", self.m), (u'Username:', u'', 'u'))
-        self.assertEqual(get_field_tuple("email", self.m), (u'Email:', u'', u'<a href="mailto:u@u.it">u@u.it</a>'))
-        self.assertEqual(get_field_tuple("password", self.m), (u'Password:', u'', u'password'))
+        self.assertEqual(get_field_tuple("username", self.m), ('Username:', '', 'u'))
+        self.assertEqual(get_field_tuple("email", self.m), ('Email:', '', '<a href="mailto:u@u.it">u@u.it</a>'))
+        self.assertEqual(get_field_tuple("password", self.m), ('Password:', '', 'password'))
         
     def test_get_typle_for_form_field(self):
         """Tests returning a tuple for a form instance's field.
@@ -396,27 +396,27 @@ class RenderGetFieldTupeTestCase(TestCase):
         self.assertEqual(
             get_field_tuple("username", self.f),
             (
-                u'<label class="required" for="id_username">Username:</label>',
-                u' class="required"',
-                u'<input id="id_username" maxlength="30" name="username" type="text" value="u" /><br/><span title="Required. 30 characters or fewer. Letters, numbers and @/./+/-/_ characters" class="helptext helppopup">Required. 30 characters or fewer. Letters, numbers and @/./+/-/_ characters</span>'
+                '<label class="required" for="id_username">Username:</label>',
+                ' class="required"',
+                '<input id="id_username" maxlength="30" name="username" type="text" value="u" /><br/><span title="Required. 30 characters or fewer. Letters, numbers and @/./+/-/_ characters" class="helptext helppopup">Required. 30 characters or fewer. Letters, numbers and @/./+/-/_ characters</span>'
             )
         )
         
         self.assertEqual(
             get_field_tuple("email", self.f),
             (
-                u'<label class="required" for="id_email">Email:</label>',
-                u' class="required"',
-                u'<input id="id_email" maxlength="254" name="email" type="email" value="u@u.it" />'
+                '<label class="required" for="id_email">Email:</label>',
+                ' class="required"',
+                '<input id="id_email" maxlength="254" name="email" type="email" value="u@u.it" />'
             )
         )
         
         self.assertEqual(
             get_field_tuple("password2", self.f),
             (
-                u'<label for="id_password2">Password confirmation:</label>',
-                u' class="errors"',
-                u'<input id="id_password2" name="password2" type="password" /><br/><span title="Enter the same password as above, for verification." class="helptext helppopup">Enter the same password as above, for verification.</span><br/>\n<ul class="errorlist">\n\t<li>This field is required.</li>\n</ul>\n'
+                '<label for="id_password2">Password confirmation:</label>',
+                ' class="errors"',
+                '<input id="id_password2" name="password2" type="password" /><br/><span title="Enter the same password as above, for verification." class="helptext helppopup">Enter the same password as above, for verification.</span><br/>\n<ul class="errorlist">\n\t<li>This field is required.</li>\n</ul>\n'
             )
         )
     

@@ -56,13 +56,13 @@ class SignalTestCase(TestCase):
         clear_perm_caches(u5)
         clear_perm_caches(u6)
         
-        self.assertTrue(ob.has_perm(u3, u"%s.view_user" % auth_app, u5))
-        self.assertTrue(ob.has_perm(u3, u"%s.change_user" % auth_app, u5))
-        self.assertTrue(ob.has_perm(u3, u"%s.delete_user" % auth_app, u5))
+        self.assertTrue(ob.has_perm(u3, "%s.view_user" % auth_app, u5))
+        self.assertTrue(ob.has_perm(u3, "%s.change_user" % auth_app, u5))
+        self.assertTrue(ob.has_perm(u3, "%s.delete_user" % auth_app, u5))
         
-        self.assertFalse(ob.has_perm(u5, u"%s.view_user" % auth_app, u3))
-        self.assertFalse(ob.has_perm(u5, u"%s.change_user" % auth_app, u3))
-        self.assertFalse(ob.has_perm(u5, u"%s.delete_user" % auth_app, u3))
+        self.assertFalse(ob.has_perm(u5, "%s.view_user" % auth_app, u3))
+        self.assertFalse(ob.has_perm(u5, "%s.change_user" % auth_app, u3))
+        self.assertFalse(ob.has_perm(u5, "%s.delete_user" % auth_app, u3))
         
         # Restores previous cached user.
         logged_cache.user = prev_user
@@ -87,13 +87,13 @@ class SignalTestCase(TestCase):
         clear_perm_caches(u3)
         clear_perm_caches(u4)
         
-        self.assertTrue(ob.has_perm(u3, u"%s.view_user" % auth_app, u7))
-        self.assertTrue(ob.has_perm(u3, u"%s.change_user" % auth_app, u7))
-        self.assertTrue(ob.has_perm(u3, u"%s.delete_user" % auth_app, u7))
+        self.assertTrue(ob.has_perm(u3, "%s.view_user" % auth_app, u7))
+        self.assertTrue(ob.has_perm(u3, "%s.change_user" % auth_app, u7))
+        self.assertTrue(ob.has_perm(u3, "%s.delete_user" % auth_app, u7))
         
-        self.assertFalse(ob.has_perm(u4, u"%s.view_user" % auth_app, u7))
-        self.assertFalse(ob.has_perm(u4, u"%s.change_user" % auth_app, u7))
-        self.assertFalse(ob.has_perm(u4, u"%s.delete_user" % auth_app, u7))
+        self.assertFalse(ob.has_perm(u4, "%s.view_user" % auth_app, u7))
+        self.assertFalse(ob.has_perm(u4, "%s.change_user" % auth_app, u7))
+        self.assertFalse(ob.has_perm(u4, "%s.delete_user" % auth_app, u7))
         
         # The current author ("logged" user) is now u4.
         logged_cache.user = u4
@@ -103,9 +103,9 @@ class SignalTestCase(TestCase):
         
         clear_perm_caches(u4)
         
-        self.assertFalse(ob.has_perm(u4, u"%s.view_user" % auth_app, u7))
-        self.assertFalse(ob.has_perm(u4, u"%s.change_user" % auth_app, u7))
-        self.assertFalse(ob.has_perm(u4, u"%s.delete_user" % auth_app, u7))
+        self.assertFalse(ob.has_perm(u4, "%s.view_user" % auth_app, u7))
+        self.assertFalse(ob.has_perm(u4, "%s.change_user" % auth_app, u7))
+        self.assertFalse(ob.has_perm(u4, "%s.delete_user" % auth_app, u7))
         
         # Restores previous cached user.
         logged_cache.user = prev_user
@@ -125,9 +125,9 @@ class SignalTestCase(TestCase):
         clear_perm_caches(u8)
         
         self.assertFalse(logged_cache.has_user)
-        self.assertFalse(ob.has_perm(logged_cache.user, u"%s.view_user" % auth_app, u8))
-        self.assertFalse(ob.has_perm(logged_cache.user, u"%s.change_user" % auth_app, u8))
-        self.assertFalse(ob.has_perm(logged_cache.user, u"%s.delete_user" % auth_app, u8))
+        self.assertFalse(ob.has_perm(logged_cache.user, "%s.view_user" % auth_app, u8))
+        self.assertFalse(ob.has_perm(logged_cache.user, "%s.change_user" % auth_app, u8))
+        self.assertFalse(ob.has_perm(logged_cache.user, "%s.delete_user" % auth_app, u8))
         
         # Restores previous cached user.
         logged_cache.user = prev_user

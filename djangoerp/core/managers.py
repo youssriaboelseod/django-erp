@@ -87,12 +87,12 @@ class ObjectPermissionManager(models.Manager):
         return self.filter(perm__content_type=ct, object_id=obj.pk)
         
     def get_by_natural_key(self, codename, app_label, model, object_id):
-        from models import Permission
+        from .models import Permission
         perm = Permission.objects.get_by_natural_key(codename, app_label, model)
         return self.get(perm=perm, object_id=int(object_id))
 
     def get_or_create_by_natural_key(self, codename, app_label, model, object_id):
-        from models import Permission
+        from .models import Permission
         perm, is_new = Permission.objects.get_or_create_by_natural_key(codename, app_label, model)
         return self.get_or_create(perm=perm, object_id=int(object_id))
         
