@@ -21,14 +21,22 @@ from django.conf import settings
 
 from models import *
 
+if "djangoerp.registration" in settings.INSTALLED_APPS:
 
-class AppConfigTestCase(TestCase):
-    def test_initial_fixture_installation(self):
-        """Tests installation of initial fixture.
-        """
-        from djangoerp.menus.models import Link
-        
-        # Links.
-        register_link, is_new = Link.objects.get_or_create(slug="register")
-        self.assertTrue(register_link)
-        self.assertFalse(is_new)
+    class AppConfigTestCase(TestCase):
+        def test_initial_fixture_installation(self):
+            """Tests installation of initial fixture.
+            """
+            from djangoerp.menus.models import Link, Menu
+
+            user_area_not_logged_menu, is_new = Menu.objects.get_or_create(
+                slug="user_area_not_logged"
+            )
+            
+            # Links.
+            register_link, is_new = Link.objects.get_or_create(
+                slug="register",
+                menu_id=user_area_not_logged_menu.pk
+            )
+            self.assertTrue(register_link)
+            self.assertFalse(is_new)
