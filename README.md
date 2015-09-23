@@ -1,5 +1,5 @@
-django ERP
-==========
+![django ERP](http://django-erp.github.io/django-erp/static/logo.png "django ERP")
+==================================================================================
 
 [![Build Status](https://travis-ci.org/django-erp/django-erp.svg?branch=develop)](https://travis-ci.org/django-erp/django-erp)
 
