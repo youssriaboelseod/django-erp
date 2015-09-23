@@ -50,3 +50,7 @@ _site
 *.db
 djangoerp/settings/base.py
 djangoerp/media
+
+#docs
+
+docs/_build/*
