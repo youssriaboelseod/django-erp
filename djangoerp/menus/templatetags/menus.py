@@ -15,8 +15,10 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 import re
 from django import template
+from django.conf import settings
 from django.utils.translation import ugettext as _
 from django.template.loader import render_to_string
 from django.contrib.auth import get_user_model
@@ -24,9 +26,9 @@ from django.contrib.auth.models import AnonymousUser
 
 from ..models import Menu
 
+
 register = template.Library()
 
-DEFAULT_MENU_TEMPLATE = "menus/menu.html"
 
 def _calculate_link_params(link, context):
     """Helper function which takes a Link instance and a context and calculates
@@ -53,7 +55,7 @@ def _calculate_link_params(link, context):
     return link
     
 
-def _render_menu(slug, context, html_template=DEFAULT_MENU_TEMPLATE):
+def _render_menu(slug, context, html_template=settings.MENU_DEFAULT_TEMPLATE):
     """Helper function which takes a menu slug, a context and a template and
     renders the given menu using the given template with the given context.
     """
@@ -74,14 +76,16 @@ def _render_menu(slug, context, html_template=DEFAULT_MENU_TEMPLATE):
         return render_to_string(html_template, {'slug': slug, 'links': links}, context)
     return ""
 
+
 @register.simple_tag(takes_context=True)
-def render_menu(context, slug, html_template=DEFAULT_MENU_TEMPLATE):
+def render_menu(context, slug, html_template=settings.MENU_DEFAULT_TEMPLATE):
     """Renders a menu.
 
     Example tag usage: {% render_menu menu_slug [html_template] %}
     """
     return _render_menu(slug, context, html_template)
     
+
 @register.simple_tag(takes_context=True)
 def render_user_bookmarks(context):
     """Renders the bookmark menu for the current logged user.
@@ -92,6 +96,7 @@ def render_user_bookmarks(context):
     if isinstance(user, get_user_model()) and user.pk:
         return _render_menu("user_%d_bookmarks" % user.pk, context)
     return ""    
+
 
 @register.assignment_tag(takes_context=True)
 def score_link(context, link, ref_url, css_class="active"):

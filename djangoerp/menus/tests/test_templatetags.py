@@ -16,6 +16,7 @@ __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
 import copy
+from django.conf import settings
 from django.test import TestCase
 from django.template import Context
 from django.contrib.auth import get_user_model
@@ -59,7 +60,7 @@ class RenderMenuTagTestCase(TestCase):
         self.context = Context({
             "user": self.su,
             "menu_slug": self.m.slug,
-            "menu_template": DEFAULT_MENU_TEMPLATE,
+            "menu_template": settings.MENU_DEFAULT_TEMPLATE,
             "link4_url_id_kwarg": "1",
             "link5_title": "Link 5",
             "link5_url": "/link5"
