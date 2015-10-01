@@ -55,7 +55,7 @@ def _calculate_link_params(link, context):
     return link
     
 
-def _render_menu(slug, context, html_template=settings.MENU_DEFAULT_TEMPLATE):
+def _render_menu(slug, context, html_template=settings.MENU_DEFAULT_TEMPLATE, css_class=None):
     """Helper function which takes a menu slug, a context and a template and
     renders the given menu using the given template with the given context.
     """
@@ -65,6 +65,8 @@ def _render_menu(slug, context, html_template=settings.MENU_DEFAULT_TEMPLATE):
             slug = slug.resolve(context)
         if isinstance(html_template, template.Variable):
            html_template = html_template.resolve(context)
+        if isinstance(css_class, template.Variable):
+           css_class = css_class.resolve(context)
         menu = Menu.objects.get(slug=slug)
         links = menu.links.all()
         for link in links:
@@ -73,28 +75,28 @@ def _render_menu(slug, context, html_template=settings.MENU_DEFAULT_TEMPLATE):
         pass
     html_template = ("%s" % html_template).replace('"', '').replace("'", "")
     if links:
-        return render_to_string(html_template, {'slug': slug, 'links': links}, context)
+        return render_to_string(html_template, {'slug': slug, 'links': links, 'css_class': css_class}, context)
     return ""
 
 
 @register.simple_tag(takes_context=True)
-def render_menu(context, slug, html_template=settings.MENU_DEFAULT_TEMPLATE):
+def render_menu(context, slug, html_template=settings.MENU_DEFAULT_TEMPLATE, css_class=None):
     """Renders a menu.
 
-    Example tag usage: {% render_menu menu_slug [html_template] %}
+    Example tag usage: {% render_menu menu_slug [html_template] [css_class] %}
     """
-    return _render_menu(slug, context, html_template)
+    return _render_menu(slug, context, html_template, css_class)
     
 
 @register.simple_tag(takes_context=True)
-def render_user_bookmarks(context):
+def render_user_bookmarks(context, css_class=None):
     """Renders the bookmark menu for the current logged user.
     
-    Example tag usage: {% render_user_bookmarks %}
+    Example tag usage: {% render_user_bookmarks [css_class] %}
     """
     user = context.get('user', None)
     if isinstance(user, get_user_model()) and user.pk:
-        return _render_menu("user_%d_bookmarks" % user.pk, context)
+        return _render_menu("user_%d_bookmarks" % user.pk, context, settings.MENU_DEFAULT_TEMPLATE, css_class)
     return ""    
 
 
@@ -102,7 +104,7 @@ def render_user_bookmarks(context):
 def score_link(context, link, ref_url, css_class="active"):
     """Checks if the link instance is the best match for "ref_url".
 
-    Example tag usage: {% score_link link ref_url [css_class] as class %}
+    Example tag usage: {% score_link link ref_url [css_class ] as class %}
     """
     def best_match(menu, parent=None, score=len(ref_url), matched_link=None):
         if menu:
