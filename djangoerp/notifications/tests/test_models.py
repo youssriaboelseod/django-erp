@@ -154,7 +154,7 @@ class NotificationTestCase(TestCase):
         """Tests checking of a valid subscription of target for given signature.
         """
         """
-        s = Signature.objects.create(slug=u"another-object-activity-signature")
+        s = Signature.objects.create(slug="another-object-activity-signature")
         
         self.assertEqual(Subscription.objects.filter(subscriber=self.u1, signature=s).count(), 0)
         
