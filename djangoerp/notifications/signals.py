@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -12,7 +13,7 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
+__copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
 __version__ = '0.0.5'
 
 
@@ -211,7 +212,7 @@ def make_observable(cls, exclude=['modified'], auto_subscriber_fields=['parent',
             __change_exclude = exclude
             __subscriber_fields = auto_subscriber_fields
 
-        _Observable.__name__ = cls.__name__ + "Observable"
+        _Observable.__name__ = cls.__name__ + str("Observable")
 
         setattr(sys.modules[__name__], _Observable.__name__, _Observable)
 
