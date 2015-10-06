@@ -61,7 +61,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='link',
             name='submenu',
-            field=models.ForeignKey(related_name='parent_links', db_column=b'submenu_id', blank=True, to='menus.Menu', null=True, verbose_name='sub-menu'),
+            field=models.ForeignKey(related_name='parent_links', db_column='submenu_id', blank=True, to='menus.Menu', null=True, verbose_name='sub-menu'),
         ),
         migrations.CreateModel(
             name='Bookmark',

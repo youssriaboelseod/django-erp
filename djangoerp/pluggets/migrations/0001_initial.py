@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=100, verbose_name='title')),
                 ('description', models.TextField(null=True, verbose_name='description', blank=True)),
                 ('source', models.CharField(max_length=256, verbose_name='source')),
-                ('template', models.CharField(default=b'pluggets/base_plugget.html', max_length=256, verbose_name='template')),
+                ('template', models.CharField(default='pluggets/base_plugget.html', max_length=256, verbose_name='template')),
                 ('context', models.TextField(blank=True, help_text='Use the JSON syntax.', null=True, verbose_name='context', validators=[djangoerp.core.models.validate_json])),
                 ('sort_order', models.PositiveIntegerField(default=0, verbose_name='sort order')),
             ],
