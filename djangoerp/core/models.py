@@ -94,7 +94,7 @@ class Group(DjangoGroup):
     def __str__(self):
         """In this proxy class the name is returned already translated.
         """
-        return "%s" % _(super(Group, self).__unicode__())
+        return "%s" % _(super(Group, self).__str__())
 
 class Permission(DjangoPermission):
     """A proxy for Permission model which uses a custom manager.
