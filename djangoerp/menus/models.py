@@ -15,6 +15,7 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django.db import models
 from django.db.models import permalink
 from django.shortcuts import get_object_or_404
@@ -22,12 +23,14 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from djangoerp.core.models import validate_json
+
         
 class Menu(models.Model):
     """Menu model.
     """
     slug = models.SlugField(max_length=100, unique=True, verbose_name=_('slug'))
     description = models.CharField(max_length=200, blank=True, null=True, verbose_name=_('description'))
+    template_name = models.CharField(max_length=255, blank=True, verbose_name=_('template name'))
 
     class Meta:
         verbose_name = _('menu')
@@ -36,15 +39,18 @@ class Menu(models.Model):
     def __unicode__(self):
         return self.description or self.slug
 
+
 class Link(models.Model):
     """A generic menu entry.
     """
     menu = models.ForeignKey(Menu, related_name='links', verbose_name=_('menu'))
-    title = models.CharField(max_length=100, verbose_name=_('title'))
+    title = models.CharField(max_length=255, verbose_name=_('title'))
     slug = models.SlugField(unique=True, verbose_name=_('slug'))
-    url = models.CharField(max_length=200, verbose_name=_('url'))
+    url = models.CharField(max_length=255, verbose_name=_('url'))
+    icon = models.CharField(max_length=100, blank=True, verbose_name=_('icon'))
+    template_name = models.CharField(max_length=255, blank=True, verbose_name=_('template name'))
     context = models.TextField(blank=True, null=True, validators=[validate_json], help_text=_('Use the JSON syntax.'), verbose_name=_('context'))
-    description = models.CharField(max_length=200, blank=True, null=True, verbose_name=_('description'))
+    description = models.CharField(max_length=255, blank=True, null=True, verbose_name=_('description'))
     new_window = models.BooleanField(default=False, verbose_name=_('New window'))
     sort_order = models.PositiveIntegerField(default=0, verbose_name=_('sort order'))
     submenu = models.ForeignKey(Menu, db_column='submenu_id', related_name='parent_links', blank=True, null=True, verbose_name=_('sub-menu'))
@@ -62,7 +68,7 @@ class Link(models.Model):
         super(Link, self).__init__(*args, **kwargs)
 
     def __unicode__(self):
-        return '%s | %s' % (self.menu, self.title % self.extra_context)
+        return u'%s | %s' % (self.menu, self.get_title())
 
     def get_absolute_url(self):
         import json
@@ -71,7 +77,7 @@ class Link(models.Model):
         
         link_context = {}
         
-        for k, v in list(json.loads(self.context or "{}").items()):
+        for k, v in json.loads(self.context or "{}").items():
             value = v
             try:
                 v = Variable(v).resolve(self.extra_context)
@@ -88,6 +94,19 @@ class Link(models.Model):
             
         return absolute_url
 
+    def get_title(self):
+        return self.title % self.extra_context
+
+    def get_description(self):
+        return self.description % self.extra_context
+
+    def get_template_name(self):
+        return self.template_name % self.extra_context
+
+    def get_icon(self):
+        return self.icon % self.extra_context
+
+
 class Bookmark(Link):
     """A proxy model for bookmark links.
     """
@@ -97,7 +116,7 @@ class Bookmark(Link):
         verbose_name_plural = _('bookmarks')
 
     def __unicode__(self):
-        return '%s' % (self.title % self.extra_context)
+        return u'%s' % (self.title % self.extra_context)
         
     @models.permalink
     def get_edit_url(self):
