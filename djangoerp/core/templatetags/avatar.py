@@ -22,7 +22,7 @@ from django import template
 register = template.Library()
 
 @register.simple_tag
-def avatar(email, size=32, default="mm", css_class="ui avatar image"):
+def avatar(email, size=32, default="mm", css_class="avatar image"):
     """Returns the gravatar image associated to the given email.
     
     More info: http://www.gravatar.com
@@ -32,7 +32,7 @@ def avatar(email, size=32, default="mm", css_class="ui avatar image"):
     # Creates and returns the URL.
     h = ""
     if email:
-        h = md5(email).hexdigest()
+        h = md5(email.encode('utf-8')).hexdigest()
     url = 'http://www.gravatar.com/avatar/%s?s=%s&r=g' % (h, size)
     
     # Adds a default image URL (if present).

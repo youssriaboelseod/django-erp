@@ -695,7 +695,7 @@ class AvatarTagTestCase(TestCase):
         """
         self.assertEqual(
             avatar(None),
-            '<span class="avatar"><img width="36" height="36" src="http://www.gravatar.com/avatar/?s=36&r=g" /></span>'
+            '<img class="avatar image" width="32" height="32" src="http://www.gravatar.com/avatar/?s=32&r=g&d=mm" />'
         )
         
     def test_valid_avatar(self):
@@ -703,7 +703,7 @@ class AvatarTagTestCase(TestCase):
         """
         self.assertEqual(
             avatar("u@u.it"),
-            '<span class="avatar"><img width="36" height="36" src="http://www.gravatar.com/avatar/754331256868501f6cdcc08efab6dd1e?s=36&r=g" /></span>'
+            '<img class="avatar image" width="32" height="32" src="http://www.gravatar.com/avatar/754331256868501f6cdcc08efab6dd1e?s=32&r=g&d=mm" />'
         )
         
     def test_set_avatar_size(self):
@@ -711,7 +711,7 @@ class AvatarTagTestCase(TestCase):
         """
         self.assertEqual(
             avatar("u@u.it", 80),
-            '<span class="avatar"><img width="80" height="80" src="http://www.gravatar.com/avatar/754331256868501f6cdcc08efab6dd1e?s=80&r=g" /></span>'
+            '<img class="avatar image" width="80" height="80" src="http://www.gravatar.com/avatar/754331256868501f6cdcc08efab6dd1e?s=80&r=g&d=mm" />'
         )
         
     def test_set_default_avatar(self):
@@ -719,5 +719,5 @@ class AvatarTagTestCase(TestCase):
         """
         self.assertEqual(
             avatar("u@u.it", default="http://localhost:8000/my_default_image.jpg"),
-            '<span class="avatar"><img width="36" height="36" src="http://www.gravatar.com/avatar/754331256868501f6cdcc08efab6dd1e?s=36&r=g&d=http://localhost:8000/my_default_image.jpg" /></span>'
+            '<img class="avatar image" width="32" height="32" src="http://www.gravatar.com/avatar/754331256868501f6cdcc08efab6dd1e?s=32&r=g&d=http://localhost:8000/my_default_image.jpg" />'
         )
