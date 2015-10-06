@@ -18,6 +18,7 @@ __version__ = '0.0.5'
 
 
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 from django.db.models import permalink
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
@@ -25,7 +26,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from djangoerp.core.models import validate_json
 
-        
+
+@python_2_unicode_compatible
 class Menu(models.Model):
     """Menu model.
     """
@@ -37,10 +39,11 @@ class Menu(models.Model):
         verbose_name = _('menu')
         verbose_name_plural = _('menus')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.description or self.slug
 
 
+@python_2_unicode_compatible
 class Link(models.Model):
     """A generic menu entry.
     """
@@ -68,7 +71,7 @@ class Link(models.Model):
         self.extra_context = kwargs.pop("extra_context", {})
         super(Link, self).__init__(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s | %s' % (self.menu, self.get_title())
 
     def get_absolute_url(self):
@@ -108,6 +111,7 @@ class Link(models.Model):
         return self.icon % self.extra_context
 
 
+@python_2_unicode_compatible
 class Bookmark(Link):
     """A proxy model for bookmark links.
     """
@@ -116,7 +120,7 @@ class Bookmark(Link):
         verbose_name = _('bookmark')
         verbose_name_plural = _('bookmarks')
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s' % (self.title % self.extra_context)
         
     @models.permalink
