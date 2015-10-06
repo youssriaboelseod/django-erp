@@ -19,7 +19,7 @@ __version__ = '0.0.5'
 import re
 import json
 from copy import copy
-
+from django.conf import settings
 from django import template
 from django.utils.translation import ugettext as _
 from django.template.loader import render_to_string
@@ -103,7 +103,7 @@ def render_region(context, region_slug, template_name=None):
         region = Region.objects.get(slug=region_slug)
         context['region'] = region
         
-        return render_to_string(template_name or "pluggets/region.html", context)
+        return render_to_string(template_name or settings.REGION_DEFAULT_TEMPLATE, context)
         
     except ObjectDoesNotExist:
         pass
