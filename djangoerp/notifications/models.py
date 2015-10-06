@@ -19,6 +19,7 @@ __version__ = '0.0.5'
 import hashlib, json
 from datetime import datetime
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -29,6 +30,8 @@ from djangoerp.core.utils.rendering import field_to_string
 
 from .managers import *
 
+
+@python_2_unicode_compatible
 class FollowRelation(models.Model):
     """It represents a relation  model between a watcher and a watched object.
     """
@@ -45,9 +48,10 @@ class FollowRelation(models.Model):
         verbose_name = _('follow relation')
         verbose_name_plural = _('follow relations')
 
-    def __unicode__(self):
+    def __str__(self):
         return _("%s followed by %s") % (self.followed, self.follower)
 
+@python_2_unicode_compatible
 class Signature(models.Model):
     """It represents the identifier of an activity and/or a notification.
     """
@@ -58,7 +62,7 @@ class Signature(models.Model):
         verbose_name = _('signature')
         verbose_name_plural = _('signatures')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
         
     def save(self, *args, **kwargs):
@@ -66,7 +70,8 @@ class Signature(models.Model):
             from django.forms.forms import BoundField, pretty_name
             self.title = pretty_name(self.slug).replace("-", " ").capitalize()
         super(Signature, self).save(*args, **kwargs)
-        
+ 
+@python_2_unicode_compatible       
 class Subscription(models.Model):
     """A Subscription allows a per-signature-based filtering of notifications.
     """
@@ -83,9 +88,10 @@ class Subscription(models.Model):
         verbose_name = _('subscription')
         verbose_name_plural = _('subscriptions')
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s | %s" % (self.subscriber, self.signature)
 
+@python_2_unicode_compatible
 class Activity(models.Model):
     """An activity is a registered event that happens at a specific time.
     
@@ -108,7 +114,7 @@ class Activity(models.Model):
         verbose_name_plural = _('activities')
         ordering = ('-created',)
 
-    def __unicode__(self):
+    def __str__(self):
         try:
             return self.title % self.get_context()
         except KeyError:
@@ -130,6 +136,7 @@ class Activity(models.Model):
     def get_absolute_url(self):
         return self.backlink or ""
 
+python_2_unicode_compatible
 class Notification(models.Model):
     """A notification notifies a specific event to a specific target.
     """
@@ -157,7 +164,7 @@ class Notification(models.Model):
             ("target_content_type", "target_id", "dispatch_uid"),
         )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     @models.permalink

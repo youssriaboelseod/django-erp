@@ -19,6 +19,7 @@ __version__ = '0.0.5'
 import json
 import re
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core import validators
@@ -83,13 +84,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     def email_user(self, subject, message, from_email=None):
         send_mail(subject, message, from_email, [self.email])
 
+@python_2_unicode_compatible
 class Group(DjangoGroup):
     """A proxy for Group model which customize its string representation.
     """
     class Meta:
         proxy = True
         
-    def __unicode__(self):
+    def __str__(self):
         """In this proxy class the name is returned already translated.
         """
         return "%s" % _(super(Group, self).__unicode__())
@@ -106,6 +108,7 @@ class Permission(DjangoPermission):
     def uid(self):
         return "%s.%s" % (self.content_type.app_label, self.codename)
 
+@python_2_unicode_compatible
 class ObjectPermission(models.Model):
     """A generic object/row-level permission.
     """
@@ -124,5 +127,5 @@ class ObjectPermission(models.Model):
     def uid(self):
         return "%s.%s" % (self.perm.uid, self.object_id)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s | %d" % (self.perm, self.object_id)
