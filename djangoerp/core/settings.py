@@ -15,7 +15,13 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
-from djangoerp.settings.base import DEBUG, TEMPLATE_CONTEXT_PROCESSORS, MIDDLEWARE_CLASSES
+
+from djangoerp.settings.base import (
+    DEBUG,
+    TEMPLATE_CONTEXT_PROCESSORS,
+    MIDDLEWARE_CLASSES
+)
+
 
 AUTH_USER_MODEL = 'core.User'
 
@@ -48,3 +54,5 @@ AUTHENTICATION_BACKENDS = (
 
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+BREADCRUMBS_DEFAULT_TEMPLATE = "elements/breadcrumbs.html"

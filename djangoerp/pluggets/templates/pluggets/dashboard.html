@@ -9,6 +9,7 @@
 {% endblock %}
 
 {% block region-footer %}
+    {{ block.super }}
     <div class="empty{% if not region.pluggets.count|divisibleby:"2" %} altrow{% endif %}">
         <ul class="actions">
             {% if region|user_has_perm:"pluggets.change_region" and perms.pluggets.add_plugget %}

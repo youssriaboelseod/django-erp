@@ -21,12 +21,12 @@ from django import template
 register = template.Library()
 
 @register.simple_tag
-def avatar(email, size=36, default=None):
+def avatar(email, size=32, default="mm", css_class="ui avatar image"):
     """Returns the gravatar image associated to the given email.
     
     More info: http://www.gravatar.com
 
-    Example tag usage: {% avatar email_address 80 "http://.../my_default_image.jpg" %}
+    Example tag usage: {% avatar email_address 80 "http://.../my_default_image.jpg" [css_class] %}
     """        
     # Creates and returns the URL.
     h = ""
@@ -38,5 +38,5 @@ def avatar(email, size=36, default=None):
     if default:
         url = "%s&d=%s" % (url, default)
         
-    return '<span class="avatar"><img width="%s" height="%s" src="%s" /></span>' % (size, size, url)
+    return '<img class="%s" width="%s" height="%s" src="%s" />' % (css_class, size, size, url)
 
