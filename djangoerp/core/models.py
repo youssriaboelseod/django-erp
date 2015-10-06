@@ -23,7 +23,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core import validators
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext, ugettext_lazy as _
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, Group as DjangoGroup, Permission as DjangoPermission
@@ -94,7 +94,7 @@ class Group(DjangoGroup):
     def __str__(self):
         """In this proxy class the name is returned already translated.
         """
-        return "%s" % _(super(Group, self).__str__())
+        return ugettext(self.name)
 
 class Permission(DjangoPermission):
     """A proxy for Permission model which uses a custom manager.
