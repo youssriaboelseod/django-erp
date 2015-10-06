@@ -15,10 +15,14 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2014, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django import template
+from django.conf import settings
 from django.core.urlresolvers import reverse
 
+
 register = template.Library()
+
 
 @register.simple_tag(takes_context=True)
 def add_crumb(context, crumb, url=None, *args):
@@ -38,6 +42,7 @@ def add_crumb(context, crumb, url=None, *args):
         context['request'].breadcrumbs.append(('%s' % crumb, href))
     return ""
 
+
 @register.simple_tag(takes_context=True)
 def remove_last_crumb(context):
     """
@@ -49,7 +54,8 @@ def remove_last_crumb(context):
         context['request'].breadcrumbs.pop()
     return ""
 
-@register.inclusion_tag('elements/breadcrumbs.html', takes_context=True)
+
+@register.inclusion_tag(settings.BREADCRUMBS_DEFAULT_TEMPLATE, takes_context=True)
 def render_breadcrumbs(context):
     """
     Renders the stored list of breadcrumbs.
