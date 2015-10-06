@@ -69,7 +69,7 @@ class Link(models.Model):
         super(Link, self).__init__(*args, **kwargs)
 
     def __unicode__(self):
-        return u'%s | %s' % (self.menu, self.get_title())
+        return '%s | %s' % (self.menu, self.get_title())
 
     def get_absolute_url(self):
         import json
@@ -117,7 +117,7 @@ class Bookmark(Link):
         verbose_name_plural = _('bookmarks')
 
     def __unicode__(self):
-        return u'%s' % (self.title % self.extra_context)
+        return '%s' % (self.title % self.extra_context)
         
     @models.permalink
     def get_edit_url(self):
