@@ -91,7 +91,7 @@ class RenderMenuTagTestCase(TestCase):
         """        
         output = render_menu({}, "empty-menu")
         
-        self.assertEqual(output, "")
+        self.assertEqual(output.replace('\n', ''), '<ul id="empty-menu-menu" class="menu"></ul>')
         
     def test_render_valid_menu(self):
         """Tests rendering a valid menu.

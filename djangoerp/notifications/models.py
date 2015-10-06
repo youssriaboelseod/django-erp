@@ -170,7 +170,8 @@ class Notification(models.Model):
 
     def clean_fields(self, exclude=None):
         if not self.dispatch_uid:
-            self.dispatch_uid = hashlib.md5("%s%s%s" % (self.title, self.description, datetime.now())).hexdigest()
+            token = "%s%s%s" % (self.title, self.description, datetime.now())
+            self.dispatch_uid = hashlib.md5(token.encode('utf-8')).hexdigest()
         """if not Subscription.objects.filter(subscriber=self.target, signature=self.signature):
             raise ValidationError('The target is not subscribed for this kind of notification.')"""
         super(Notification, self).clean_fields(exclude)

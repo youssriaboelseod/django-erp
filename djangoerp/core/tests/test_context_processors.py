@@ -144,7 +144,7 @@ class AuthContextProcessorTestCase(TestCase):
         
         self.assertEqual(
             "%s" % obj_perms['core'],
-            "['core.view_user.1', 'core.change_user.1', 'core.delete_user.1']"
+            repr(['core.view_user.1', 'core.change_user.1', 'core.delete_user.1'])
         )
         
     def test_repr_module_obj_perms_for_superuser(self):
@@ -155,5 +155,5 @@ class AuthContextProcessorTestCase(TestCase):
         
         self.assertEqual(
             "%s" % obj_perms['core'],
-            "['core.view_user.1', 'core.view_user.2', 'core.change_user.1', 'core.change_user.2', 'core.delete_user.1', 'core.delete_user.2']"
+            repr(['core.view_user.1', 'core.view_user.2', 'core.change_user.1', 'core.change_user.2', 'core.delete_user.1', 'core.delete_user.2'])
         )

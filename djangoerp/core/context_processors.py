@@ -30,8 +30,8 @@ class ObjPermLookupDict(object):
 
     def __repr__(self):
         if self.user.is_superuser:
-            return str([p.uid for p in ObjectPermission.objects.filter(perm__content_type__app_label=self.module_name) if len(p.uid.split('.')) == 3])
-        return str([p.uid for p in self.user.objectpermissions.filter(perm__content_type__app_label=self.module_name) if len(p.uid.split('.')) == 3])
+            return repr([p.uid for p in ObjectPermission.objects.filter(perm__content_type__app_label=self.module_name) if len(p.uid.split('.')) == 3])
+        return repr([p.uid for p in self.user.objectpermissions.filter(perm__content_type__app_label=self.module_name) if len(p.uid.split('.')) == 3])
 
     def __getitem__(self, perm_name):
         if self.user.is_superuser:

@@ -293,7 +293,7 @@ class ModelListDeleteMixinTestCase(TestCase):
         self.assertEqual(user_model.objects.count(), 1)
         self.assertQuerysetEqual(
             user_model.objects.values("pk"),
-            ["{'pk': 2}"],
+            [repr({'pk': 2})],
             ordered=False
         )
         
