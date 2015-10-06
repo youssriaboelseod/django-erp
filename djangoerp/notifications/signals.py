@@ -212,7 +212,7 @@ def make_observable(cls, exclude=['modified'], auto_subscriber_fields=['parent',
             __change_exclude = exclude
             __subscriber_fields = auto_subscriber_fields
 
-        _Observable.__name__ = cls.__name__ + b"Observable"
+        _Observable.__name__ = cls.__name__ + str("Observable")
 
         setattr(sys.modules[__name__], _Observable.__name__, _Observable)
 
