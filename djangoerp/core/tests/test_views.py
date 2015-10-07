@@ -142,7 +142,7 @@ class ModelListDeleteMixinTestCase(TestCase):
                 return get_user_model().objects.all()
                 
             def get_paginate_by(self, qs):
-                return max(1, qs.count())
+                return int(max(1, qs.count()))
             
         class TestModelListDeleteMixin(ModelListDeleteMixin, FakeBase):
             pass
@@ -162,7 +162,10 @@ class ModelListDeleteMixinTestCase(TestCase):
         """
         self.request.POST = {"select_1": True, "select_2": False, "select_3": True, "select_4": ""}
         
-        self.assertEqual(self.m.get_selected_uids(self.request), ["1", "3"])
+        self.assertEqual(
+            sorted(self.m.get_selected_uids(self.request)),
+            ["1", "3"]
+        )
         
     def test_get_delete_template_name(self):
         """Tests retrieving delete template name.

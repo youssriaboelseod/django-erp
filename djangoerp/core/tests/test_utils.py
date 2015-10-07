@@ -168,7 +168,7 @@ class SetPathKwargsTestCase(TestCase):
         """
         self.assertEqual(
             set_path_kwargs(self.request),
-            "/home/test/?next=/home/;prev=/home/test/foo/;filter_by=name"
+            "/home/test/?filter_by=name;next=/home/;prev=/home/test/foo/"
         )
         
     def test_filtering_existing_kwargs(self):
@@ -176,7 +176,7 @@ class SetPathKwargsTestCase(TestCase):
         """
         self.assertEqual(
             set_path_kwargs(self.request, filter_by="id", prev="/"),
-            "/home/test/?prev=/;filter_by=id;next=/home/"
+            "/home/test/?filter_by=id;next=/home/;prev=/"
         )
         
     def test_removing_invalid_kwargs(self):
@@ -184,7 +184,7 @@ class SetPathKwargsTestCase(TestCase):
         """
         self.assertEqual(
             set_path_kwargs(self.request, filter_by=None, prev="/"),
-            "/home/test/?prev=/;next=/home/"
+            "/home/test/?next=/home/;prev=/"
         )
         
 class DependencyTestCase(TestCase):
