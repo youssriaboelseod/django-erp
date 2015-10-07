@@ -142,7 +142,7 @@ class ModelListDeleteMixinTestCase(TestCase):
                 return get_user_model().objects.all()
                 
             def get_paginate_by(self, qs):
-                return max(1, qs.count())
+                return int(max(1, qs.count()))
             
         class TestModelListDeleteMixin(ModelListDeleteMixin, FakeBase):
             pass
