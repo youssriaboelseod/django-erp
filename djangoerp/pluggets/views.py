@@ -169,7 +169,7 @@ class PluggetWizard(SetCancelUrlMixin, SessionWizardView):
         from django.http import HttpResponseRedirect
         
         # First step:
-        f0 = form_list[0]
+        f0 = list(form_list)[0]
         
         source_uid = f0.cleaned_data['source_uid']
         source = registry.get_plugget_source(source_uid)
