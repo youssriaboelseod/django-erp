@@ -93,8 +93,9 @@ def set_path_kwargs(request, **kwargs):
             path_kwargs.update({k: ''.join(v)})
             
     path_kwargs.update(kwargs)
-            
-    path_kwargs_string = ';'.join(["%s=%s" % (k, v) for k, v in list(path_kwargs.items()) if v])
+    ordered_path_kwargs = sorted(path_kwargs.items(), key=lambda t: t[0])
+
+    path_kwargs_string = ';'.join(["%s=%s" % (k, v) for k, v in ordered_path_kwargs if v])
     if path_kwargs_string:
         if path[-1] != '?':
             path += '?'
