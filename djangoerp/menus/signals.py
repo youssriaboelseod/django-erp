@@ -18,7 +18,7 @@ __version__ = '0.0.5'
 
 from django.conf import settings
 from django.db.models.signals import post_save, pre_delete
-from djangoerp.core.utils import get_model
+from djangoerp.core.utils.models import get_model
 from djangoerp.core.signals import manage_author_permissions
 
 from .models import Menu, Link, Bookmark

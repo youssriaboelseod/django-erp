@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load permfuncs %}
+{% load perms %}
 
 <aside class="plugget{% if plugget_index and not plugget_index|divisibleby:"2" %} altplugget{% endif %} {{ plugget.slug }}" id="{{ plugget.slug }}-plugget">
     <header>

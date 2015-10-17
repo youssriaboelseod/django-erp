@@ -18,17 +18,30 @@ __version__ = '0.0.5'
 
 
 from copy import copy
-from django.utils import six
+from django.conf import settings
 from django.db import models
 from django.utils.encoding import force_text
 from django import template
 from django.template.loader import render_to_string
 from django.contrib.contenttypes.models import ContentType
-from djangoerp.core.utils import get_model, get_fields
-from djangoerp.core.utils.rendering import field_to_string, get_field_type, get_field_tuple
+from djangoerp.core.utils.models import (
+    get_model,
+    get_fields,
+    get_field_type,
+    get_field_tuple,
+)
 
 
 register = template.Library()
+
+
+@register.filter
+def typeof(value):
+    """Returns the type of the given value.
+
+    Example usage: {{ my_var|typeof }}
+    """
+    return (u"%s" % type(value)).replace("<class '", "").replace("<type '", "").replace("'>", "")
 
 
 @register.filter
@@ -72,6 +85,7 @@ def raw_model_name(obj):
         pass
     return ""
 
+
 @register.filter
 def raw_model_name_plural(obj):
     """Returns the raw pluralized model name for the given instance.
@@ -80,12 +94,12 @@ def raw_model_name_plural(obj):
     """
     name = raw_model_name(obj)
     if name:
-        return "%ss" % name
+        return u"%ss" % name
     return ""
     
 
 @register.simple_tag(takes_context=True)
-def render_model_list(context, object_list, field_list=[], template_name="elements/model_list.html", uid=""):
+def render_model_list(context, object_list, field_list=[], template_name=None, uid=""):
     """Renders a table with given fields for all given model instances.
     
     It takes three optional arguments:
@@ -111,7 +125,7 @@ def render_model_list(context, object_list, field_list=[], template_name="elemen
     filters = dict([(f.attname, ("", "")) for f in fields])
     filters.update(context.get("%slist_filter_by" % prefix, None) or {})
     headers = [{"name": f.verbose_name, "attname": f.attname, "type": get_field_type(f), "filter": {"expr": filters[f.attname][0], "value": filters[f.attname][1]}} for f in fields]
-    rows = [{"object": o, "fields": [field_to_string(f, o) for f in fields]} for o in object_list]
+    rows = [{"object": o, "fields": [f.value_to_string(o) for f in fields]} for o in object_list]
     new_context = copy(context)
     new_context.update(
         {
@@ -124,11 +138,11 @@ def render_model_list(context, object_list, field_list=[], template_name="elemen
         }
     )
     
-    return render_to_string(template_name, new_context)
+    return render_to_string(template_name or settings.MODEL_LIST_DEFAULT_TEMPLATE, new_context)
 
 
 @register.simple_tag(takes_context=True)
-def render_model_details(context, objects, field_layout=[], template_name="elements/model_details.html", uid=""):
+def render_model_details(context, objects, field_layout=[], template_name=None, uid=""):
     """Renders a details table from one or more model forms and/or instances.
     
     it could be also possible to specify the layout of the table, using the
@@ -138,12 +152,12 @@ def render_model_details(context, objects, field_layout=[], template_name="eleme
 
     Example tag usage: {% render_model_details "[object, form]" "[field1, [0.field2, 1.field3], field4]" %}
     """
-    if objects and isinstance(objects, six.string_types):
+    if objects and isinstance(objects, basestring):
         objects = eval(objects, {}, context)
     if not isinstance(objects, (list, tuple)):
         objects = [objects]
     
-    if isinstance(field_layout, six.string_types) and field_layout:
+    if isinstance(field_layout, basestring) and field_layout:
         field_layout = eval(field_layout)
     elif not field_layout:
         field_layout = []
@@ -189,4 +203,4 @@ def render_model_details(context, objects, field_layout=[], template_name="eleme
         }
     )
     
-    return render_to_string(template_name, new_context)
+    return render_to_string(template_name or settings.MODEL_DETAILS_DEFAULT_TEMPLATE, new_context)

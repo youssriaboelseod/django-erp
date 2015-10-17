@@ -29,6 +29,7 @@ from .models import *
 from ..models import Group, User
 from ..forms.auth import UserForm
 from ..utils import *
+from ..utils.models import *
 from ..utils.dependencies import *
 from ..utils.rendering import *
           
@@ -377,21 +378,21 @@ class RenderGetFieldTupeTestCase(TestCase):
         self.m = User.objects.create(username="u", email="u@u.it", password="password")
         self.f = UserForm({"username": "u", "email": "u@u.it", "password1": "password"}, instance=self.m)
         
-    def test_get_typle_for_object_attr(self):
+    def test_get_tuple_for_object_attr(self):
         """Tests returning a tuple for an arbitrary object's attribute.
         """
         self.assertEqual(get_field_tuple("test", self.o), ('Test:', '', 'A small test'))
         self.assertEqual(get_field_tuple("test1", self.o), ('Test1:', '', 'Test'))
         self.assertEqual(get_field_tuple("test2", self.o), ('Something:', '', 'Foo'))
         
-    def test_get_typle_for_model_field(self):
+    def test_get_tuple_for_model_field(self):
         """Tests returning a tuple for a model instance's field.
         """
         self.assertEqual(get_field_tuple("username", self.m), ('Username:', '', 'u'))
         self.assertEqual(get_field_tuple("email", self.m), ('Email:', '', '<a href="mailto:u@u.it">u@u.it</a>'))
         self.assertEqual(get_field_tuple("password", self.m), ('Password:', '', 'password'))
         
-    def test_get_typle_for_form_field(self):
+    def test_get_tuple_for_form_field(self):
         """Tests returning a tuple for a form instance's field.
         """
         self.assertEqual(

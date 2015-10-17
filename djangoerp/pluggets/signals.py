@@ -23,7 +23,7 @@ from django.utils.translation import ugettext_noop as _
 from django.db.models.signals import post_save, pre_delete
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
-from djangoerp.core.utils import get_model
+from djangoerp.core.utils.models import get_model
 from djangoerp.core.signals import manage_author_permissions
 
 from .models import *

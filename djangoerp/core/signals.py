@@ -16,14 +16,16 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
 __version__ = '0.0.5'
 
+
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 
-from .utils import get_model
+from .utils.models import get_model
 from .cache import LoggedInUserCache
 from .models import Permission, ObjectPermission, Group
+
 
 ## HANDLERS ##
 

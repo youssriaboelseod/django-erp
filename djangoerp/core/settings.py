@@ -57,3 +57,5 @@ if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 BREADCRUMBS_DEFAULT_TEMPLATE = "elements/breadcrumbs.html"
+MODEL_LIST_DEFAULT_TEMPLATE = "elements/model_list.html"
+MODEL_DETAILS_DEFAULT_TEMPLATE = "elements/model_details.html"

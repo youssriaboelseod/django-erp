@@ -24,7 +24,7 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from django.utils.translation import ugettext_noop as _
 from django.contrib.auth import get_user_model
-from djangoerp.core.utils import get_model
+from djangoerp.core.utils.models import get_model
 from djangoerp.core.models import Permission, ObjectPermission
 from djangoerp.core.cache import LoggedInUserCache
 

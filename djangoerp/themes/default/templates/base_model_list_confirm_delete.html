@@ -1,8 +1,8 @@
 {% extends "base_confirm_delete.html" %}
 
 {% load i18n %}
-{% load basefuncs %}
-{% load modelfuncs %}
+{% load markup %}
+{% load introspection %}
 
 {% block meta_title %}
 {% blocktrans with object_list|model_name_plural as model %}Delete {{ model }}{% endblocktrans %}

@@ -16,29 +16,30 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
 __version__ = '0.0.5'
 
-from django import template
-from django.contrib import auth
 
-from ..cache import LoggedInUserCache
+from django import template
+from django.template.defaultfilters import stringfilter
+
 
 register = template.Library()
 
-@register.filter
-def user_has_perm(obj, perm_name):
-    """Returns True if the user has permission "perm_name" over "obj".
-    
-    Looks for a suitable permission on both model and object-levels, iterating
-    over all installed backends.
 
-    Example usage: {{ article_object|user_has_perm:"articles.change_article" }}
+@register.filter
+def form_field_widget_type(field):
+    """Returns the type of an arbitrary form field widget.
     """
-    current_user = LoggedInUserCache().user
-    
-    for backend in auth.get_backends():
-        if hasattr(backend, "has_perm"):
-            if backend.has_perm(current_user, perm_name):
-                return True
-            elif backend.has_perm(current_user, perm_name, obj):
-                return True
-                
-    return False
+    try:
+        return field.field.widget.__class__.__name__
+    except:
+        return ""
+
+
+@register.filter
+def is_current_translation_field(field, current_lang):
+    """Returns true if the given field is the current translation form field.
+    """
+    try:
+        suffix = "_" + current_lang.replace('-', '_')
+        return field.name.endswith(suffix)
+    except:
+        return False

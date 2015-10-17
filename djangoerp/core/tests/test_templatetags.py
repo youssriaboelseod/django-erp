@@ -24,9 +24,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 
 from . import *
-from ..templatetags.modelfuncs import *
-from ..templatetags.basefuncs import *
-from ..templatetags.permfuncs import *
+from ..templatetags.introspection import *
+from ..templatetags.markup import *
+from ..templatetags.perms import *
 from ..templatetags.breadcrumbs import *
 from ..templatetags.avatar import *
         

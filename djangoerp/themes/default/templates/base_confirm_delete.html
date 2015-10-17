@@ -1,7 +1,7 @@
 {% extends "base_form.html" %}
 
 {% load i18n %}
-{% load modelfuncs %}
+{% load introspection %}
 
 {% block meta_title %}
 {% blocktrans with object|model_name as model %}Delete {{ model }}{% endblocktrans %}

@@ -17,57 +17,6 @@ __copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
 __version__ = '0.0.5'
 
 
-from django.utils import six
-from django.apps import apps as app_registry
-from django.db import models
-from django import forms
-
-
-def get_model(klass):
-    """Returns the model class identified by klass.
-    
-    If klass is already a model class, is returned as it is.
-    If klass is a model instance or queryset, its model class is returned.
-    If klass is a string, it's used to retrieve the related real model class.
-    
-    A ValueError is raised on other cases.
-    """    
-    try:
-        if issubclass(klass, models.Model):
-            return klass
-    except:
-        pass
-        
-    if isinstance(klass, models.Model):
-        return klass.__class__
-        
-    elif isinstance(klass, models.query.QuerySet):
-        return klass.model
-        
-    elif isinstance(klass, six.string_types):
-        app_label, sep, model_name = klass.rpartition('.')
-        return app_registry.get_model(app_label, model_name)
-        
-    raise ValueError
-        
-def get_fields(form_or_model):
-    """Returns a dict containing all the fields of the given model/form instance.
-    
-    If the given instance is not a model mor a form, an empty dict is returned.
-    
-    The returned dict is in the form:
-    
-    {field_name: field_instance, ...}
-    """
-    field_list = {}
-    
-    if isinstance(form_or_model, models.Model):
-        field_list = dict([(f.name, f) for f in (form_or_model._meta.fields + form_or_model._meta.many_to_many)])
-    elif isinstance(form_or_model, forms.BaseForm):
-        field_list = form_or_model.fields
-        
-    return field_list
-
 def clean_http_referer(request, default_referer='/'):
     """Returns the HTTP referer of the given request.
     

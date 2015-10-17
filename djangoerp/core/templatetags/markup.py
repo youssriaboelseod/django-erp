@@ -17,8 +17,8 @@ __copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
 __version__ = '0.0.5'
 
 
-import collections
 from django import template
+from django.utils.safestring import mark_safe
 from django.template.defaultfilters import stringfilter
 
 
@@ -62,7 +62,7 @@ def get(obj, attr_name):
 
     elif hasattr(obj, attr_name):
         value = getattr(obj, attr_name)
-        if isinstance(value, collections.Callable):
+        if callable(value):
             return value()
         return value
 
@@ -76,4 +76,37 @@ def diff(obj, amount):
     Example usage: {{ my_counter|diff:"5" }} or {{ my_counter|diff:step_id }}
     """
     return obj-float(amount)
-    
+
+
+@register.filter
+@stringfilter
+def add_class(value, css_class):
+    """Adds a CSS class to an arbitrary HTML tag.
+
+    Please note this filter doesn't check if the class is already assigned.
+
+    Example usage:
+        
+        {{ my_html_repr|add_class:"col-md-4" }}
+        {{ my_html_repr|add_class:my_class }}
+    """
+    string = unicode(value)
+    css_class = unicode(css_class)
+
+    if css_class and string:
+        # Look for the very first tag.
+        before, sep, after = string.partition('>')
+        if before[-1] == '/':
+            before = before[:-1]
+            sep = '/' + sep
+            before = before.rstrip()
+        new_string = before + ' class="%s"' % css_class + sep + after
+
+        # Try to find an existing class attribute.
+        new_before, new_sep, new_after = before.partition('class="')
+        if new_after:
+            new_string = new_before + new_sep + css_class + " " + new_after + sep + after
+
+        return mark_safe(new_string)
+
+    return string    
