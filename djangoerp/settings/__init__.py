@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -12,10 +13,12 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.1'
+__copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
+__version__ = '0.0.5'
 
-from base import *
+
+from .base import *
+
 
 # Auto-discovering of application specific settings.
 for app in INSTALLED_APPS:
@@ -31,10 +34,10 @@ for app in INSTALLED_APPS:
         app_settings = __import__(app_name, globals(), locals(), ['*'], 1)
     
     # 2) If fails, try to import settings from app settings module.
-    except:
+    except ImportError:
         try:
           app_settings = __import__('%s.settings' % app, globals(), locals(), ['*'], 0)
-        except:
+        except ImportError:
           continue
 
     for attr in dir(app_settings):

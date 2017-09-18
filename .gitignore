@@ -1,4 +1,5 @@
 *.py[cod]
+*.bak
 
 # C extensions
 *.so
@@ -18,6 +19,7 @@ develop-eggs
 lib
 lib64
 __pycache__
+env
 
 # Installer logs
 pip-log.txt
@@ -25,6 +27,8 @@ pip-log.txt
 # Unit test / coverage reports
 .coverage
 .tox
+htmlcov
+coverage.xml
 nosetests.xml
 
 # Translations
@@ -35,9 +39,19 @@ nosetests.xml
 .project
 .pydevproject
 
+# GitHub Pages
+.bundle
+Gemfile.lock
+_site
+
 # Linux
 *~
 
 # django ERP-specific files
 *.db
 djangoerp/settings/base.py
+djangoerp/media
+
+#docs
+
+docs/_build/*

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load breadcrumbs %}
+
+{% block meta_title %}{% trans 'Login' %}{% endblock %}
+
+{% block extrastyle %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/login.css" type="text/css" media="screen"/>
+{% endblock %}
+
+{% block bodyclass %}login{% endblock %}
+
+{% block breadcrumbs %}
+    {% add_crumb 'Home' '/' %}
+    {% add_crumb 'Login' %}
+{% endblock %}
+
+{% block main %}
+<form method="post" action=".">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}" />
+    {{ form.as_p }}
+    {% block after-form %}{% endblock %}
+    <span class="submit"><button>{% trans 'Login' %}</button></span>
+</form>
+{% endblock %}
+

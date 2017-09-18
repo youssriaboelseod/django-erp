@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -12,14 +13,20 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.1'
+__copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
+__version__ = '0.0.5'
 
+
+import collections
 from django.utils.formats import localize
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
-from django.template.defaultfilters import date, time
 from django.db import models
+from django import forms
+from django.forms.forms import BoundField, pretty_name
+from django.forms.utils import flatatt
+
 
 def value_to_string(value):
     """Tries to return a smart string representation of the given value.
@@ -36,7 +43,7 @@ def value_to_string(value):
             output = render_to_string('elements/no.html', {})
 
     elif isinstance(value, float):
-        output = u'%.2f' % value
+        output = '%.2f' % value
 
     elif isinstance(value, int):
         output = '%d' % value
@@ -44,8 +51,7 @@ def value_to_string(value):
     if not value and not output:
         output = render_to_string('elements/empty.html', {})
 
-    return mark_safe(output)
-
+    return mark_safe(output.strip())
 
 def field_to_value(field, instance):
     """Tries to convert a model field value in something smarter to render.
@@ -54,7 +60,7 @@ def field_to_value(field, instance):
 
     if field.primary_key or isinstance(field, (models.SlugField, models.PositiveIntegerField)):
         if value:
-          return u'#%d' % value
+          return '#%s' % value
 
     elif isinstance(field, (models.ForeignKey, models.OneToOneField)):
         try:
@@ -68,17 +74,8 @@ def field_to_value(field, instance):
             try:
                 items.append(render_to_string('elements/link.html', {'url': item.get_absolute_url(), 'caption': item}))
             except AttributeError:
-                items.append(u'%s' % item)
+                items.append('%s' % item)
         return items
-
-    elif isinstance(field, models.DateTimeField):
-        return date(value, settings.DATETIME_FORMAT)
-
-    elif isinstance(field, models.DateField):
-        return date(value, settings.DATE_FORMAT)
-
-    elif isinstance(field, models.TimeField):
-        return time(value, settings.TIME_FORMAT)
 
     elif isinstance(field, models.URLField) and value:
         return render_to_string('elements/link.html', {'url': value, 'caption': value})
@@ -95,7 +92,6 @@ def field_to_value(field, instance):
         return True
 
     return value
-
 
 def field_to_string(field, instance):
     """All-in-one conversion from a model field value to a smart string representation.

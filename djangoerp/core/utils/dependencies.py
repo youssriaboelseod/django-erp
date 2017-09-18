@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -12,10 +13,12 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.1'
+__copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
+__version__ = '0.0.5'
+
 
 from django.conf import settings
+
 
 class DependencyError(Exception):
     """Error raised when a dependency is not satisfied.
@@ -24,7 +27,8 @@ class DependencyError(Exception):
         self._app_name = app_name
 
     def __str__(self):
-        return u"A dependency is not satisfied: %s" % self._app_name
+        return "A dependency is not satisfied: %s" % self._app_name
+
 
 def check_dependency(app_name):
     """Assures the app is installed, otherwise raises a DependencyError.

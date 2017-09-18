@@ -1,0 +1,27 @@
+{% extends "base_form.html" %}
+
+{% load i18n %}
+{% load introspection %}
+
+{% block meta_title %}
+{% blocktrans with object|model_name as model %}Delete {{ model }}{% endblocktrans %}
+{% endblock %}
+
+{% block title %}
+<h1>{% block object-title %}{{ object|striptags|capfirst }}{% endblock %}</h1>
+<h2>{% block subtitle %}{% blocktrans with object|model_name as model %}Delete {{ model }}{% endblocktrans %}{% endblock %}</h2>
+{% endblock %}
+
+{% block formcontent_prefix %}
+<div class="message">
+{% endblock %}
+
+{% block formcontent %}
+<h3>{% block deletion-message %}{% blocktrans with object|model_name as model %}Are you sure you want to <strong>delete</strong> this {{ model }}?{% endblocktrans %}{% endblock %}</h3>
+<p>Please, keep in mind this operation is <strong>irreversible</strong>...</p>
+{% endblock %}
+
+{% block formbuttons %}
+{{ block.super }}
+</div>
+{% endblock %}

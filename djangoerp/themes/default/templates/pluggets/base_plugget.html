@@ -1,0 +1,24 @@
+{% load i18n %}
+{% load perms %}
+
+<aside class="plugget{% if plugget_index and not plugget_index|divisibleby:"2" %} altplugget{% endif %} {{ plugget.slug }}" id="{{ plugget.slug }}-plugget">
+    <header>
+        <h3>{% if plugget.title %}{% trans plugget.title %}{% else %}{% trans plugget.template.title %}{% endif %}</h3>
+        <ul class="actions">
+        {% if plugget.region|user_has_perm:"pluggets.change_region" %}
+            {% if plugget|user_has_perm:"pluggets.change_plugget" %}
+            <li class="edit"><a title="{% trans 'Edit' %}"  href="{{ plugget.get_edit_url }}">{% trans "Edit" %}</a></li>
+            {% endif %}
+            {% if plugget|user_has_perm:"pluggets.delete_plugget" %}
+            <li class="delete"><a title="{% trans 'Delete' %}"  href="{{ plugget.get_delete_url }}">{% trans "Delete" %}</a></li>
+            {% endif %}
+        {% endif %}
+        </ul>
+    </header>
+    {% block plugget-body %}
+    <section class="body">
+        {% block plugget-content %}{% trans text %}{% endblock %}
+        {% if not text %}{% include "elements/empty.html" %}{% endif %}
+    </section>
+    {% endblock %}
+</aside>

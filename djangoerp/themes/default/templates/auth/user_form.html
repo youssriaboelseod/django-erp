@@ -1,0 +1,35 @@
+{% extends "base_form.html" %}
+
+{% load i18n %}
+{% load markup %}
+{% load breadcrumbs %}
+{% load avatar %}
+
+{% block breadcrumbs %}
+    {% add_crumb 'Home' '/' %}
+    {% if object and object.pk %}
+    {% if object == user %}
+    {% add_crumb 'My Profile' object.get_absolute_url %}
+    {% else %}
+    {% add_crumb  object object.get_absolute_url %}
+    {% endif %}
+    {% add_crumb 'Edit' %}
+    {% else %}
+    {% add_crumb 'Add user' %}
+    {% endif %}
+{% endblock %}
+
+{% block object-title %}
+{% if object.pk == user.pk %}
+{% trans "My Profile" %}
+{% else %}
+{{ block.super }}
+{% endif %}
+{% endblock %}
+
+{% block formbody %}
+{% avatar object|get:"email" 90 %}
+{% with field_list="[['username', 'email'], ['password1', 'password2'], ['language', 'timezone']]" %}
+{{ block.super }}
+{% endwith %}
+{% endblock %}

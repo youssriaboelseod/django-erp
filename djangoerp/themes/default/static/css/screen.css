@@ -1,0 +1,918 @@
+/**
+ *
+ * This file is part of the django ERP project.
+ *
+ * Copyright (C) 2013 Emanuele Bertoldi.
+ * <emanuele.bertoldi@gmail.com>
+ */
+
+html { background: #f8f8f8; }
+
+body {
+    min-width: 1024px;
+    font-family: 'Helvetica', arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.5em;
+    background: #fff;
+    text-align: left;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    clear: both;
+    margin: 0 0 10px;
+    padding: 0;
+    background: none;
+    border: none;
+    line-height: 1em;
+}
+ 
+h1 { font-size: 2.5em; }
+h2 { font-size: 1.7em; }
+h3 { font-size: 1.4em; }
+h4 { font-size: 1.2em; }
+h5 { font-size: 0.9em; }
+h6 { font-size: 0.7em; }
+
+a, a:link, a:visited {
+    text-decoration: none;
+    font-weight: bold;
+    color: #ce0600;
+}
+
+a:hover { color: #1f1f1f; }
+
+p, ol, ul, dl, pre { margin-bottom: 10px; }
+
+ol { margin-left: 35px; }
+
+ol ol, ul ul, dl dl {
+    margin-left: 5px;
+    margin-top: 6px;
+    margin-bottom: 0;
+}
+
+li, dt { padding: 4px 0; }
+
+ul li, dl dt {
+    clear: left;
+    padding-left: 18px;
+}
+
+section ul li, section dl dt { background: url(images/right.png) no-repeat left 0.68em; }
+
+dl dd { margin-left: 15px; }
+
+pre {
+    clear: both;
+    padding: 15px;
+    border: 1px solid #c0c0c0;
+    background: #efefef;
+    overflow: auto;
+}
+
+hr { display: none; }
+
+/**
+ * Form
+ */
+
+form {
+    clear: both;
+    overflow: hidden;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+form p {
+    font-style: italic;
+    color: #60625d;
+}
+
+form br { display: none; }
+
+form label {
+    clear: left;
+    display: block;
+    font-weight: bold;
+    font-style: normal;
+    color: #1f1f1f;
+}
+
+form input, form select, form textarea {
+    clear: left;
+    float: left;
+    padding: 3px;
+    margin-right: 10px;
+    border: 1px solid #c0c0c0;
+    font-style: normal;
+    outline: none;
+    
+    border-radius: 3px;
+}
+
+form input,
+form input[type="text"],
+form input[type="email"] { 
+    width: 80%;
+    max-width: 300px;
+}
+
+form input[type="text"],
+form input[type="email"] { cursor: text; }
+
+form select {
+    width: 83%;
+    padding: 4px 3px;
+    max-width: 308px;
+}
+
+form textarea {
+    width: 99%;
+    max-width: 665px;
+    height: 150px;
+}
+
+form input[type="checkbox"],
+form input[type="radio"] {
+    width: auto !important;
+    margin-right: 10px;
+    margin-top: 3px;
+}
+
+form .helptext {
+    float: left;
+    min-height: 16px;
+    margin-top: 3px;
+    padding-left: 21px;
+    background: url(images/info.png) no-repeat left top;
+    color: #888;
+    font-style: italic;
+    font-weight: bold;
+    cursor: help;
+}
+
+form .helppopup {
+    width: 16px;
+    height: 20px;
+    font-size: 0;
+    padding-left: 0;
+}
+
+form .required input, form .required textarea, form .required select {
+    background-color: #fffecc !important;
+    border: 1px solid #ffda88 !important;
+}
+
+form .errors input, form .errors textarea, form .errors select {
+    background-color: #ffc0c0 !important;
+    border: 1px solid #d21717 !important;
+}
+
+form ul.errorlist li, form td ul.errorlist li {
+    padding: 5px 0 5px 25px;
+    background-repeat: no-repeat;
+    background-position: left 5px;
+    border: none;
+    color: #d21717;
+}
+
+form ul.errorlist li, form td ul.errorlist li { background-image: url(images/error.png); }
+
+form ul.errorlist { margin-bottom: 0; }
+
+form td ul.errorlist { margin-top: -5px; }
+
+button, .submit input, .cancel input, .submit a, .cancel a, input[type="submit"] {
+    clear: none;
+    float: left;
+    width: auto;
+    margin: 0 20px 0 0;
+    font-weight: bold;
+    text-align: center;
+    
+    border-radius: 3px;
+}
+
+button {
+    padding: 10px 15px;
+    
+    border-radius: 3px;
+}
+
+.submit a, .cancel a, .submit input, .cancel input, input[type="submit"] { padding: 8px 15px; }
+
+.submit button, .submit input, .submit a, input[type="submit"] {
+    float: right;
+    margin: 0 0 0 20px;
+    background: #ce0600 url(images/button.jpg) repeat-x bottom;
+    border: 1px solid #1f1f1f;
+    color: #fff;
+}
+
+.cancel button, .cancel input, .cancel a {
+    background: #f8f8f8 url(images/menu.jpg) repeat-x bottom;
+    border: 1px solid #c0c0c0;
+    color: #000;
+}
+
+.submit button:hover, .cancel button:hover, .submit input:hover, .cancel input:hover, .submit a:hover, .cancel a:hover {
+    background: #1f1f1f url(images/nav.jpg) repeat-x top;
+    border: 1px solid #1f1f1f;
+    color: #fff;
+}
+
+/**
+ * Tables.
+ */
+ 
+table {
+    clear: both;
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    overflow: auto;
+    text-align: left;
+}
+
+caption {
+    color: #1f1f1f;
+    font-weight: normal;
+    background: #f8f8f8 url(images/menu.jpg) repeat-x bottom;
+    border-bottom: 1px solid #888;
+    padding: 10px;
+    text-align: left;
+}
+
+td, th {
+    padding: 10px;
+    vertical-align: top;
+    text-align: left;
+    border-top: 1px solid #c0c0c0;
+}
+
+td.empty, th.empty { border-bottom: 1px solid #888; }
+
+tr.altrow td { background-color: #f8f8f8; }
+
+thead td, thead th {
+    color: #fff;
+    background: #1f1f1f url(images/nav.jpg) repeat-x top;
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    padding: 5px 10px;
+}
+
+thead a, thead a:link, thead a:visited { color: #c0c0c0; }
+
+thead a:hover { color: #fff; }
+
+thead .actions {
+    float: none;
+    width: 10px;
+}
+
+thead a.asc, thead a.desc {
+    float: right;
+    width: 10px;
+    height: 10px;
+    margin: 5px;
+    background-repeat: no-repeat;
+    background-image: url(images/arrows.png);
+    font-size: 0;
+}
+
+thead a.asc { background-position: -20px -10px; }
+
+thead a.asc:hover { background-position: -30px -10px; }
+
+thead a.desc { background-position: -20px 0; }
+
+thead a.desc:hover { background-position: -30px 0; }
+
+thead tr.filterbox td, tr.filterbox th {
+    color: #1f1f1f;
+    font-weight: normal;
+    background: #f8f8f8 url(images/menu.jpg) repeat-x bottom;
+    border-bottom: 1px solid #888;
+    padding: 5px 10px;
+}
+
+thead tr.filterbox input, thead tr.filterbox select {
+    clear: none;
+    margin: 0;
+}
+
+thead tr.filterbox input { width: 75%; }
+
+thead tr.filterbox select { width: 90%; }
+
+thead tr.filterbox input[type="checkbox"] { bottom: -6px; }
+
+thead tr.filterbox select.expr { width: 85px; }
+
+thead tr.filterbox ul.actions { margin-top: 5px; }
+
+tfoot tr td { border-top: 1px solid #888; }
+
+table td ul.actions {
+    width: auto;
+    float: right;
+    margin: 0;
+    padding: 0;
+}
+
+/**
+ * Commons.
+ */
+
+.empty, .disabled { color: #888; }
+
+.yes, .no {
+    width: 0;
+    height: 0;
+    padding: 8px;
+    font-size: 0;
+    background: no-repeat center center;
+}
+
+td > .yes, td > .no {
+    display: block;
+    margin: 0 auto;
+}
+
+.yes { background-image: url(images/success.png); }
+
+.no { background-image: url(images/error.png); }
+
+/**
+ * Actions.
+ */
+ 
+.actions {
+    float: left;
+    width: 100%;
+    margin: 0;
+}
+ 
+.actions li {
+    float: left;
+    clear: none;
+    padding: 0;
+    margin-right: 5px;
+    background-image: none;
+}
+ 
+.actions a, .actions button {
+    float: left;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-color: transparent;
+    border: none;
+    font-size: 0;
+}
+
+.actions a:hover, .actions button:hover { background-position: -16px center; }
+
+.add a, .add button { background-image: url(images/add-item.png); }
+.edit a, .edit button { background-image: url(images/edit-item.png); }
+.delete a, .delete button { background-image: url(images/delete.png); }
+.list a, .list button { background-image: url(images/list.png); }
+.search a, .search button { background-image: url(images/search.png); }
+.settings a, .settings button { background-image: url(images/settings.png); }
+.exit a, .exit button { background-image: url(images/exit.png); }
+.play a, .play button { background-image: url(images/play.png); }
+
+/**
+ * Messages.
+ */
+
+.messages { clear: both; width: 100%; }
+
+.messages ul {
+    margin: 0 0 20px;
+    padding: 5px;
+    padding-left: 15px;
+    border: 1px solid #ffda88;
+    background-color: #fffecc;
+    
+    border-radius: 3px;
+}
+
+.messages li {
+    padding-left: 30px;
+    background-repeat: no-repeat;
+    background-position: left 5px;
+}
+
+.messages li.info { background-image: url(images/info.png); }
+
+.messages li.warning { background-image: url(images/warning.png); }
+
+.messages li.success { background-image: url(images/success.png); }
+
+.messages li.error { background-image: url(images/error.png); }
+
+
+/**
+ * Paginator
+ */
+ 
+.paginator {
+    clear: both;
+    display: block;
+    width: 150px;
+    margin: -20px auto 0;
+}
+
+.paginator .current,
+.paginator .first,
+.paginator .previous,
+.paginator .next,
+.paginator .last {
+    clear: none;
+    float: left;
+    text-align: center;
+}
+
+.paginator .current { margin: 0 10px 0 5px; }
+
+.paginator .disabled,
+.paginator a {
+    display: block;
+    width: 10px;
+    height: 10px;
+    margin: 4px 5px 4px 0;
+    background-repeat: no-repeat;
+    background-image: url(images/arrows.png);
+    font-size: 0;
+}
+
+.paginator .first .disabled { background-position: -20px -50px; }
+.paginator .first a { background-position: -10px -50px; }
+.paginator .first a:hover { background-position: left -50px; }
+
+.paginator .previous .disabled { background-position: -20px -30px; }
+.paginator .previous a { background-position: -10px -30px; }
+.paginator .previous a:hover { background-position: left -30px; }
+
+.paginator .next .disabled { background-position: -20px -20px; }
+.paginator .next a { background-position: -10px -20px; }
+.paginator .next a:hover { background-position: left -20px; }
+
+.paginator .last .disabled { background-position: -20px -40px; }
+.paginator .last a { background-position: -10px -40px; }
+.paginator .last a:hover { background-position: left -40px; }
+
+/**
+ * Tabs
+ */
+ 
+.tabs {
+    clear: both;
+    float: left;
+    width: auto;
+    padding: 0;
+    margin: 20px 0 -20px;
+    border-left: 1px solid #888;
+}
+
+.tabs li {
+    clear: none;
+    float: left;
+    width: auto;
+    padding: 0;
+    margin: 0;
+    background: none;
+}
+
+.tabs li a, .tabs li span {
+    display: block;
+    background: #f8f8f8 url(images/menu.jpg) repeat-x bottom;
+    border: none;
+    border-top: 1px solid #888;
+    border-right: 1px solid #888;
+    padding: 10px 15px;
+    font-weight: bold;
+}
+
+.tabs li.active a {
+    background: #fff;
+    border-bottom: 1px solid #fff;
+    margin-bottom: -1px;
+}
+
+/**
+ * Property tables
+ */
+
+.properties {
+    margin-top: 5px;
+    border-top: 1px solid #c0c0c0;
+}
+
+.properties tr { border-bottom: 1px solid #c0c0c0; }
+
+.properties th, .properties td { padding: 15px 10px; }
+
+.properties th {
+    width: 150px;
+    background: none;
+    border: none;
+    color: #1f1f1f;
+    text-align: right;
+}
+
+.properties td {
+    min-width: 30%;
+    border: none;
+}
+
+.properties .altrow td { background-color: transparent; }
+
+.properties td ul { margin: 0 0 -1px; }
+
+.properties td ul li {
+    background: none;
+    padding: 10px;
+    border-bottom: 1px solid #c0c0c0;
+}
+
+.properties td ul li .type { float: right; }
+
+.properties td .yes, .properties td .no { margin: 0; }
+
+.properties td input[type="checkbox"] { margin-top: 5px; }
+
+/**
+ * Pluggets.
+ */
+ 
+.region {
+    clear: both;
+    overflow: auto;
+}
+
+.plugget {
+    clear: left;
+    float: left;
+    width: 99%;
+    padding-bottom: 12px; 
+    margin-bottom: 8px;
+    background: url(images/plugget.jpg) no-repeat center bottom;
+    color: #1f1f1f;
+}
+
+.plugget > header {
+    padding: 5px 10px 8px;
+    background: #f8f8f8 url(images/menu.jpg) repeat-x left bottom;
+    border: 1px solid #c0c0c0;
+    border-bottom: 1px solid #888;
+    font-size: 0.85em;
+    color: #888;
+    
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+.plugget header h1,
+.plugget header h2,
+.plugget header h3,
+.plugget header h4,
+.plugget header h5,
+.plugget header h6 { margin-bottom: 0; }
+
+.plugget header .actions {
+    position: relative;
+    width: auto;
+    float: right;
+    top: -14px;
+    margin-bottom: -14px;
+}
+
+.plugget header .actions li {
+    margin-right: 0;
+    margin-left: 5px;
+}
+
+.plugget .body {
+    display: block;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #c0c0c0;
+    border-top: none;
+    border-bottom: 1px solid #888;
+    overflow: hidden;
+    
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+/**
+ * Layout.
+ */
+
+#header, #breadcrumbs, #content, #footer {
+    clear: both;
+    float: left;
+    width: 100%;
+    padding: 0;
+}
+
+#branding { display: none; }
+
+#user-nav {
+    padding: 6px 20px;
+    min-height: 18px;
+    background: #1f1f1f url(images/nav.jpg) repeat-x top;
+    border-bottom: 1px solid #ff3500;
+    color: #fff;
+}
+
+#user-nav ul, #user-nav li {
+    display: inline;
+    padding: 0;
+    margin: 0;
+}
+
+#user-nav a, #user-nav a:link, #user-nav a:visited { color: #c0c0c0; }
+
+#user-nav a:hover { color: #fff; }
+
+#user-nav li.active a { color: #fff; }
+
+#userarea {
+    float: right;
+    width: 30%;
+    text-align: right;
+}
+
+#userarea ul.menu li { margin-left: 10px; }
+
+#userarea .profile {
+    border-right: 1px solid #c0c0c0;
+    padding-right: 20px;
+    margin-right: 10px;
+}
+
+#userarea a.notification-counter {
+    width: 10px;
+    padding: 3px 7px;
+    padding-right: 5px;
+    margin-left: 10px;
+    color: #fff;
+    background-color: #ce0600;
+    text-align: center;
+    
+    border-radius: 3px;
+}
+
+#userarea a.notification-counter:hover {
+    background-color: #c0c0c0;
+    color: #1f1f1f;
+}
+
+#bookmarks {
+    float: left;
+    width: 70%;
+}
+
+#bookmarks li { margin-right: 10px; }
+
+#bookmarks .actions {
+    width: auto;
+    margin-right: 10px;
+}
+
+#bookmarks .actions a, #bookmarks .actions a:link, #bookmarks .actions a:visited { background-position: -32px center; }
+
+#bookmarks .actions a:hover { background-position: -48px center; }
+
+#breadcrumbs {
+    padding: 6px 0;
+    background: #f8f8f8 url(images/menu.jpg) repeat-x left bottom;
+    border-top: 10px solid #ce0600;
+    border-bottom: 1px solid #c0c0c0;
+    text-align: left;
+}
+
+#breadcrumbs .entry, #breadcrumbs .separator { float: left; }
+
+#breadcrumbs .entry {
+    margin-left: 20px;
+    margin-right: 10px;
+}
+
+#breadcrumbs .separator {
+    width: 10px;
+    height: auto;
+    font-size: 0;
+    margin-right: -15px;
+    background: url(images/right.png) no-repeat center center;
+}
+
+#content {
+    padding-bottom: 20px;
+    background: #fff url(images/content.jpg) repeat-y left -5px;
+    border-bottom: 1px solid #c0c0c0;
+}
+
+#sidebar, #main { padding: 20px; }
+
+#sidebar {
+    float: left;
+    width: 180px;
+    min-height: 400px;
+    padding-top: 20px;
+}
+
+#sidebar ul.menu ul.menu {
+    margin-left: 15px;
+}
+
+#sidebar ul.menu li.active ul.menu { display: block; }
+
+#main {
+    min-width: 300px;
+    overflow: auto;
+}
+
+#main > header {
+    float: left;
+    width: 100%;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #888;
+    color: #888;
+}
+
+#main > header h1,
+#main > header h2,
+#main > header h3,
+#main > header h4,
+#main > header h5,
+#main > header h6 {
+    clear: left;
+    float: left;
+    margin: 0;
+}
+
+#main > header h2,
+#main > header h3,
+#main > header h4,
+#main > header h5,
+#main > header h6 { margin-top: 10px; }
+
+#main > header h1 { color: #000; }
+
+#main > header .actions {
+    width: auto;
+    float: right;
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+
+#main .message {
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #ffda88;
+    background-color: #fffecc;
+    font-style: normal;
+    color: #1f1f1f;
+    overflow: auto;
+}
+
+#main .message p {
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ffda88;
+}
+
+#main .dashboard {
+    clear: both;
+    overflow: auto;
+}
+
+#main .dashboard .empty {
+    float: left;
+    width: 99.8%;
+    padding: 25px 0;
+    margin: 0;
+    border: 1px dashed #888;
+    text-align: center;
+    
+    border-radius: 10px;
+}
+
+#main .dashboard .altrow {
+    float: right;
+    width: 49%;
+}
+
+#main .dashboard .region .empty .actions {
+    width: auto;
+    padding: 0 20px;
+}
+
+#main .dashboard .region .empty .actions li > a { margin-right: 10px; }
+
+#main .dashboard .plugget { width: 49%; }
+
+#main .dashboard .altplugget {
+    float: right;
+    clear: none;
+    margin-right: 0;
+}
+
+#main .avatar {
+    display: block;
+    text-align: center;
+}
+
+#main .avatar img {
+    background-color: #ffffff;
+    border: 1px solid #c0c0c0;
+    padding: 10px;
+    margin-bottom: 20px;
+    
+    border-radius: 3px;
+}
+
+body.popup { min-width: 520px; }
+
+body.popup #header, body.popup #sidebar, body.popup #footer { display: none; }
+
+body.popup #content {
+    background-image: none;
+    padding-bottom: 0;
+}
+
+body.popup #main { padding: 10px; }
+
+body.login #content { background-image: none; }
+
+body.login #sidebar { display: none; }
+
+body.login #main {
+    width: 308px;
+    margin: 40px auto 20px;
+    padding: 180px 20px 20px;
+    background: url(images/logo-splash.png) no-repeat center 20px;
+    border: 1px dashed #888;
+    
+    border-radius: 10px;
+}
+
+body.login #main header h1 {
+    float: none;
+    text-align: center;
+    margin-top: 10px;
+} 
+
+body.login #main p { text-align: center; }
+
+body.login #main form p {
+    clear: both;
+    float: left;
+    width: 100%;
+    text-align: left;
+}
+
+body.login #main form input,
+body.login #main form select,
+body.login #main form textarea {
+    width: 100%;
+    margin-right: 0;
+    background-color: #fffecc;
+    border: 1px solid #ffda88;
+}
+
+body.login #main form .cancel a,
+body.login #main form .submit button {
+    width: auto;
+    margin-top: 20px;
+}
+
+#footer {
+    height: 200px;
+    background: #f8f8f8 url(images/footer.jpg) repeat-x top;
+    color: #888;
+}
+
+.powered-by {
+    float: right;
+    margin: 20px;
+    text-align: center;
+}
+
+.powered-by a {
+    display: block;
+    width: 160px;
+    height: 46px;
+    margin-top: 10px;
+    background: url(images/logo.png) no-repeat center bottom;
+    font-size: 0;
+}

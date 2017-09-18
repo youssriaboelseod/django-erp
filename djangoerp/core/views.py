@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -12,13 +13,34 @@ THE SOFTWARE.
 """
 
 __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
-__copyright__ = 'Copyright (c) 2013 Emanuele Bertoldi'
-__version__ = '0.0.1'
+__copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
+__version__ = '0.0.5'
 
-from utils import clean_http_referer
+
+from copy import copy
+from django.http import HttpResponseRedirect
+from django.utils.translation import ugettext_lazy as _
+from django.utils.decorators import method_decorator
+from django.core.urlresolvers import reverse
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import UpdateView, DeleteView
+from django.views.generic.list import ListView
+from django.template.response import TemplateResponse
+from django.contrib.auth import get_user_model
+from django.contrib.messages.views import SuccessMessageMixin
+
+from .decorators import obj_permission_required as permission_required
+from .utils import clean_http_referer, set_path_kwargs
+from .models import User
+from .forms.auth import UserForm
+
+
+def _get_user(request, *args, **kwargs):
+    pk = kwargs.get("pk", None)
+    return get_user_model().objects.get(pk=pk)
 
 class SetCancelUrlMixin(object):
-    """Mixin that allows setting an URL to the previous logical view.
+    """Mixin that allows to set an URL to "rollback" (cancel) the current view.
     
     It adds a context variable called "back" with the value of "cancel_url" (if
     provided) or the HTTP referer (otherwise).
@@ -27,24 +49,262 @@ class SetCancelUrlMixin(object):
     
     def get_context_data(self, **kwargs):
         context = super(SetCancelUrlMixin, self).get_context_data(**kwargs)
-        context['back'] = self.request.GET.get('back', self.cancel_url or clean_http_referer(self.request))
+        context.update({"back": self.request.GET.get('back', self.cancel_url or clean_http_referer(self.request))})
+        return context  
+
+class BaseModelListView(ListView):
+    """View to be used in conjunction with render_model_list templatetag.
+    
+    It allows to set two context variables:
+    
+     * field_list -- The list of fields to be rendererd in the model list.
+                     Set the "field_list" variable or overwrite the
+                     "get_field_list" method.
+     * list_template_name -- The template name for rendering the model list. 
+                             Set the "list_template_name" variable or overwrite
+                             the "get_list_template_name" method.
+     * list_uid -- The unique ID of the model list.
+                   Set the "list_uid" variable or overwrite the "get_list_uid"
+                   method.
+    """
+    field_list = None
+    list_template_name = "elements/model_list.html"
+    list_uid = ""
+    
+    def __init__(self, field_list=None, list_template_name=None, list_uid=None, *args, **kwargs):
+        super(BaseModelListView, self).__init__(*args, **kwargs)
+        if field_list:
+            self.field_list = field_list
+        if list_template_name:
+            self.list_template_name = list_template_name
+        if list_uid:
+            self.list_uid = list_uid
+    
+    def get_field_list(self):
+        return self.field_list
+    
+    def get_list_template_name(self):
+        return self.list_template_name
+    
+    def get_list_uid(self):
+        return self.list_uid
+        
+    def get_list_prefix(self):
+        uid = self.get_list_uid()
+        if uid:
+            return "%s_" % uid
+        
+        return ""
+        
+    def paginate_queryset(self, queryset, page_size):
+        self.page_kwarg = "%spage" % self.get_list_prefix()
+        return super(BaseModelListView, self).paginate_queryset(queryset, page_size)
+    
+    def get_context_data(self, *args, **kwargs):
+        context = super(BaseModelListView, self).get_context_data(*args, **kwargs)
+        context['field_list'] = self.get_field_list()
+        context['list_template_name'] = self.get_list_template_name()
+        context['list_uid'] = self.get_list_uid()
         return context
 
-class SetSuccessUrlMixin(object):
-    """Mixin that allows setting an URL to the next logical view.
+class ModelListDeleteMixin(object):
+    """Mixin to be used with "ModelListView" to delete a group of list items.
     
-    It adds a context variable called "next" with the value of the "success_url"
-    variable, handling automatically the "get_success_url" for forms.
+    It manages deletion of one or more model instances at the same time.
+    
+    It could be customize using the following context variables:
+    
+     * delete_template_name -- The template name which is used to renders the
+                               deletion confrimation page. 
+                               Set the "delete_template_name" variable or
+                               overwrite the "get_delete_template_name" method.
     """
-    success_url = None
+    delete_template_name = "base_model_list_confirm_delete.html"
+        
+    def get_selected_uids(self, request, *args, **kwargs):
+        selected_uids = []
+        prefix = self.get_list_prefix()
+        selected_all = request.POST.get("%sselect_all" % prefix, False)
+        
+        if selected_all:
+            selected_uids = "*"
+            
+        else:
+            for k, v in list(request.POST.items()):
+                if k.startswith("%sselect_" % prefix) and v:
+                    selected_uids.append(k.rpartition('_')[2])
+                    
+        return selected_uids
+        
+    def get_delete_template_name(self):
+        return self.delete_template_name
+
+    def delete_selected(self, request, *args, **kwargs):
+        prefix = self.get_list_prefix()
+        selected_uids = self.get_selected_uids(request, *args, **kwargs)
+        queryset = self.get_queryset()
+        selected_queryset = queryset
+        if hasattr(queryset, '_clone'):
+            selected_queryset = queryset._clone()
+          
+        if isinstance(selected_uids, list):
+            selected_queryset = selected_queryset.filter(pk__in=selected_uids)   
+        
+        if selected_queryset:
+            if "%sdelete_selected" % prefix in request.POST:
+                return TemplateResponse(request, self.get_delete_template_name(), {"object_list": selected_queryset})
+
+            if "%sconfirm_delete_selected" % prefix in request.POST:
+                selected_queryset.delete()
+                curr_page = request.GET.get(self.page_kwarg, 1)
+                page_size = self.get_paginate_by(queryset)
+                item_count = queryset.count()
+                page_count = int(max(1, item_count / page_size))
+                if curr_page > page_count:
+                    path = set_path_kwargs(request, **{self.page_kwarg: page_count})
+                    return HttpResponseRedirect(path)
+        
+        return self.get(request, *args, **kwargs)
+        
+    def post(self, request, *args, **kwargs):
+        selected_uids = self.get_selected_uids(request, *args, **kwargs)
+        
+        if selected_uids\
+        and ("%sdelete_selected" % self.get_list_prefix() in request.POST\
+            or "%sconfirm_delete_selected" % self.get_list_prefix() in request.POST):
+            return self.delete_selected(request, *args, **kwargs)
+            
+        return super(ModelListDeleteMixin, self).post(request, *args, **kwargs)
+        
+class ModelListFilteringMixin(object):
+    """Mixin to be used with "ModelListView" to filter the list items.
+    """
+    def get_queryset(self):
+        qs = super(ModelListFilteringMixin, self).get_queryset()
+        
+        filter_query = self.get_filter_query_from_get()
+        
+        if filter_query:
+            return qs.filter(**filter_query)
+            
+        return qs
     
-    def get_context_data(self, **kwargs):
-        context = super(SetSuccessUrlMixin, self).get_context_data(**kwargs)
-        context['next'] = self.request.GET.get('next', self.success_url or clean_http_referer(self.request))
+    def get_context_data(self, *args, **kwargs):
+        context = super(ModelListFilteringMixin, self).get_context_data(*args, **kwargs)
+        filter_query = self.get_filter_query_from_get()
+        context['unfiltered_object_list'] = super(ModelListFilteringMixin, self).get_queryset()
+        context['%slist_filter_by' % self.get_list_prefix()] = dict([(k.rpartition('__')[0] or k.rpartition('__')[2], (k.rpartition('__')[2], v)) for k, v in list(filter_query.items())]) or None
         return context
         
-    def get_success_url(self):
-        try:
-            return self.request.GET.get('next', self.success_url or clean_http_referer(self.request))
-        except:
-            return super(SetSuccessUrlMixin, self).get_success_url()
+    def post(self, request, *args, **kwargs):
+        list_prefix = self.get_list_prefix()
+        filter_by_key = "%sfilter_by_" % list_prefix
+        filter_query = self.get_filter_query_from_post()
+        filter_kwargs = dict([("%s%s" % (filter_by_key, f), None) for f, v in list(self.get_filter_query_from_get().items())])
+        filter_kwargs.update(dict([('%s%s' % (filter_by_key, k), v) for k, v in list(filter_query.items())]))
+                
+        if "%sreset_filters" % list_prefix in request.POST:
+            for k, v in list(filter_kwargs.items()):
+                filter_kwargs[k] = None
+                    
+        return HttpResponseRedirect(set_path_kwargs(request, **filter_kwargs))
+        
+    def get_filter_query_from_post(self):
+        filter_query = {}
+        list_prefix = self.get_list_prefix()
+        filter_arg_name_prefix = "%sfilter_by_" % list_prefix
+        filter_arg_expr_prefix = "%sfilter_expr_" % list_prefix
+        for arg_name, arg_value in list(self.request.POST.items()):
+            if arg_name.startswith(filter_arg_name_prefix):
+                arg_name = arg_name.replace(filter_arg_name_prefix, "")
+                arg_expr = self.request.POST.get(filter_arg_expr_prefix + arg_name, None)
+                arg = arg_name
+                if arg_expr:
+                    arg += "__%s" % arg_expr
+                filter_query.update({arg: arg_value})
+        return filter_query
+        
+    def get_filter_query_from_get(self):
+        filter_query = {}
+        list_prefix = self.get_list_prefix()
+        filter_arg_name_prefix = "%sfilter_by_" % list_prefix
+        for arg_name, arg_value in list(self.request.GET.items()):
+            if arg_value and arg_name.startswith(filter_arg_name_prefix):
+                arg_name = arg_name.replace(filter_arg_name_prefix, "")
+                filter_query.update({arg_name: arg_value})
+        return filter_query
+  
+class ModelListOrderingMixin(object):
+    """Mixin to be used with "ModelListView" to order the list items.
+    """        
+    def get_queryset(self):
+        qs = super(ModelListOrderingMixin, self).get_queryset()
+            
+        ord_arg_name = "%sorder_by" % self.get_list_prefix()
+        self._order_query = self.request.GET.get(ord_arg_name, None)
+        
+        if self._order_query:
+            return qs.order_by(self._order_query)
+            
+        return qs
+    
+    def get_context_data(self, *args, **kwargs):
+        context = super(ModelListOrderingMixin, self).get_context_data(*args, **kwargs)
+        
+        self.get_queryset()
+            
+        context['list_order_by'] = self._order_query
+        
+        return context      
+        
+class ModelListView(ModelListDeleteMixin, ModelListOrderingMixin, ModelListFilteringMixin, BaseModelListView):
+    """Default model list view with support for deleting and ordering.
+    """
+    pass
+    
+class UserMixin(object):
+    """A mixin class for User model views.
+    """
+    model = get_user_model()
+    
+class UserCreateUpdateMixin(SuccessMessageMixin, SetCancelUrlMixin, UserMixin):
+    """A mixin class for create or update User model.
+    """
+    form_class = UserForm
+
+class DetailUserView(UserMixin, DetailView):
+    """View to show details of the given user.
+    """
+    template_name = "auth/user_detail.html"
+    
+    @method_decorator(permission_required("core.view_user", _get_user))
+    def dispatch(self, *args, **kwargs):
+        return super(DetailUserView, self).dispatch(*args, **kwargs)
+        
+class UpdateUserView(UserCreateUpdateMixin, UpdateView):
+    """View to edit the given user.
+    """
+    template_name = "auth/user_form.html"
+    success_message = _("The user was updated successfully.")
+    
+    @method_decorator(permission_required("core.change_user", _get_user))
+    def dispatch(self, *args, **kwargs):
+        return super(UpdateUserView, self).dispatch(*args, **kwargs)
+        
+class DeleteUserView(SuccessMessageMixin, SetCancelUrlMixin, UserMixin, DeleteView):
+    """View to delete the given user.
+    """
+    template_name = "auth/user_confirm_delete.html"
+    success_message = _("The user was deleted successfully.")
+    
+    @method_decorator(permission_required("core.delete_user", _get_user))
+    def dispatch(self, *args, **kwargs):
+        return super(DeleteUserView, self).dispatch(*args, **kwargs)
+        
+    def get_object(self, queryset=None):
+        self.object = super(DeleteUserView, self).get_object(queryset)
+        if self.object == self.request.user:
+            self.success_url = reverse('user_logout')
+        else:
+            self.success_url = '/'
+        return self.object

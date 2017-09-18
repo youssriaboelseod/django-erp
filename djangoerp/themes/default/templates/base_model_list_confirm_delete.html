@@ -1,0 +1,36 @@
+{% extends "base_confirm_delete.html" %}
+
+{% load i18n %}
+{% load markup %}
+{% load introspection %}
+
+{% block meta_title %}
+{% blocktrans with object_list|model_name_plural as model %}Delete {{ model }}{% endblocktrans %}
+{% endblock %}
+
+{% block title %}
+<h1>{% block object-title %}{% blocktrans with object_list|model_name_plural as model %}Delete {{ model }}{% endblocktrans %}{% endblock %}</h2>
+{% endblock %}
+
+{% block formcontent %}
+{% blocktrans with object_list|model_name_plural as model %}
+<h3>Are you sure you want to <strong>delete</strong> these {{ model }}?</h3>
+{% endblocktrans %}
+<ul>
+    {% for obj in object_list %}
+    <li>
+        {% join "_" table.uid "select" obj.pk as selection_input_name %}
+        <input title="{% trans 'Select this item' %}" name="{{ selection_input_name }}" type="checkbox" checked="on" />
+        <a title="{{ obj }}" href="{{ obj.get_absolute_url }}" target="_blank">{{ obj }}</a>
+    </li>
+    {% endfor %}
+</ul>
+<p>{% blocktrans %}Please, keep in mind this operation is <strong>irreversible</strong>...{% endblocktrans %}</p>
+{% endblock %}
+
+{% block formbuttons %}
+{% join "_" table.uid "confirm_delete_selected" as confirm_deletion_button %}
+{% with back=request.get_full_path submitbutton_value=confirm_deletion_button %}
+{{ block.super }}
+{% endwith %}
+{% endblock %}

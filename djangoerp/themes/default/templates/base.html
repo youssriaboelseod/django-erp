@@ -1,0 +1,81 @@
+{% load i18n %}
+{% load staticfiles %}
+{% load breadcrumbs %}
+{% load regions %}
+
+{% language user.language|default:LANGUAGE_CODE %}
+{% get_current_language as lang_code %}
+{% get_current_language_bidi as lang_bidi %}
+
+<!DOCTYPE html>
+<html lang="{{ lang_code }}"{% if lang_bidi %} dir="rtl"{% endif %}>
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% trans "django ERP" %} |{% block meta_title %}{% endblock %}</title>
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}" />
+    <link rel="stylesheet" href="{% static 'css/tripoli.simple.css' %}" type="text/css" media="all"/>
+    <!--[if IE]><link rel="stylesheet" href="{% static 'css/tripoli.simple.ie.css' %}" type="text/css" media="all"/><![endif]-->
+    <link rel="stylesheet" href="{% static 'css/screen.css' %}" type="text/css" media="screen"/>
+    {% if lang_bidi %}
+    <link rel="stylesheet" href="{% static 'css/screen_rtl.css' %}" type="text/css" media="screen"/>
+    {% endif %}
+    {% block extrastyle %}
+    {% endblock %}
+    {% block extraform %}
+    {% if form %}{{ form.media }}{% endif %}
+    {% if wizard %}{{ wizard.form.media }}{% endif %}
+    {% endblock %}
+    {% block extrahead %}
+    {% endblock %}
+</head>
+
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+    <div id="container">
+        <header id="header">
+            <hgroup id="branding">
+                <h1 id="site-name">django ERP</h1>
+                <h2 id="site-tagline">Free your business</h2>
+            </hgroup>
+            <div id="user-nav">
+                <div id="userarea">
+                    {% block userarea %}
+                    {% include "elements/userarea.html" %}
+                    {% endblock %}
+                </div>
+                <nav id="bookmarks">
+                    {% block bookmarks %}
+                    {% include "elements/user_bookmarks.html" %}
+                    {% endblock %}
+                </nav>
+            </div>
+            <nav id="breadcrumbs">{% block breadcrumbs %}{% add_crumb 'Home' %}{% endblock %}{% render_breadcrumbs %}</nav>
+        </header>
+ 		<section id="content">
+ 		    <section id="sidebar">
+                {% block sidebar %}
+                {% render_region "sidebar" %}
+                {% endblock %} 
+ 		    </section>
+ 		    <section id="main">
+                <section class="messages">
+                    {% include "elements/messages.html" %}
+                </section>
+                <header>
+                    {% block title %}{% endblock %}
+                </header>
+                {% block main %}
+                {% endblock %}
+ 		    </section>
+		</section>
+        <footer id="footer">
+            {% block footer %}
+            {% render_region "footer" %}
+            {% endblock %}
+        </footer>
+    </div>
+</body>
+
+</html>
+
+{% endlanguage %}

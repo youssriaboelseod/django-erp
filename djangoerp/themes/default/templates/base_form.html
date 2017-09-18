@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load introspection %}
+
+{% block meta_title %}
+{% if object and object.pk %}
+{% with model=object|model_name %}
+{% blocktrans %}Edit {{ model }}{% endblocktrans %}
+{% endwith %}
+{% else %}
+{% with model=view.model|model_name %}
+{% blocktrans %}Add {{ model }}{% endblocktrans %}
+{% endwith %}
+{% endif %}
+{% endblock %}
+
+{% block title %}
+{% if object and object.pk %}
+{% with model=object|model_name %}
+<h1>{% block object-title %}{{ object|striptags|capfirst }}{% endblock %}</h1>
+<h2>{% block subtitle %}{% blocktrans %}Edit {{ model }}{% endblocktrans %}{% endblock %}</h2>
+{% endwith %}
+{% else %}
+{% with model=view.model|model_name %}
+<h1>{% blocktrans %}Add {{ model }}{% endblocktrans %}</h1>
+{% endwith %}
+{% endif %}
+{% endblock %}
+
+{% block main %}
+{% block formheader %}<form method="post" action="{{ request.get_full_path }}{% if next %}{% if request.get_full_path|last == '/' %}?{% else %};{% endif %}next={{ next }}{% endif %}{% if back %}{% if request.get_full_path|last == '/' %}?{% else %};{% endif %}back={{ back }}{% endif %}">{% endblock %}
+    {% csrf_token %}
+    {% block formcontent_prefix %}{% endblock %}
+    {% block formcontent %}
+    <table class="properties">
+        {% block formbody %}
+        {% render_model_details form field_list %}
+        {% endblock %}
+    </table>
+    {% endblock %}
+    {% block formcontent_suffix %}{% endblock %}
+    {% block formbuttons %}
+    {% include "elements/cancel_button.html" %}
+    {% include "elements/submit_button.html" %}
+    {% endblock %}
+</form>
+{% endblock %}
