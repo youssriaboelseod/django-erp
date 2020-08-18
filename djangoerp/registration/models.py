@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -23,7 +21,7 @@ from django.conf import settings
 class ActivationToken(models.Model):
     """Activation token for user account.
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, verbose_name=_("user"))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, verbose_name=_("user"))
     activation_key = models.CharField(_("activation key"), max_length=40, blank=True, null=True)
     key_expiration = models.DateTimeField(_("key expiration"), blank=True, null=True)
     

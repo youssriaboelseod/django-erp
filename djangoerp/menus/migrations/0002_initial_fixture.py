@@ -1,10 +1,6 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
-
 from django.db import models, migrations
 from django.utils.translation import ugettext_noop as _
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from ..utils import create_detail_actions, create_detail_navigation
 
@@ -85,7 +81,7 @@ def install(apps, schema_editor):
         context='{"pk": "object.pk"}',
         menu_id=user_detail_actions.pk
     )
-    user_edit_link.only_with_perms=[edit_user]
+    user_edit_link.only_with_perms.set([edit_user])
     
     user_delete_link, is_new = Link.objects.get_or_create(
         title=_("Delete"),
@@ -95,7 +91,7 @@ def install(apps, schema_editor):
         context='{"pk": "object.pk"}',
         menu_id=user_detail_actions.pk
     )
-    user_delete_link.only_with_perms=[delete_user]
+    user_delete_link.only_with_perms.set([delete_user])
     
     # Permissions.
     users_group.permissions.add(add_bookmark)

@@ -6,7 +6,7 @@
 
     {% block table_headers %}
     <tr>
-        {% join '_' table.uid 'order_by' as order_by_key %}
+        {% joinargs '_' table.uid 'order_by' as order_by_key %}
         {% for h in table.headers %}
         {% block table_header %}
         <td class="{{ h.type }}">

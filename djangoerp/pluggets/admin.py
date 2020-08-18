@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -23,11 +21,11 @@ from .models import *
 
 
 class RegionAdmin(admin.ModelAdmin):
-    list_display  = ('__unicode__', 'slug')
+    list_display  = ('slug',)
     prepopulated_fields = {"slug": ("title",)}
 
 class PluggetAdmin(admin.ModelAdmin):
-    list_display  = ('__unicode__', 'description', 'slug')
+    list_display  = ('description', 'slug')
     search_fields = ('title', 'slug')
 
 

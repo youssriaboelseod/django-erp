@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -18,6 +16,7 @@ __version__ = '0.0.5'
 
 from hashlib import md5
 from django import template
+from django.utils.html import format_html
 
 register = template.Library()
 
@@ -39,5 +38,5 @@ def avatar(email, size=32, default="mm", css_class="avatar image"):
     if default:
         url = "%s&d=%s" % (url, default)
         
-    return '<img class="%s" width="%s" height="%s" src="%s" />' % (css_class, size, size, url)
+    return format_html('<img class="{}" width="{}" height="{}" src="{}" />', css_class, size, size, url)
 

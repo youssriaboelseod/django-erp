@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -18,13 +16,11 @@ __version__ = '0.0.5'
 
 import datetime
 
-from django.shortcuts import render_to_response, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
-from django.template import RequestContext
+from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.core.mail import send_mail
 from django.conf import settings
 
 from .models import *
@@ -48,7 +44,7 @@ def user_register(request):
     else:
         form = UserRegistrationForm(instance=user)
 
-    return render_to_response('registration/register.html', RequestContext(request, {'form': form}))        
+    return render(request, 'registration/register.html', {'form': form})        
     
 def user_activate(request, activation_key):
     """Activates a pending user account.

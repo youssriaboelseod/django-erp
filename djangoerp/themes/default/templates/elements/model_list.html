@@ -10,8 +10,8 @@
     {% block table_filterbox %}
     <tr class="filterbox">
         {% for h in table.headers %}
-        {% join '_' table.uid 'filter_by' h.attname as filter_by_key %}
-        {% join '_' table.uid 'filter_expr' h.attname as filter_expr_key %}
+        {% joinargs '_' table.uid 'filter_by' h.attname as filter_by_key %}
+        {% joinargs '_' table.uid 'filter_expr' h.attname as filter_expr_key %}
         {% block table_field_filter %}
         <td class="{{ h.attname }}-filter">
             {% if h.type == "boolean" %}
@@ -58,8 +58,8 @@
         {% endfor %}
         <td>
             <ul class="actions">
-                {% join '_' table.uid 'filter' as filter_button_name %}
-                {% join '_' table.uid 'reset_filters' as reset_filters_button_name %}
+                {% joinargs '_' table.uid 'filter' as filter_button_name %}
+                {% joinargs '_' table.uid 'reset_filters' as reset_filters_button_name %}
                 <li class="search"><button title="{% trans 'Filter' %}" name="{{ filter_button_name }}">{% trans "Filter" %}</button></li>
                 <li class="list"><button title="{% trans 'Reset' %}" name="{{ reset_filters_button_name }}">{% trans "Reset" %}</button></li>
             </ul>

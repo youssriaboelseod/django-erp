@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -25,8 +23,8 @@ from django.template.defaultfilters import stringfilter
 register = template.Library()
 
 
-@register.assignment_tag
-def join(join_str, *args):
+@register.simple_tag
+def joinargs(join_str, *args):
     """Joins given args (if valid) using join_str.
     
     The result is stored in a context variable.

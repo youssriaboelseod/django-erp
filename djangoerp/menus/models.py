@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -18,8 +16,7 @@ __version__ = '0.0.5'
 
 
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
-from django.db.models import permalink
+from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
@@ -27,7 +24,6 @@ from django.contrib.auth.models import Permission
 from djangoerp.core.models import validate_json
 
 
-@python_2_unicode_compatible
 class Menu(models.Model):
     """Menu model.
     """
@@ -43,11 +39,10 @@ class Menu(models.Model):
         return self.description or self.slug
 
 
-@python_2_unicode_compatible
 class Link(models.Model):
     """A generic menu entry.
     """
-    menu = models.ForeignKey(Menu, related_name='links', verbose_name=_('menu'))
+    menu = models.ForeignKey(Menu, on_delete=models.CASCADE, related_name='links', verbose_name=_('menu'))
     title = models.CharField(max_length=255, verbose_name=_('title'))
     slug = models.SlugField(unique=True, verbose_name=_('slug'))
     url = models.CharField(max_length=255, verbose_name=_('url'))
@@ -57,7 +52,7 @@ class Link(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True, verbose_name=_('description'))
     new_window = models.BooleanField(default=False, verbose_name=_('New window'))
     sort_order = models.PositiveIntegerField(default=0, verbose_name=_('sort order'))
-    submenu = models.ForeignKey(Menu, db_column='submenu_id', related_name='parent_links', blank=True, null=True, verbose_name=_('sub-menu'))
+    submenu = models.ForeignKey(Menu, on_delete=models.CASCADE, db_column='submenu_id', related_name='parent_links', blank=True, null=True, verbose_name=_('sub-menu'))
     only_authenticated = models.BooleanField(default=True, verbose_name=_('Only for authenticated users'))
     only_staff = models.BooleanField(default=False, verbose_name=_('Only for staff users'))
     only_with_perms = models.ManyToManyField(Permission, blank=True, verbose_name=_('Only with following permissions'))
@@ -111,7 +106,6 @@ class Link(models.Model):
         return self.icon % self.extra_context
 
 
-@python_2_unicode_compatible
 class Bookmark(Link):
     """A proxy model for bookmark links.
     """
@@ -123,10 +117,8 @@ class Bookmark(Link):
     def __str__(self):
         return '%s' % (self.title % self.extra_context)
         
-    @models.permalink
     def get_edit_url(self):
-        return ('bookmark_edit', (), {"slug": self.slug})
+        return reverse('bookmark_edit', kwargs={"slug": self.slug})
 
-    @models.permalink
     def get_delete_url(self):
-        return ('bookmark_delete', (), {"slug": self.slug})
+        return reverse('bookmark_delete', kwargs={"slug": self.slug})

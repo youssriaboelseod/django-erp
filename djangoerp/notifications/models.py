@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -19,8 +17,8 @@ __version__ = '0.0.5'
 import hashlib, json
 from datetime import datetime
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
+from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -31,14 +29,13 @@ from djangoerp.core.utils.rendering import field_to_string
 from .managers import *
 
 
-@python_2_unicode_compatible
 class FollowRelation(models.Model):
     """It represents a relation  model between a watcher and a watched object.
     """
-    followed_content_type = models.ForeignKey(ContentType, related_name="+")
+    followed_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name="+")
     followed_id = models.PositiveIntegerField()
     followed = GenericForeignKey('followed_content_type', 'followed_id')
-    follower_content_type = models.ForeignKey(ContentType, related_name="+")
+    follower_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name="+")
     follower_id = models.PositiveIntegerField()
     follower = GenericForeignKey('follower_content_type', 'follower_id')
 
@@ -51,7 +48,6 @@ class FollowRelation(models.Model):
     def __str__(self):
         return _("%s followed by %s") % (self.followed, self.follower)
 
-@python_2_unicode_compatible
 class Signature(models.Model):
     """It represents the identifier of an activity and/or a notification.
     """
@@ -71,14 +67,13 @@ class Signature(models.Model):
             self.title = pretty_name(self.slug).replace("-", " ").capitalize()
         super(Signature, self).save(*args, **kwargs)
  
-@python_2_unicode_compatible       
 class Subscription(models.Model):
     """A Subscription allows a per-signature-based filtering of notifications.
     """
-    subscriber_content_type = models.ForeignKey(ContentType, related_name="+")
+    subscriber_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name="+")
     subscriber_id = models.PositiveIntegerField()
     subscriber = GenericForeignKey('subscriber_content_type', 'subscriber_id')
-    signature = models.ForeignKey(Signature)
+    signature = models.ForeignKey(Signature, on_delete=models.CASCADE)
     send_email = models.BooleanField(default=True, verbose_name=_('send email'))
     email = models.EmailField(null=True, blank=True, verbose_name=_('email'))
 
@@ -91,7 +86,6 @@ class Subscription(models.Model):
     def __str__(self):
         return "%s | %s" % (self.subscriber, self.signature)
 
-@python_2_unicode_compatible
 class Activity(models.Model):
     """An activity is a registered event that happens at a specific time.
     
@@ -103,7 +97,7 @@ class Activity(models.Model):
     context = models.TextField(_('context'), blank=True, null=True, validators=[validate_json], help_text=_('Use the JSON syntax.'))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_('created'))
     backlink = models.CharField(_('backlink'), blank=True, null=True, max_length=200)
-    source_content_type = models.ForeignKey(ContentType, related_name="+")
+    source_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name="+")
     source_id = models.PositiveIntegerField()
     source = GenericForeignKey('source_content_type', 'source_id')
 
@@ -136,16 +130,15 @@ class Activity(models.Model):
     def get_absolute_url(self):
         return self.backlink or ""
 
-python_2_unicode_compatible
 class Notification(models.Model):
     """A notification notifies a specific event to a specific target.
     """
     title = models.CharField(max_length=100, verbose_name=_('title'))
     description = models.TextField(blank=True, null=True, verbose_name=_('description'))
-    target_content_type = models.ForeignKey(ContentType, related_name="+")
+    target_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name="+")
     target_id = models.PositiveIntegerField()
     target = GenericForeignKey('target_content_type', 'target_id')
-    signature = models.ForeignKey(Signature, verbose_name=_('signature'))
+    signature = models.ForeignKey(Signature, on_delete=models.CASCADE, verbose_name=_('signature'))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_('created on'))
     read = models.DateTimeField(blank=True, null=True, verbose_name=_('read on'))
     dispatch_uid = models.CharField(max_length=32, verbose_name=_('dispatch UID'))
@@ -167,13 +160,11 @@ class Notification(models.Model):
     def __str__(self):
         return self.title
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('notification_detail', (), {"object_model": self.target._meta.verbose_name_plural, "object_id": self.target.pk, "pk": self.pk})
+        return reverse('notification_detail', kwargs={"object_model": self.target._meta.verbose_name_plural, "object_id": self.target.pk, "pk": self.pk})
 
-    @models.permalink
     def get_delete_url(self):
-        return ('notification_delete', (), {"object_model": self.target._meta.verbose_name_plural, "object_id": self.target.pk, "pk": self.pk})
+        return reverse('notification_delete', kwargs={"object_model": self.target._meta.verbose_name_plural, "object_id": self.target.pk, "pk": self.pk})
 
     def clean_fields(self, exclude=None):
         if not self.dispatch_uid:

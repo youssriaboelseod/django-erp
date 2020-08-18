@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -18,11 +16,10 @@ __version__ = '0.0.5'
 
 
 import collections
-from django.utils import six
-from django.utils.six.moves.urllib.parse import urlparse
+from functools import wraps
+from urllib.parse import urlparse
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.utils.decorators import available_attrs
 
 
 def obj_permission_required(perm, get_obj_func=None, login_url=None, redirect_field_name=REDIRECT_FIELD_NAME):
@@ -37,7 +34,7 @@ def obj_permission_required(perm, get_obj_func=None, login_url=None, redirect_fi
     passing the arguments of the decorated view).
     """
     def decorator(viewfunc):
-        @six.wraps(viewfunc, assigned=available_attrs(viewfunc))
+        @wraps(viewfunc)
         def _wrapped_view(request, *args, **kwargs):
             obj = None
             perm_name = perm

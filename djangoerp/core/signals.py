@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -33,7 +31,7 @@ def _update_author_permissions(sender, instance, raw, created, **kwargs):
     """Updates the permissions assigned to the author of the given object.
     """
     author = LoggedInUserCache().user
-    if author and author.is_authenticated():
+    if author and author.is_authenticated:
         content_type = ContentType.objects.get_for_model(sender)
         app_label = content_type.app_label
         model_name = content_type.model

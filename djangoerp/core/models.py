@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -19,10 +17,10 @@ __version__ = '0.0.5'
 import json
 import re
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core import validators
+from django.urls import reverse
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.utils import timezone
 from django.conf import settings
@@ -55,8 +53,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False, help_text=_('Designates whether the user can log into this admin site.'), verbose_name=_('staff'))
     is_active = models.BooleanField(default=True, help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'), verbose_name=_('active'))
     date_joined = models.DateTimeField(default=timezone.now, verbose_name=_('date joined'))
-    language = models.CharField(max_length=5, null=True, choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE, verbose_name=_("language"))
-    timezone = models.CharField(max_length=20, null=True, choices=settings.TIME_ZONES, default=settings.TIME_ZONE, verbose_name=_("timezone"))
+    language = models.CharField(max_length=7, null=True, choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE, verbose_name=_("language"))
+    timezone = models.CharField(max_length=30, null=True, choices=settings.TIME_ZONES, default=settings.TIME_ZONE, verbose_name=_("timezone"))
     
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
@@ -77,14 +75,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_full_name(self):
         return self.get_short_name()
     
-    @models.permalink
     def get_absolute_url(self):
-        return ('user_detail', (), {"pk": self.pk})
+        return reverse('user_detail', kwargs={"pk": self.pk})
+
 
     def email_user(self, subject, message, from_email=None):
         send_mail(subject, message, from_email, [self.email])
 
-@python_2_unicode_compatible
 class Group(DjangoGroup):
     """A proxy for Group model which customize its string representation.
     """
@@ -108,12 +105,11 @@ class Permission(DjangoPermission):
     def uid(self):
         return "%s.%s" % (self.content_type.app_label, self.codename)
 
-@python_2_unicode_compatible
 class ObjectPermission(models.Model):
     """A generic object/row-level permission.
     """
     object_id = models.PositiveIntegerField()
-    perm = models.ForeignKey(Permission, verbose_name=_("permission"))
+    perm = models.ForeignKey(Permission, on_delete=models.CASCADE, verbose_name=_("permission"))
     users = models.ManyToManyField(User, blank=True, related_name='objectpermissions', verbose_name=_("users"))
     groups = models.ManyToManyField(Group, blank=True, related_name='objectpermissions', verbose_name=_("groups"))
 
