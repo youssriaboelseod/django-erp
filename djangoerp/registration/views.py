@@ -29,7 +29,7 @@ from .forms import *
 def user_register(request):
     """Registers a new user account.
     """
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         messages.info(request, _("You are already registered."))
         return redirect("/")
 
@@ -53,7 +53,7 @@ def user_activate(request, activation_key):
     user_account = token.user
     if user_account.is_active:
         messages.info(request, _("This account is already active."))
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return redirect("/")
         return redirect(reverse('user_login'))
     try:

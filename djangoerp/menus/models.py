@@ -72,7 +72,7 @@ class Link(models.Model):
     def get_absolute_url(self):
         import json
         from django.template import Variable
-        from django.core.urlresolvers import reverse, NoReverseMatch
+        from django.urls import reverse, NoReverseMatch
         
         link_context = {}
         

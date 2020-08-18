@@ -80,5 +80,6 @@ class LoggedInUserCacheMiddleware(object):
     def __call__(self, request):
         logged_in_user = LoggedInUserCache()
         logged_in_user.set_user(request)
-        return self.get_response(request)
-
+        response = self.get_response(request)
+        logged_in_user.clear()
+        return response

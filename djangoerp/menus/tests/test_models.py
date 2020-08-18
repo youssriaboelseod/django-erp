@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -17,6 +15,7 @@ __copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
 __version__ = '0.0.5'
 
 from django.test import TestCase
+from django.test.utils import override_settings
 
 from ..models import *
     
@@ -32,8 +31,8 @@ class MenuTestCase(TestCase):
         
         self.assertEqual("%s" % m, "A test menu.")
     
+@override_settings(ROOT_URLCONF='djangoerp.menus.tests.urls')
 class LinkTestCase(TestCase):
-    urls = 'djangoerp.menus.tests.urls'
     
     def setUp(self):
         self.m = Menu.objects.create(slug="menu")

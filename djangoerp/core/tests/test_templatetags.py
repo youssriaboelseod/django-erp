@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -18,7 +16,9 @@ __version__ = '0.0.5'
 
 
 from django.test import TestCase
+from django.test.utils import override_settings
 from django.utils.safestring import mark_safe
+from django.template import Context
 from django.template.loader import render_to_string
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -35,7 +35,7 @@ class JoinStringsTemplateTagTestCase(TestCase):
     def test_join_list_with_empty_string(self):
         """Tests "join" templatetag must exclude empty/invalid strings.
         """
-        self.assertEqual(join("_", "a", "b", "", "d"), "a_b_d")
+        self.assertEqual(joinargs("_", "a", "b", "", "d"), "a_b_d")
         
 class SplitFilterTestCase(TestCase):
     def test_split_on_string(self):
@@ -169,7 +169,7 @@ class ModelListTagTestCase(TestCase):
         """Tests rendering a model list from an invalid object_list (not a queryset).
         """
         self.assertEqual(
-            render_model_list({}, None),
+            render_model_list(Context(), None),
             ""
         )
         
@@ -188,7 +188,7 @@ class ModelListTagTestCase(TestCase):
         }
         
         self.assertEqual(
-            render_model_list({}, qs, ["username"]),
+            render_model_list(Context(), qs, ["username"]),
             render_to_string("elements/model_list.html", {"table": table_dict})
         )
         
@@ -207,7 +207,7 @@ class ModelListTagTestCase(TestCase):
         }
         
         self.assertEqual(
-            render_model_list({}, qs, ["username"], uid="mytable"),
+            render_model_list(Context(), qs, ["username"], uid="mytable"),
             render_to_string("elements/model_list.html", {"table": table_dict})
         )
         
@@ -229,17 +229,17 @@ class ModelListTagTestCase(TestCase):
         rendered_table = render_to_string("elements/model_list.html", {"table": table_dict})
         
         self.assertEqual(
-            render_model_list({}, qs),
+            render_model_list(Context(), qs),
             rendered_table
         )
         
         self.assertEqual(
-            render_model_list({}, qs, None),
+            render_model_list(Context(), qs, None),
             rendered_table
         )
         
         self.assertEqual(
-            render_model_list({}, qs, False),
+            render_model_list(Context(), qs, False),
             rendered_table
         )
         
@@ -260,7 +260,7 @@ class ModelListTagTestCase(TestCase):
         }
         
         self.assertEqual(
-            render_model_list({}, qs, ["username"]),
+            render_model_list(Context(), qs, ["username"]),
             render_to_string("elements/model_list.html", {"table": table_dict})
         )
         
@@ -285,7 +285,7 @@ class ModelListTagTestCase(TestCase):
         }
         
         self.assertEqual(
-            render_model_list({}, qs, ["username"]),
+            render_model_list(Context(), qs, ["username"]),
             render_to_string("elements/model_list.html", {"table": table_dict})
         )
         
@@ -311,7 +311,7 @@ class ModelListTagTestCase(TestCase):
         }
         
         self.assertEqual(
-            render_model_list({}, qs, ["username"]),
+            render_model_list(Context(), qs, ["username"]),
             render_to_string("elements/model_list.html", {"table": table_dict})
         )
         
@@ -326,7 +326,7 @@ class ModelListTagTestCase(TestCase):
         })
         
         self.assertEqual(
-            render_model_list({}, qs, ["username"]),
+            render_model_list(Context(), qs, ["username"]),
             render_to_string("elements/model_list.html", {"table": table_dict})
         )
         
@@ -351,7 +351,7 @@ class ModelListTagTestCase(TestCase):
         }
         
         self.assertEqual(
-            render_model_list({"list_filter_by": {"username": ("lt", "u3")}}, qs, ["username"]),
+            render_model_list(Context({"list_filter_by": {"username": ("lt", "u3")}}), qs, ["username"]),
             render_to_string("elements/model_list.html", {"table": table_dict})
         )
         
@@ -366,7 +366,7 @@ class ModelDetailsTagTestCase(TestCase):
         }
         
         self.assertEqual(
-            render_model_details({}, ""),
+            render_model_details(Context(), ""),
             render_to_string("elements/model_details.html", {"details": details_dict})
         )
         
@@ -380,7 +380,7 @@ class ModelDetailsTagTestCase(TestCase):
         }
         
         self.assertEqual(
-            render_model_details({}, "", uid="mydetails"),
+            render_model_details(Context(), "", uid="mydetails"),
             render_to_string("elements/model_details.html", {"details": details_dict})
         )
         
@@ -396,7 +396,7 @@ class ModelDetailsTagTestCase(TestCase):
         }
         
         self.assertEqual(
-            render_model_details({}, u1, ['username']),
+            render_model_details(Context(), u1, ['username']),
             render_to_string("elements/model_details.html", {"details": details_dict})
         )
         
@@ -416,7 +416,7 @@ class ModelDetailsTagTestCase(TestCase):
         }
         
         self.assertEqual(
-            render_model_details({}, [u1, u2], ['0.username', '1.username']),
+            render_model_details(Context(), [u1, u2], ['0.username', '1.username']),
             render_to_string("elements/model_details.html", {"details": details_dict})
         )
         
@@ -435,7 +435,7 @@ class ModelDetailsTagTestCase(TestCase):
         }
         
         self.assertEqual(
-            render_model_details({}, [u1, u2], [['0.username', '1.username']]),
+            render_model_details(Context(), [u1, u2], [['0.username', '1.username']]),
             render_to_string("elements/model_details.html", {"details": details_dict})
         )
         
@@ -455,7 +455,7 @@ class ModelDetailsTagTestCase(TestCase):
         }
         
         self.assertEqual(
-            render_model_details({}, [u1, u2], ['0.username:(user)', '1.username:(another user)']),
+            render_model_details(Context(), [u1, u2], ['0.username:(user)', '1.username:(another user)']),
             render_to_string("elements/model_details.html", {"details": details_dict})
         )
         
@@ -475,7 +475,7 @@ class ModelDetailsTagTestCase(TestCase):
         }
         
         self.assertEqual(
-            render_model_details({"u1": u1, "u2": u2}, "[u1, u2]", ['0.username:(user)', '1.username:(another user)']),
+            render_model_details(Context({"u1": u1, "u2": u2}), "[u1, u2]", ['0.username:(user)', '1.username:(another user)']),
             render_to_string("elements/model_details.html", {"details": details_dict})
         )
         
@@ -495,7 +495,7 @@ class ModelDetailsTagTestCase(TestCase):
         }
         
         self.assertEqual(
-            render_model_details({}, [u1, u2], "['0.username:(user)', '1.username:(another user)']"),
+            render_model_details(Context(), [u1, u2], "['0.username:(user)', '1.username:(another user)']"),
             render_to_string("elements/model_details.html", {"details": details_dict})
         )
         
@@ -508,14 +508,14 @@ class ModelDetailsTagTestCase(TestCase):
             "uid": "",
             "num_cols": 1,
             "layout": [
-                [{"name": "Permissions:", "attrs": "", "value": mark_safe(render_to_string("elements/empty.html").strip())}],
                 [{"name": "ID:", "attrs": "", "value": "#%d" % g.pk}],
                 [{"name": "Name:", "attrs": "", "value": g.name}],
+                [{"name": "Permissions:", "attrs": "", "value": mark_safe(render_to_string("elements/empty.html").strip())}],
             ]
         }
         
         self.assertEqual(
-            render_model_details({}, g),
+            render_model_details(Context(), g),
             render_to_string("elements/model_details.html", {"details": details_dict})
         )
         
@@ -555,8 +555,8 @@ class UserHasPermTagTestCase(TestCase):
         # Restores previous cached user.
         logged_cache.user = prev_user
         
+@override_settings(ROOT_URLCONF='djangoerp.core.tests.urls')
 class BreadcrumbsTagsTestCase(TestCase):
-    urls = 'djangoerp.core.tests.urls'
     
     def setUp(self):
         self.context = {"request": FakeRequest()}

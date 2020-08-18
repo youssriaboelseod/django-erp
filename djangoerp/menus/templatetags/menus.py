@@ -49,7 +49,7 @@ def _calculate_link_params(link, context):
         user = AnonymousUser()
         if link.only_staff or link.only_with_perms.exists():
             link.authorized = False
-        if link.only_authenticated and not user.is_authenticated():
+        if link.only_authenticated and not user.is_authenticated:
             link.authorized = False
     return link
     

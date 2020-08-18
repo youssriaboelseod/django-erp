@@ -15,12 +15,26 @@ __copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
 __version__ = '0.0.5'
 
 
-default_app_config = 'djangoerp.registration.apps.RegistrationAppConfig'
+from unittest import SkipTest
+from django.test import TestCase
+
+from .models import *
 
 
-def load_tests(loader, tests, pattern):
-    from unittest import SkipTest
-    from django.apps import apps
-    if apps.is_installed(__name__):
-        return loader.discover('tests', pattern)
-    raise SkipTest(f'{__name__} not installed')
+class AppConfigTestCase(TestCase):
+    def test_initial_fixture_installation(self):
+        """Tests installation of initial fixture.
+        """
+        from djangoerp.menus.models import Link, Menu
+
+        user_area_not_logged_menu, is_new = Menu.objects.get_or_create(
+            slug="user_area_not_logged"
+        )
+        
+        # Links.
+        register_link, is_new = Link.objects.get_or_create(
+            slug="register",
+            menu_id=user_area_not_logged_menu.pk
+        )
+        self.assertTrue(register_link)
+        self.assertFalse(is_new)

@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -80,7 +78,7 @@ class ObjectPermissionBackend(object):
     def get_all_permissions(self, user_obj, obj=None):
         """Returns all and only the object perms granted to the given user_obj.
         """
-        if user_obj.is_anonymous():
+        if user_obj.is_anonymous:
             return set()
         if True: # not hasattr(user_obj, '_obj_perm_cache'):
             user_obj._obj_perm_cache = self.get_user_permissions(user_obj, obj)
@@ -94,6 +92,9 @@ class ObjectPermissionBackend(object):
             return True
 
         if not user_obj.is_active:
+            return False
+
+        if user_obj.is_anonymous:
             return False
 
         if obj is None:

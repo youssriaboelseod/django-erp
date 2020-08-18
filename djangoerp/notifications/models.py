@@ -63,7 +63,8 @@ class Signature(models.Model):
         
     def save(self, *args, **kwargs):
         if self.slug and not self.title:
-            from django.forms.forms import BoundField, pretty_name
+            from django.forms.boundfield import BoundField
+            from django.forms.utils import pretty_name
             self.title = pretty_name(self.slug).replace("-", " ").capitalize()
         super(Signature, self).save(*args, **kwargs)
  
