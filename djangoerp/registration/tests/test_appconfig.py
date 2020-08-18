@@ -15,7 +15,6 @@ __copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
 __version__ = '0.0.5'
 
 
-from unittest import SkipTest
 from django.test import TestCase
 
 from .models import *
