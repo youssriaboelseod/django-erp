@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -23,8 +21,8 @@ from ..models import User, Group
 
 class TestModelInstance(models.Model):
     id = models.PositiveIntegerField(default=5, primary_key=True)
-    user = models.ForeignKey(User, default=1)
-    group = models.ForeignKey(Group, default=1)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, default=1)
     slug = models.SlugField(default="fake_object")
     url = models.URLField(default="http://localhost:8000/test")
     email = models.EmailField(default="u@u.it")

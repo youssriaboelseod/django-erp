@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -61,11 +59,11 @@ class UserModelTestCase(TestCase):
         """Tests sending an email to the given user.
         """
         from django.core import mail
-        
-        u1, n = User.objects.get_or_create(username="u1")
-        
+
+        u1, n = User.objects.get_or_create(username="u1", email="u1@example.com")
+
         u1.email_user('Subject here', 'Here is the message.', 'from@example.com')
-        
+
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Subject here')
         self.assertEqual(mail.outbox[0].from_email, 'from@example.com')

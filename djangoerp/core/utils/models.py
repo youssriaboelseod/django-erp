@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -20,12 +18,11 @@ __version__ = '0.0.5'
 from django.utils.formats import localize
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from django.template.loader import render_to_string
 from django.apps import apps as app_registry
 from django.db import models
 from django import forms
-from django.forms.forms import BoundField, pretty_name
-from django.forms.utils import flatatt
+from django.forms.boundfield import BoundField
+from django.forms.utils import flatatt, pretty_name
 
 from .rendering import field_to_string
 
@@ -51,7 +48,7 @@ def get_model(klass):
     elif isinstance(klass, models.query.QuerySet):
         return klass.model
         
-    elif isinstance(klass, basestring):
+    elif isinstance(klass, str):
         app_label, sep, model_name = klass.rpartition('.')
         return app_registry.get_model(app_label, model_name)
         

@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -16,9 +14,9 @@ __author__ = 'Emanuele Bertoldi <emanuele.bertoldi@gmail.com>'
 __copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
 __version__ = '0.0.5'
 
-import copy
 from django.conf import settings
 from django.test import TestCase
+from django.test.utils import override_settings
 from django.template import Context
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
@@ -29,8 +27,8 @@ from ..templatetags.menus import *
 def _clean_output(output):
     return "".join([r.strip() for r in output.strip().splitlines() if r and not r.isspace()])
 
+@override_settings(ROOT_URLCONF='djangoerp.menus.tests.urls')
 class RenderMenuTagTestCase(TestCase):
-    urls = 'djangoerp.menus.tests.urls'
 
     def setUp(self):
         from djangoerp.core.models import Permission
@@ -81,7 +79,7 @@ class RenderMenuTagTestCase(TestCase):
     def test_render_invalid_menu(self):
         """Tests rendering an invalid menu.
         """
-        output = render_menu({}, "invalid-menu")
+        output = render_menu(Context(), "invalid-menu")
         
         self.assertFalse(Menu.objects.filter(slug="invalid-menu").exists())
         self.assertEqual(output, "")
@@ -89,7 +87,7 @@ class RenderMenuTagTestCase(TestCase):
     def test_render_empty_menu(self):
         """Tests rendering an empty menu.
         """        
-        output = render_menu({}, "empty-menu")
+        output = render_menu(Context(), "empty-menu")
         
         self.assertEqual(output.replace('\n', ''), '<ul id="empty-menu-menu" class="menu"></ul>')
         
@@ -156,14 +154,11 @@ class RenderMenuTagTestCase(TestCase):
     def test_render_menu_with_anonymous_user_permission_management(self):
         """Tests handling anonymous user's permission management on menu rendering.
         """        
-        context = copy.copy(self.auth_context)
-        
-        context['user'] = AnonymousUser()
-        
-        output = render_menu(
-            context,
-            "auth-menu"
-        )
+        with self.context.push(user=AnonymousUser()): 
+            output = render_menu(
+                self.context,
+                "auth-menu"
+            )
         
         cleaned_output = _clean_output(output)
         
@@ -181,14 +176,11 @@ class RenderMenuTagTestCase(TestCase):
     def test_render_menu_with_superuser_permission_management(self):
         """Tests handling superuser's permission management on menu rendering.
         """
-        context = copy.copy(self.auth_context)
-        
-        context['user'] = self.su
-        
-        output = render_menu(
-            context,
-            "auth-menu"
-        )
+        with self.context.push(user=self.su):
+            output = render_menu(
+                self.context,
+                "auth-menu"
+            )
         
         cleaned_output = _clean_output(output)
         
@@ -221,14 +213,11 @@ class RenderMenuTagTestCase(TestCase):
     def test_render_menu_with_staff_user_permission_management(self):
         """Tests handling staff user's permission management on menu rendering.
         """
-        context = copy.copy(self.auth_context)
-        
-        context['user'] = self.u2
-        
-        output = render_menu(
-            context,
-            "auth-menu"
-        )
+        with self.context.push(user=self.u2):
+            output = render_menu(
+                self.context,
+                "auth-menu"
+            )
         
         cleaned_output = _clean_output(output)
         
@@ -256,14 +245,11 @@ class RenderMenuTagTestCase(TestCase):
     def test_render_menu_with_user_permission_management(self):
         """Tests handling user's permission management on menu rendering.
         """
-        context = copy.copy(self.auth_context)
-        
-        context['user'] = self.u3
-        
-        output = render_menu(
-            context,
-            "auth-menu"
-        )
+        with self.context.push(user=self.u3):
+            output = render_menu(
+                self.context,
+                "auth-menu"
+            )
         
         cleaned_output = _clean_output(output)
         

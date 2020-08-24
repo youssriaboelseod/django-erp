@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -19,7 +17,7 @@ __version__ = '0.0.5'
 
 from django.test import TestCase, RequestFactory
 from django.test.utils import override_settings
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.conf import settings
@@ -41,11 +39,11 @@ def _get_perm_name(request, *args, **kwargs):
 
 @obj_permission_required("core.view_user", _get_user)        
 def test_decorator_view(request, *args, **kwargs):
-    return render_to_response('index.html')
+    return render(request, 'index.html')
 
 @obj_permission_required(_get_perm_name, _get_user)        
 def test_decorator_view2(request, *args, **kwargs):
-    return render_to_response('index.html')
+    return render(request, 'index.html')
 
 
 @override_settings(

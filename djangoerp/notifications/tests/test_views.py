@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -18,7 +16,7 @@ __version__ = '0.0.5'
 
 from django.test import TestCase
 from django.test.client import RequestFactory
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 from djangoerp.core.models import Permission, ObjectPermission
 
@@ -230,7 +228,7 @@ class ListNotificationViewTestCase(TestCase):
         
         self.assertEqual(response.status_code, 302)
         self.assertFalse(obj.is_followed_by(u3))
-        self.assertEqual(response.url, "http://testserver" + reverse("user_login")[:-1] + "?next=%s" % url)
+        self.assertEqual(response.url, reverse("user_login")[:-1] + "?next=%s" % url)
         
         # With valid follower.
         self.assertTrue(obj.is_followed_by(u2))
@@ -263,7 +261,7 @@ class DetailNotificationViewTestCase(TestCase):
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "http://testserver" + reverse("user_login")[:-1] + "?next=%s" % url)
+        self.assertEqual(response.url, reverse("user_login")[:-1] + "?next=%s" % url)
         
         notification = Notification.objects.get(pk=notification.pk)
         self.assertFalse(notification.read)
@@ -301,7 +299,7 @@ class DeleteNotificationViewTestCase(TestCase):
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "http://testserver" + reverse("user_login")[:-1] + "?next=%s" % url)
+        self.assertEqual(response.url, reverse("user_login")[:-1] + "?next=%s" % url)
         
         # With valid owner.        
         self.client.login(username="u2", password="p")

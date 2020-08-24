@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -17,7 +15,7 @@ __copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
 __version__ = '0.0.5'
 
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.views.generic import TemplateView
 
 from ..urls import urlpatterns
@@ -34,9 +32,8 @@ class PresetSetCancelUrlTestView(SetCancelUrlTestView):
     cancel_url = "/go_to_cancel_url/"
 
 # Special urls for test cases.
-urlpatterns += patterns('',
+urlpatterns += [
     url(r'^default_cancel_url/', view=SetCancelUrlTestView.as_view(), name="default_cancel_url"),
     url(r'^preset_cancel_url/', view=PresetSetCancelUrlTestView.as_view(), name="preset_cancel_url"),
     url(r'^private/', view=BaseTemplateView.as_view(), name="private_zone_url"),
-)
-
+]

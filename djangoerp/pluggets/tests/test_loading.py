@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -59,7 +57,6 @@ class SourceCacheLoadingTestCase(TestCase):
             }
         )
         
-    @expectedFailure
     def test_get_source_choices(self):
         """Tests retrieving a list of choices for the registered plugget sources.
         """
@@ -76,10 +73,8 @@ class SourceCacheLoadingTestCase(TestCase):
                 ("Plugget 2", "Plugget 2"),
             ]
         )
-        
-        self.assertTrue(
-            ("Text plugget", "Text plugget") in registry.get_plugget_source_choices(True)
-        )
+
+        registry.clear()
         
     def test_unique_source_title(self):
         """Tests that plugget source titles must be unique.
@@ -125,10 +120,13 @@ class SourceCacheLoadingTestCase(TestCase):
         
         self.assertEqual(sources["A foo plugget with description"]["description"], "With a foo description. Multiline.")
         
+    # There are no registered pluggets yet add this when there is
     @expectedFailure
     def test_source_cache_auto_discovering(self):
         """Tests the auto-discovering of plugget sources.
         """
+        registry.clear()
+        self.assertTrue(("Text plugget", "Text plugget") in registry.get_plugget_source_choices(True))
         self.assertTrue("Text plugget" in registry.get_plugget_sources(True))
      
     def test_source_cache_clearing(self):

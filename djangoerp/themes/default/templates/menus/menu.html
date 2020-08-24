@@ -7,7 +7,7 @@
     {% if link.authorized and link.get_absolute_url %}
     {% block menu-link %}
     {% score_link link request.get_full_path as active_css_class %}
-    {% join ' ' active_css_class css_class as style %}
+    {% joinargs ' ' active_css_class css_class as style %}
     <li{% if style %} class="{{ style }}"{% endif %} id="{{ link.slug|escape }}-link">
         {% with link.description|default:link.title|striptags as link_title %}
         <a{% if link.new_window %} target="_blank"{% endif %} title="{% trans link_title %}" href="{{ link.get_absolute_url|escape }}">

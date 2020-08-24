@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -81,13 +79,16 @@ class ObjectPermissionBackendTestCase(TestCase):
         """
         class TestObject(object):
             pk = 5894325454554428943296
-            
-        def fake_is_anonymous():
-            return True
+
+        class TestUser(get_user_model()):
+            @property
+            def is_anonymous(self):
+                return True
+            class Meta:
+                proxy = True
             
         obj = TestObject()
-        au, n = get_user_model().objects.get_or_create(username="anonymous")
-        au.is_anonymous = fake_is_anonymous
+        au, n = TestUser.objects.get_or_create(username="anonymous")
         
         p = Permission.objects.get_by_natural_key("delete_user", auth_app, "user")
         

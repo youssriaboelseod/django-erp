@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -18,6 +16,7 @@ __version__ = '0.0.5'
 
 
 from django.test import TestCase
+from django.test.utils import override_settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.test.utils import override_settings
@@ -26,8 +25,8 @@ from . import *
 from ..middleware import *
         
 
+@override_settings(ROOT_URLCONF='djangoerp.core.tests.urls')
 class RequireLoginMiddlewareTestCase(TestCase):
-    urls = 'djangoerp.core.tests.urls'
     
     def test_required_url(self):
         """Tests an URL in required list must be accessible only after a login.
@@ -58,20 +57,22 @@ class LoggedInUserCacheMiddlewareTestCase(TestCase):
     def test_store_request_user(self):
         """Tests the correct storing of the current user in the logged cache.
         """
+        def get_response(request):
+            request.logged_in_user = logged_cache.user
+            request.has_user = logged_cache.has_user
+
         r = FakeRequest()
-        m = LoggedInUserCacheMiddleware()
+        m = LoggedInUserCacheMiddleware(get_response)
         u, n = get_user_model().objects.get_or_create(username="u1")
-        m.process_request(r)
+        m(r)
         
-        self.assertTrue(isinstance(logged_cache.user, AnonymousUser))
-        self.assertFalse(logged_cache.has_user)
+        self.assertTrue(isinstance(r.logged_in_user, AnonymousUser))
+        self.assertFalse(r.has_user)
         
         r.user = u
-        m.process_request(r)
+        m(r)
         
-        self.assertEqual(logged_cache.user, u)
-        self.assertTrue(logged_cache.has_user)
+        self.assertEqual(r.logged_in_user, u)
+        self.assertTrue(r.has_user)
         
-        # Reset (WARNING: DON'T REMOVE!).
-        r.user = AnonymousUser()
-        m.process_request(r)
+        logged_cache.clear()

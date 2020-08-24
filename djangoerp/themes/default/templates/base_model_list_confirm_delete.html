@@ -19,7 +19,7 @@
 <ul>
     {% for obj in object_list %}
     <li>
-        {% join "_" table.uid "select" obj.pk as selection_input_name %}
+        {% joinargs "_" table.uid "select" obj.pk as selection_input_name %}
         <input title="{% trans 'Select this item' %}" name="{{ selection_input_name }}" type="checkbox" checked="on" />
         <a title="{{ obj }}" href="{{ obj.get_absolute_url }}" target="_blank">{{ obj }}</a>
     </li>
@@ -29,7 +29,7 @@
 {% endblock %}
 
 {% block formbuttons %}
-{% join "_" table.uid "confirm_delete_selected" as confirm_deletion_button %}
+{% joinargs "_" table.uid "confirm_delete_selected" as confirm_deletion_button %}
 {% with back=request.get_full_path submitbutton_value=confirm_deletion_button %}
 {{ block.super }}
 {% endwith %}

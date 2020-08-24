@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -43,9 +41,8 @@ class GetterTestCase(TestCase):
         except User.DoesNotExist:
             self.assertFalse(True)
 
-@override_settings(LOGIN_REQUIRED_URLS_EXCEPTIONS=(r'/(.*)$',))    
+@override_settings(ROOT_URLCONF='djangoerp.core.tests.urls', LOGIN_REQUIRED_URLS_EXCEPTIONS=(r'/(.*)$',))
 class SetCancelUrlMixinTestCase(TestCase):
-    urls = 'djangoerp.core.tests.urls'
     
     def test_back_in_context_data(self):
         """Tests the presence of a "back" variable in context data.

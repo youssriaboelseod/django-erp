@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -18,3 +16,11 @@ __version__ = '0.0.5'
 
 
 default_app_config = 'djangoerp.registration.apps.RegistrationAppConfig'
+
+
+def load_tests(loader, tests, pattern):
+    from unittest import SkipTest
+    from django.apps import apps
+    if apps.is_installed(__name__):
+        return loader.discover('tests', pattern)
+    raise SkipTest(f'{__name__} not installed')

@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -19,8 +17,7 @@ __version__ = '0.0.5'
 
 from djangoerp.settings.base import (
     DEBUG,
-    TEMPLATE_CONTEXT_PROCESSORS,
-    MIDDLEWARE_CLASSES
+    MIDDLEWARE,
 )
 
 
@@ -39,14 +36,10 @@ LOGIN_REQUIRED_URLS_EXCEPTIONS = (
     r'/users/login/$',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS += (
-    'djangoerp.core.context_processors.auth',
-)
-
-MIDDLEWARE_CLASSES += (
+MIDDLEWARE += [
     'djangoerp.core.middleware.RequireLoginMiddleware',
     'djangoerp.core.middleware.LoggedInUserCacheMiddleware',
-)
+]
 
 AUTHENTICATION_BACKENDS = (
     'djangoerp.core.backends.ModelBackend',

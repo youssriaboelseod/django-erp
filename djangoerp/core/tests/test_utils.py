@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -395,30 +393,32 @@ class RenderGetFieldTupeTestCase(TestCase):
     def test_get_tuple_for_form_field(self):
         """Tests returning a tuple for a form instance's field.
         """
+        from django.forms.boundfield import BoundField
+        b = BoundField(self.f, self.f.fields['username'], 'username')
         self.assertEqual(
             get_field_tuple("username", self.f),
             (
                 '<label class="required" for="id_username">Username:</label>',
                 ' class="required"',
-                '<input id="id_username" maxlength="30" name="username" type="text" value="u" /><br/><span title="Required. 30 characters or fewer. Letters, numbers and @/./+/-/_ characters" class="helptext helppopup">Required. 30 characters or fewer. Letters, numbers and @/./+/-/_ characters</span>'
+                '%s<br/><span title="Required. 30 characters or fewer. Letters, numbers and @/./+/-/_ characters" class="helptext helppopup">Required. 30 characters or fewer. Letters, numbers and @/./+/-/_ characters</span>' % (b,)
             )
         )
-        
+        b = BoundField(self.f, self.f.fields['email'], 'email')
         self.assertEqual(
             get_field_tuple("email", self.f),
             (
                 '<label class="required" for="id_email">Email:</label>',
                 ' class="required"',
-                '<input id="id_email" maxlength="254" name="email" type="email" value="u@u.it" />'
+                '%s' % (b,)
             )
         )
-        
+        b = BoundField(self.f, self.f.fields['password2'], 'password2')
         self.assertEqual(
             get_field_tuple("password2", self.f),
             (
                 '<label for="id_password2">Password confirmation:</label>',
                 ' class="errors"',
-                '<input id="id_password2" name="password2" type="password" /><br/><span title="Enter the same password as above, for verification." class="helptext helppopup">Enter the same password as above, for verification.</span><br/>\n<ul class="errorlist">\n\t<li>This field is required.</li>\n</ul>\n'
+                '%s<br/><span title="%s" class="helptext helppopup">%s</span><br/>\n<ul class="errorlist">\n\t<li>This field is required.</li>\n</ul>\n' % (b, b.help_text, b.help_text)
             )
         )
     
