@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -18,19 +16,16 @@ __version__ = '0.0.5'
 
 
 import collections
-from django.utils import six
-from djangoerp.core.cache import Singleton
+from djangoerp.core.singleton import Singleton
 
 
-@six.add_metaclass(Singleton)
-class PluggetSourceCache(object):
+class PluggetSourceCache(metaclass=Singleton):
     """Stores all plugget sources.
     """
 
     def __init__(self):
         self.default_func = lambda x: x
         self.clear()
-        self.auto_discover()
         
     def register(self, func, title, description, template, form):        
         if not isinstance(func, collections.Callable):

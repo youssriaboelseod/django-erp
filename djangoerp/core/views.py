@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -17,11 +15,10 @@ __copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
 __version__ = '0.0.5'
 
 
-from copy import copy
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.utils.decorators import method_decorator
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView, DeleteView
 from django.views.generic.list import ListView

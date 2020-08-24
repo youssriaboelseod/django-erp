@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -17,11 +15,9 @@ __copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
 __version__ = '0.0.5'
 
 
-import re
 from django import template
 from django.conf import settings
-from django.utils.translation import ugettext as _
-from django.template.loader import render_to_string
+from django.template import Engine
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 
@@ -53,7 +49,7 @@ def _calculate_link_params(link, context):
         user = AnonymousUser()
         if link.only_staff or link.only_with_perms.exists():
             link.authorized = False
-        if link.only_authenticated and not user.is_authenticated():
+        if link.only_authenticated and not user.is_authenticated:
             link.authorized = False
     return link
     
@@ -78,7 +74,10 @@ def _render_menu(slug, context, html_template=None, css_class=None):
             _calculate_link_params(link, context)
         html_template = html_template or menu.template_name or settings.MENU_DEFAULT_TEMPLATE
         html_template = ("%s" % html_template).replace('"', '').replace("'", "")
-        return render_to_string(html_template, {'slug': slug, 'links': links, 'css_class': css_class}, context)
+        html_template = Engine.get_default().get_template(html_template)
+        with context.push(slug=slug, links=links, css_class=css_class):
+            result = html_template.render(context)
+        return result
     except Menu.DoesNotExist:
         pass
     return ""
@@ -105,7 +104,7 @@ def render_user_bookmarks(context, css_class=None):
     return ""    
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def score_link(context, link, ref_url, css_class="active"):
     """Checks if the link instance is the best match for "ref_url".
 

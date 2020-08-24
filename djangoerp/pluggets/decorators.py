@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -19,7 +17,6 @@ __version__ = '0.0.5'
 
 from functools import wraps
 from django.shortcuts import redirect
-from django.utils.decorators import available_attrs
 
 from .models import Plugget
 import collections
@@ -31,7 +28,7 @@ def is_plugget_editable(get_plugget_func, redirect_to='/'):
     A plugget is editable if its source UID is registered.
     """
     def decorator(viewfunc):
-        @wraps(viewfunc, assigned=available_attrs(viewfunc))
+        @wraps(viewfunc)
         def _wrapped_view(request, *args, **kwargs):
             from .loading import registry
             plugget = None

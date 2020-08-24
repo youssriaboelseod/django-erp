@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -17,13 +15,11 @@ __copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
 __version__ = '0.0.5'
 
 
-from copy import copy
 from django.conf import settings
 from django.db import models
 from django.utils.encoding import force_text
 from django import template
-from django.template.loader import render_to_string
-from django.contrib.contenttypes.models import ContentType
+from django.template import Engine
 from djangoerp.core.utils.models import (
     get_model,
     get_fields,
@@ -126,19 +122,21 @@ def render_model_list(context, object_list, field_list=[], template_name=None, u
     filters.update(context.get("%slist_filter_by" % prefix, None) or {})
     headers = [{"name": f.verbose_name, "attname": f.attname, "type": get_field_type(f), "filter": {"expr": filters[f.attname][0], "value": filters[f.attname][1]}} for f in fields]
     rows = [{"object": o, "fields": [f.value_to_string(o) for f in fields]} for o in object_list]
-    new_context = copy(context)
-    new_context.update(
-        {
-            "table": {
-                "uid": uid,
-                "order_by": object_list.query.order_by,
-                "headers": headers,
-                "rows": rows
-            }
-        }
+
+    table = {
+        "uid": uid,
+        "order_by": object_list.query.order_by,
+        "headers": headers,
+        "rows": rows
+    }
+
+    html_template = Engine.get_default().get_template(
+        template_name or settings.MODEL_LIST_DEFAULT_TEMPLATE
     )
-    
-    return render_to_string(template_name or settings.MODEL_LIST_DEFAULT_TEMPLATE, new_context)
+    with context.push(table=table):
+        result = html_template.render(context)
+    return result
+
 
 
 @register.simple_tag(takes_context=True)
@@ -152,12 +150,12 @@ def render_model_details(context, objects, field_layout=[], template_name=None, 
 
     Example tag usage: {% render_model_details "[object, form]" "[field1, [0.field2, 1.field3], field4]" %}
     """
-    if objects and isinstance(objects, basestring):
+    if objects and isinstance(objects, str):
         objects = eval(objects, {}, context)
     if not isinstance(objects, (list, tuple)):
         objects = [objects]
     
-    if isinstance(field_layout, basestring) and field_layout:
+    if isinstance(field_layout, str) and field_layout:
         field_layout = eval(field_layout)
     elif not field_layout:
         field_layout = []
@@ -191,16 +189,16 @@ def render_model_details(context, objects, field_layout=[], template_name=None, 
     num_cols = 1
     for row in layout:
         num_cols = max(num_cols, len(row))
-                
-    new_context = copy(context)
-    new_context.update(
-        {
-            "details": {
-                "uid": uid,
-                "num_cols": num_cols,
-                "layout": layout
-            }
-        }
-    )
     
-    return render_to_string(template_name or settings.MODEL_DETAILS_DEFAULT_TEMPLATE, new_context)
+    details = {
+        "uid": uid,
+        "num_cols": num_cols,
+        "layout": layout
+    }
+
+    html_template = Engine.get_default().get_template(
+        template_name or settings.MODEL_DETAILS_DEFAULT_TEMPLATE
+    )
+    with context.push(details=details):
+        result = html_template.render(context)
+    return result

@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -22,10 +20,10 @@ from ..models import Notification
 
 register = template.Library()
 
-@register.assignment_tag
+@register.simple_tag
 def notification_for(instance):
     return Notification.objects.for_object(instance)
 
-@register.assignment_tag
+@register.simple_tag
 def unread_notification_for(instance):
     return Notification.objects.unread_for_object(instance)

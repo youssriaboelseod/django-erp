@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -47,20 +45,27 @@ class RequireLoginMiddleware(object):
     LOGIN_REQUIRED_URLS_EXCEPTIONS is, conversely, where you explicitly 
     define any exceptions (like login and logout URLs).
     """
-    def __init__(self):
+    def __init__(self, get_response):
+        self.get_response = get_response
         self.required = tuple([re.compile(url) for url in settings.LOGIN_REQUIRED_URLS])
         self.exceptions = tuple([re.compile(url) for url in settings.LOGIN_REQUIRED_URLS_EXCEPTIONS])
+
+    def __call__(self, request):
+        return self.get_response(request)
     
     def process_view(self, request, view_func, view_args, view_kwargs):
         # No need to process URLs if user already logged in
-        if request.user.is_authenticated(): return None
+        if request.user.is_authenticated:
+            return None
         # An exception match should immediately return None
         for url in self.exceptions:
-            if url.match(request.path): return None
+            if url.match(request.path):
+                return None
         # Requests matching a restricted URL pattern are returned 
         # wrapped with the login_required decorator
         for url in self.required:
-            if url.match(request.path): return login_required(view_func)(request,*view_args,**view_kwargs)
+            if url.match(request.path):
+                return login_required(view_func)(request,*view_args,**view_kwargs)
         # Explicitly return None for all non-matching requests
         return None
 
@@ -69,9 +74,12 @@ class RequireLoginMiddleware(object):
 class LoggedInUserCacheMiddleware(object):
     """Initialize the user attribute of the LoggedInUserCache class.
     """
-    def process_request(self, request):
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
         logged_in_user = LoggedInUserCache()
         logged_in_user.set_user(request)
-
-        return None
-
+        response = self.get_response(request)
+        logged_in_user.clear()
+        return response

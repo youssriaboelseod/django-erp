@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -18,15 +16,14 @@ __version__ = '0.0.5'
 
 
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.text import slugify
+from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils.translation import ugettext_lazy as _
 from djangoerp.core.models import validate_json
 
 
-@python_2_unicode_compatible
 class Region(models.Model):
     """A logical area that could host any kind of Pluggets.
     
@@ -34,7 +31,7 @@ class Region(models.Model):
     """
     slug = models.SlugField(max_length=100, unique=True, verbose_name=_('slug'))
     title = models.CharField(max_length=256, blank=True, null=True, verbose_name=_('title'))
-    content_type = models.ForeignKey(ContentType, blank=True, null=True)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, blank=True, null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     owner_object = GenericForeignKey('content_type', 'object_id')
 
@@ -54,11 +51,10 @@ class Region(models.Model):
             pass
         return "/"
 
-@python_2_unicode_compatible
 class Plugget(models.Model):
     """A plugget is a graphical element hosted on a Region.
     """
-    region = models.ForeignKey(Region, related_name='pluggets', verbose_name=_('region'))
+    region = models.ForeignKey(Region, on_delete=models.CASCADE, related_name='pluggets', verbose_name=_('region'))
     title = models.CharField(max_length=100, verbose_name=_('title'))
     description = models.TextField(blank=True, null=True, verbose_name=_('description'))
     source = models.CharField(max_length=256, verbose_name=_('source'))
@@ -81,10 +77,8 @@ class Plugget(models.Model):
     def get_absolute_url(self):
         return self.region.get_absolute_url()
 
-    @models.permalink
     def get_edit_url(self):
-        return ('plugget_edit', (), {"pk": self.pk})
+        return reverse('plugget_edit', kwargs={"pk": self.pk})
 
-    @models.permalink
     def get_delete_url(self):
-        return ('plugget_delete', (), {"pk": self.pk})
+        return reverse('plugget_delete', kwargs={"pk": self.pk})

@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -17,15 +15,11 @@ __copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
 __version__ = '0.0.5'
 
 
-import collections
 from django.utils.formats import localize
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 from django.db import models
-from django import forms
-from django.forms.forms import BoundField, pretty_name
-from django.forms.utils import flatatt
 
 
 def value_to_string(value):

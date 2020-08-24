@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -17,13 +15,10 @@ __copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
 __version__ = '0.0.5'
 
 
-import re
 import json
-from copy import copy
 from django.conf import settings
 from django import template
-from django.utils.translation import ugettext as _
-from django.template.loader import render_to_string
+from django.template import Engine
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
 
@@ -49,38 +44,43 @@ def render_plugget(context, plugget_pk, template_name=None):
     
     Example usage: {% render_plugget plugget_pk template_name %}
     """    
-    context = copy(context)
-    
     if isinstance(plugget_pk, template.Variable):
         plugget_pk = plugget_pk.resolve(context)
     if isinstance(template_name, template.Variable):
         template_name = template_name.resolve(context)
-    
-    try:
-        plugget = Plugget.objects.get(pk=plugget_pk)
-        if plugget.context:
-            context.update(json.loads(plugget.context))
-        sources = registry.get_plugget_sources()
-        source = sources.get(plugget.source, None)
-        func = None
-        if source:
-            func = source.get("func", None)
-        elif plugget.source:
-            pkg, sep, name = plugget.source.rpartition('.')
-            try:
-                m = __import__(pkg, {}, {}, [name])
-                func = getattr(m, name)
+   
+    result = ""
+
+    with context.push():
+        try:
+            plugget = Plugget.objects.get(pk=plugget_pk)
+            if plugget.context:
+                context.update(json.loads(plugget.context))
+            sources = registry.get_plugget_sources()
+            source = sources.get(plugget.source, None)
+            func = None
+            if source:
+                func = source.get("func", None)
+            elif plugget.source:
+                pkg, sep, name = plugget.source.rpartition('.')
+                try:
+                    m = __import__(pkg, {}, {}, [name])
+                    func = getattr(m, name)
+                    context = func(context)
+                except:
+                    pass
+            if isinstance(func, collections.Callable):
                 context = func(context)
-            except:
-                pass
-        if isinstance(func, collections.Callable):
-            context = func(context)
-        return render_to_string(template_name or plugget.template, {'plugget': plugget}, context)
-            
-    except ObjectDoesNotExist:
-        pass
+
+            html_template = Engine.get_default().get_template(
+                template_name or plugget.template
+            )
+            with context.push(plugget=plugget):
+                result = html_template.render(context)
+        except ObjectDoesNotExist:
+            pass
         
-    return ""    
+    return result
 
 @register.simple_tag(takes_context=True)
 def render_region(context, region_slug, template_name=None):
@@ -100,18 +100,21 @@ def render_region(context, region_slug, template_name=None):
     if isinstance(template_name, template.Variable):
         template_name = template_name.resolve(context)
     
+    result = ""
+
     try:
         region = Region.objects.get(slug=region_slug)
-        context['region'] = region
-        
-        return render_to_string(template_name or settings.REGION_DEFAULT_TEMPLATE, context)
-        
+        html_template = Engine.get_default().get_template(
+            template_name or settings.REGION_DEFAULT_TEMPLATE
+        )
+        with context.push(region=region):
+            result = html_template.render(context)
     except ObjectDoesNotExist:
         pass
         
-    return ""
+    return result
     
-@register.assignment_tag
+@register.simple_tag
 def regions_for(obj):
     """Returns all the regions related to the given obj in a context variable.
     
@@ -122,7 +125,7 @@ def regions_for(obj):
     except:
         return []
     
-@register.assignment_tag
+@register.simple_tag
 def first_region_for(obj):
     """Returns the first region related to the given obj in a context variable.
     

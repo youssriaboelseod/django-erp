@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -17,26 +15,11 @@ __copyright__ = 'Copyright (c) 2013-2015, django ERP Team'
 __version__ = '0.0.5'
 
 
-from django.utils import six
 from django.contrib.auth.models import AnonymousUser
+from .singleton import Singleton
 
 
-# Inspired by http://stackoverflow.com/a/7469395/1063729
-
-class Singleton(type):
-    """Singleton pattern.
-    """
-    def __init__(cls, name, bases, dicts):
-        cls.instance = None
-
-    def __call__(cls, *args, **kwargs):
-        if cls.instance is None:
-            cls.instance = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls.instance
-
-
-@six.add_metaclass(Singleton)
-class LoggedInUserCache(object):
+class LoggedInUserCache(metaclass=Singleton):
     """Stores the current user as a member attribute of a singleton.
     
     WARNING: if you manually change the value of "LoggedInUserCanche.user"
@@ -62,4 +45,4 @@ class LoggedInUserCache(object):
 
     @property
     def has_user(self):
-        return self.user and self.user.is_authenticated()
+        return self.user and self.user.is_authenticated

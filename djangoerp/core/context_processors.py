@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -49,7 +47,7 @@ class ObjPermWrapper(object):
         self.user = user
 
     def __getitem__(self, module_name):
-        if self.user.is_anonymous():
+        if self.user.is_anonymous:
             return []
         return ObjPermLookupDict(self.user, module_name)
 

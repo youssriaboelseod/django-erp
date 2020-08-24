@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """This file is part of the django ERP project.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -24,7 +22,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 
 class _GFKQuerySet(QuerySet):
     def filter(self, **kwargs):
-        gfk_fields = [g for g in self.model._meta.virtual_fields if isinstance(g, GenericForeignKey)]
+        gfk_fields = [g for g in self.model._meta.private_fields if isinstance(g, GenericForeignKey)]
 
         for gfk in gfk_fields:
             if gfk.name in kwargs:
