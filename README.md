@@ -15,13 +15,13 @@ Pre-requisites
 
 Make sure you have the following pre-requisites installed:
 
- * **python** >= 2.7 (required)
+ * **python** >= 3.5 (required)
    http://www.python.org
 
- * **pytz** >= 2015.4 (required)
+ * **pytz** >= 2020.1 (required)
    http://pytz.sourceforge.net/
 
- * **django** >= 1.8.x (required)
+ * **django** >= 3.1 (required)
    http://www.djangoproject.com
 
  * **apache2** (optional)
