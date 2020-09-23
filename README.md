@@ -41,9 +41,9 @@ Installation
 
     `cd django-erp`
 
-2. Install all **pre-requisities** (better inside a [virtualenv]) using [pip]:
+    `python -m venv env`
 
-    `pip install -r requirements.txt`
+    `source env-django-erp/Scripts/activate ` or `source ../env-django-erp/Scripts/activate ` (if the virtualenv outside the project file )
 
 3. Copy and rename **djangoerp/settings/base.py.tmpl** to  **djangoerp/settings/base.py**.
  
@@ -51,11 +51,17 @@ Installation
 
 5. Initialize the database and all applications:
 
-    `python manage migrate`
+    `python manage.py migrate`
+
+    `python manage.py makemigrations`  if you create modifications in models or create another module ( don't forget request pull it for        django-erp development after stablitiy stage)
 
 6. Test the installation running the development web-server (http://localhost:8000 on your browser):
 
     `python manage runserver`
+
+7. create supper user for manage your erp system and you can add more users
+
+    `python manage.py createsuperuser`
 
 [virtualenv]: http://www.virtualenv.org/en/latest/    
 [pip]: http://www.pip-installer.org/en/latest/
